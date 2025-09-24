@@ -1,8 +1,33 @@
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Menu, LogOut, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
+  const { user, userRole, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
+  const getRoleLabel = (role: string | null) => {
+    switch (role) {
+      case 'superadmin': return 'Süper Admin';
+      case 'admin': return 'Yönetici';
+      case 'dealer': return 'Bayi';
+      case 'user': return 'Kullanıcı';
+      default: return 'Kullanıcı';
+    }
+  };
+
   return (
     <header className="bg-secondary text-secondary-foreground shadow-card sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
@@ -25,9 +50,31 @@ const Header = () => {
             <Link to="/contact" className="text-secondary-foreground hover:text-primary transition-smooth">
               İletişim
             </Link>
-            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-              Admin Girişi
-            </Button>
+            
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                    <User className="h-4 w-4 mr-2" />
+                    {getRoleLabel(userRole)}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Çıkış Yap
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button 
+                variant="outline" 
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                onClick={() => navigate("/auth")}
+              >
+                Giriş Yap
+              </Button>
+            )}
           </nav>
 
           <Button variant="ghost" size="sm" className="md:hidden">
