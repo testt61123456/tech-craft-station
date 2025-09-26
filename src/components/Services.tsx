@@ -51,7 +51,7 @@ const Services = () => {
           {services.map((service, index) => (
             <Card 
               key={index} 
-              className="bg-gradient-card hover:shadow-tech transition-bounce border-0 group h-full"
+              className="bg-white/10 backdrop-blur-sm border-white/20 hover:shadow-tech transition-bounce group h-full"
             >
               <CardHeader className="text-center pb-4">
                 <div className="w-16 h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-bounce">

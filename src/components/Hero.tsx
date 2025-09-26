@@ -98,19 +98,19 @@ const Hero = () => {
               <p className="text-gray-300 text-sm">Sunduğumuz teknoloji çözümleri</p>
             </div>
             
-            <Carousel className="w-full max-w-sm mx-auto">
+            <Carousel className="w-full max-w-lg mx-auto">
               <CarouselContent>
                 {services.map((service, index) => (
                   <CarouselItem key={index}>
-                    <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+                    <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white h-48">
                       <CardHeader className="text-center pb-4">
-                        <div className="w-12 h-12 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-3">
-                          <service.icon className="w-6 h-6 text-white" />
+                        <div className="w-14 h-14 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-3">
+                          <service.icon className="w-7 h-7 text-white" />
                         </div>
-                        <CardTitle className="text-lg text-white">
+                        <CardTitle className="text-xl text-white">
                           {service.title}
                         </CardTitle>
-                        <CardDescription className="text-gray-300 text-sm">
+                        <CardDescription className="text-gray-300 text-sm leading-relaxed">
                           {service.description}
                         </CardDescription>
                       </CardHeader>
