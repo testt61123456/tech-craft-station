@@ -31,13 +31,13 @@ const Products = () => {
   ];
 
   return (
-    <section id="products" className="py-20 bg-background">
+    <section id="products" className="py-20 bg-secondary">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Ürün Fiyat Listesi
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Güncel ürün fiyatlarımız ve teknik özellikleri. Detaylı bilgi için bizimle iletişime geçin.
           </p>
         </div>
@@ -45,7 +45,7 @@ const Products = () => {
         <div className="space-y-12">
           {productCategories.map((category, categoryIndex) => (
             <div key={categoryIndex}>
-              <h3 className="text-2xl font-bold text-secondary mb-8 text-center">
+              <h3 className="text-2xl font-bold text-white mb-8 text-center">
                 {category.title}
               </h3>
               
@@ -61,7 +61,7 @@ const Products = () => {
                           {product.price}
                         </Badge>
                       </div>
-                      <CardDescription className="text-sm text-muted-foreground">
+                      <CardDescription className="text-sm text-gray-300">
                         {product.specs}
                       </CardDescription>
                     </CardHeader>
@@ -81,7 +81,7 @@ const Products = () => {
         </div>
 
         <div className="text-center mt-16">
-          <p className="text-muted-foreground mb-4">
+          <p className="text-gray-300 mb-4">
             Daha fazla ürün ve güncel fiyat bilgileri için
           </p>
           <Button size="lg" className="bg-gradient-hero hover:shadow-tech transition-bounce">

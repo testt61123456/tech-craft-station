@@ -36,13 +36,13 @@ const Services = () => {
   ];
 
   return (
-    <section id="services" className="py-20 bg-muted">
+    <section id="services" className="py-20 bg-secondary">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Hizmetlerimiz
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Teknoloji alanında ihtiyacınız olan tüm çözümler için uzman ekibimiz hizmetinizde
           </p>
         </div>
@@ -57,17 +57,17 @@ const Services = () => {
                 <div className="w-16 h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-bounce">
                   <service.icon className="w-8 h-8 text-white" />
                 </div>
-                <CardTitle className="text-xl text-secondary group-hover:text-primary transition-smooth">
+                <CardTitle className="text-xl text-white group-hover:text-primary transition-smooth">
                   {service.title}
                 </CardTitle>
-                <CardDescription className="text-muted-foreground">
+                <CardDescription className="text-gray-300">
                   {service.description}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
                   {service.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center text-sm text-muted-foreground">
+                    <li key={featureIndex} className="flex items-center text-sm text-gray-300">
                       <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0" />
                       {feature}
                     </li>
