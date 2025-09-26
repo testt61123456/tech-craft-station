@@ -19,13 +19,13 @@ const Partners = () => {
   ];
 
   return (
-    <section className="py-20 bg-muted">
+    <section className="py-20 bg-secondary">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             İş Ortaklarımız
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Güvenilir iş ortaklarımızla birlikte size en iyi hizmeti sunuyoruz
           </p>
         </div>
@@ -34,12 +34,12 @@ const Partners = () => {
           {partners.map((partner, index) => (
             <div 
               key={index} 
-              className="flex items-center justify-center p-6 bg-white rounded-lg shadow-sm hover:shadow-tech transition-bounce group"
+              className="flex items-center justify-center h-24 w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg hover:shadow-tech transition-bounce group"
             >
               <img 
                 src={partner.logo} 
                 alt={partner.name}
-                className="max-h-16 max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                className="max-h-12 max-w-full object-contain filter brightness-0 invert group-hover:filter-none transition-all duration-300"
               />
             </div>
           ))}

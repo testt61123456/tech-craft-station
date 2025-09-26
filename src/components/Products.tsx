@@ -68,7 +68,7 @@ const Products = () => {
                     <CardContent>
                       <Button 
                         variant="outline" 
-                        className="w-full border-white text-white hover:bg-white hover:text-secondary"
+                        className="w-full border-gray-300 text-gray-700 hover:bg-gray-700 hover:text-white"
                       >
                         Detaylı Bilgi Al
                       </Button>

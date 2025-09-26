@@ -65,7 +65,7 @@ const Hero = () => {
               <Button 
                 variant="outline" 
                 size="lg"
-                className="border-white text-white hover:bg-white hover:text-secondary text-lg px-8 py-6"
+                className="border-gray-300 text-gray-700 hover:bg-gray-700 hover:text-white text-lg px-8 py-6"
               >
                 Fiyat Listesi
               </Button>
@@ -98,16 +98,16 @@ const Hero = () => {
               <p className="text-gray-300 text-sm">Sunduğumuz teknoloji çözümleri</p>
             </div>
             
-            <Carousel className="w-full max-w-lg mx-auto">
+            <Carousel className="w-full max-w-xl mx-auto">
               <CarouselContent>
                 {services.map((service, index) => (
                   <CarouselItem key={index}>
-                    <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white h-48">
-                      <CardHeader className="text-center pb-4">
-                        <div className="w-14 h-14 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-3">
-                          <service.icon className="w-7 h-7 text-white" />
+                    <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white h-56">
+                      <CardHeader className="text-center pb-4 px-6">
+                        <div className="w-16 h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-4">
+                          <service.icon className="w-8 h-8 text-white" />
                         </div>
-                        <CardTitle className="text-xl text-white">
+                        <CardTitle className="text-xl text-white mb-2">
                           {service.title}
                         </CardTitle>
                         <CardDescription className="text-gray-300 text-sm leading-relaxed">
