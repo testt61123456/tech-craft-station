@@ -51,10 +51,10 @@ const Products = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {category.products.map((product, productIndex) => (
-                  <Card key={productIndex} className="bg-gradient-card hover:shadow-tech transition-bounce group">
+                  <Card key={productIndex} className="bg-white/10 backdrop-blur-sm border-white/20 hover:shadow-tech transition-bounce group">
                     <CardHeader>
                       <div className="flex justify-between items-start mb-2">
-                        <CardTitle className="text-lg group-hover:text-primary transition-smooth">
+                        <CardTitle className="text-lg text-white group-hover:text-primary transition-smooth">
                           {product.name}
                         </CardTitle>
                         <Badge variant="secondary" className="bg-gradient-hero text-white border-0">
@@ -68,7 +68,7 @@ const Products = () => {
                     <CardContent>
                       <Button 
                         variant="outline" 
-                        className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                        className="w-full border-white text-white hover:bg-white hover:text-secondary"
                       >
                         Detaylı Bilgi Al
                       </Button>
