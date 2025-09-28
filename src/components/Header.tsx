@@ -47,6 +47,9 @@ const Header = () => {
             <Link to="/products" className="text-secondary-foreground hover:text-primary transition-smooth">
               Ürünler
             </Link>
+            <Link to="/about" className="text-secondary-foreground hover:text-primary transition-smooth">
+              Hakkımızda
+            </Link>
             <Link to="/contact" className="text-secondary-foreground hover:text-primary transition-smooth">
               İletişim
             </Link>
