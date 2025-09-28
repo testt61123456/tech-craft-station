@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Monitor, Printer, Shield, Cog, Server } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import servicesBanner from "@/assets/services-banner.jpg";
 
 const ServicesPage = () => {
   const services = [
@@ -41,14 +42,57 @@ const ServicesPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
+        {/* Banner Section */}
+        <section className="relative min-h-[60vh] flex items-center bg-gradient-tech overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+            style={{ backgroundImage: `url(${servicesBanner})` }}
+          />
+          <div className="absolute inset-0 bg-gradient-tech opacity-80" />
+          
+          <div className="relative container mx-auto px-4 py-20">
+            <div className="text-center max-w-4xl mx-auto">
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                Profesyonel
+                <span className="text-primary block">Hizmetlerimiz</span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-gray-200 mb-8 leading-relaxed">
+                Teknoloji alanında ihtiyacınız olan tüm çözümler için 
+                <strong className="text-primary"> uzman ekibimizle</strong> yanınızdayız
+              </p>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-white">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary mb-2">5+</div>
+                  <div className="text-sm">Hizmet Alanı</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary mb-2">15+</div>
+                  <div className="text-sm">Yıl Tecrübe</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary mb-2">1000+</div>
+                  <div className="text-sm">Mutlu Müşteri</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary mb-2">24/7</div>
+                  <div className="text-sm">Teknik Destek</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Services Grid Section */}
         <section className="py-20 bg-muted">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h1 className="text-4xl md:text-5xl font-bold text-secondary mb-6">
-                Hizmetlerimiz
-              </h1>
+              <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-6">
+                Hizmet Alanlarımız
+              </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Teknoloji alanında ihtiyacınız olan tüm çözümler için uzman ekibimiz hizmetinizde
+                Her bir alanda uzmanlaşmış ekibimizle, kaliteli ve güvenilir hizmet sunuyoruz
               </p>
             </div>
 
