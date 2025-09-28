@@ -85,13 +85,13 @@ const ServicesPage = () => {
         </section>
 
         {/* Services Grid Section */}
-        <section className="py-20 bg-muted">
+        <section className="py-20 bg-secondary">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 Hizmet Alanlarımız
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
                 Her bir alanda uzmanlaşmış ekibimizle, kaliteli ve güvenilir hizmet sunuyoruz
               </p>
             </div>
