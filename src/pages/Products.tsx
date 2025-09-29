@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import productsBanner from "@/assets/products-banner.jpg";
 
 const ProductsPage = () => {
   const { data: products, isLoading } = useQuery({
@@ -25,12 +26,12 @@ const ProductsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-secondary">
         <Header />
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>Ürünler yükleniyor...</p>
+            <p className="text-white">Ürünler yükleniyor...</p>
           </div>
         </div>
         <Footer />
@@ -39,23 +40,30 @@ const ProductsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-secondary">
       <Header />
       <main>
-        <section className="py-20 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h1 className="text-4xl md:text-5xl font-bold text-secondary mb-6">
-                Ürünlerimiz
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                İhtiyaçlarınıza özel teknoloji çözümleri ve kaliteli ürünler
-              </p>
+        {/* Banner Section */}
+        <section className="relative h-96 overflow-hidden">
+          <img 
+            src={productsBanner} 
+            alt="Ürünlerimiz Banner" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+            <div className="text-center text-white">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">Ürünlerimiz</h1>
+              <p className="text-xl md:text-2xl">İhtiyaçlarınıza özel teknoloji çözümleri</p>
             </div>
+          </div>
+        </section>
+
+        <section className="py-20 bg-secondary">
+          <div className="container mx-auto px-4">
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {products?.map((product) => (
-                <Card key={product.id} className="group hover:shadow-elegant transition-all duration-300 bg-gradient-card">
+                <Card key={product.id} className="group hover:shadow-elegant transition-all duration-300 bg-white/10 backdrop-blur-sm border border-white/20">
                   <CardHeader className="p-0">
                     <div className="aspect-video relative overflow-hidden rounded-t-lg">
                       <img 
@@ -69,10 +77,10 @@ const ProductsPage = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="p-6">
-                    <CardTitle className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">
+                    <CardTitle className="text-xl font-semibold mb-3 text-white group-hover:text-primary transition-colors">
                       {product.name}
                     </CardTitle>
-                    <CardDescription className="text-muted-foreground mb-4 line-clamp-2">
+                    <CardDescription className="text-gray-300 mb-4 line-clamp-2">
                       {product.description || 'Ürün açıklaması yakında eklenecek.'}
                     </CardDescription>
                     
@@ -84,7 +92,7 @@ const ProductsPage = () => {
                             className="h-4 w-4 fill-yellow-400 text-yellow-400" 
                           />
                         ))}
-                        <span className="text-sm text-muted-foreground ml-2">(4.8)</span>
+                        <span className="text-sm text-gray-400 ml-2">(4.8)</span>
                       </div>
                       {product.price && (
                         <span className="text-2xl font-bold text-primary">
@@ -95,7 +103,7 @@ const ProductsPage = () => {
 
                     <div className="flex gap-3">
                       <Link to={`/products/${product.id}`} className="flex-1">
-                        <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                        <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20">
                           Detayları Gör
                         </Button>
                       </Link>
@@ -111,7 +119,7 @@ const ProductsPage = () => {
 
             {(!products || products.length === 0) && (
               <div className="text-center py-12">
-                <p className="text-xl text-muted-foreground">Henüz ürün bulunmamaktadır.</p>
+                <p className="text-xl text-white">Henüz ürün bulunmamaktadır.</p>
               </div>
             )}
           </div>
