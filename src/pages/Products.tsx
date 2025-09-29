@@ -1,15 +1,36 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Star } from "lucide-react";
+import { ShoppingCart, Star, Plus, Edit, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import productsBanner from "@/assets/products-banner.jpg";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 
 const ProductsPage = () => {
+  const { userRole } = useAuth();
+  const queryClient = useQueryClient();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    price: '',
+    category: '',
+    image_url: ''
+  });
+
+  const isAdmin = userRole === 'admin' || userRole === 'superadmin';
+
   const { data: products, isLoading } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
@@ -23,6 +44,114 @@ const ProductsPage = () => {
       return data;
     }
   });
+
+  const createProductMutation = useMutation({
+    mutationFn: async (productData: any) => {
+      const { data, error } = await supabase
+        .from('products')
+        .insert([{
+          ...productData,
+          price: productData.price ? parseFloat(productData.price) : null
+        }])
+        .select();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      toast.success('Ürün başarıyla eklendi');
+      setIsDialogOpen(false);
+      resetForm();
+    },
+    onError: (error) => {
+      toast.error('Ürün eklenirken hata oluştu');
+      console.error(error);
+    }
+  });
+
+  const updateProductMutation = useMutation({
+    mutationFn: async ({ id, productData }: { id: string, productData: any }) => {
+      const { data, error } = await supabase
+        .from('products')
+        .update({
+          ...productData,
+          price: productData.price ? parseFloat(productData.price) : null
+        })
+        .eq('id', id)
+        .select();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      toast.success('Ürün başarıyla güncellendi');
+      setIsDialogOpen(false);
+      resetForm();
+    },
+    onError: (error) => {
+      toast.error('Ürün güncellenirken hata oluştu');
+      console.error(error);
+    }
+  });
+
+  const deleteProductMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('products')
+        .update({ is_active: false })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      toast.success('Ürün başarıyla silindi');
+    },
+    onError: (error) => {
+      toast.error('Ürün silinirken hata oluştu');
+      console.error(error);
+    }
+  });
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      description: '',
+      price: '',
+      category: '',
+      image_url: ''
+    });
+    setEditingProduct(null);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingProduct) {
+      updateProductMutation.mutate({ id: editingProduct.id, productData: formData });
+    } else {
+      createProductMutation.mutate(formData);
+    }
+  };
+
+  const handleEdit = (product: any) => {
+    setEditingProduct(product);
+    setFormData({
+      name: product.name,
+      description: product.description || '',
+      price: product.price?.toString() || '',
+      category: product.category || '',
+      image_url: product.image_url || ''
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    if (confirm('Bu ürünü silmek istediğinizden emin misiniz?')) {
+      deleteProductMutation.mutate(id);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -60,6 +189,99 @@ const ProductsPage = () => {
 
         <section className="py-20 bg-secondary">
           <div className="container mx-auto px-4">
+            {isAdmin && (
+              <div className="mb-8 flex justify-end">
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      onClick={() => {
+                        resetForm();
+                        setIsDialogOpen(true);
+                      }}
+                      className="bg-primary hover:bg-primary/90"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Yeni Ürün Ekle
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-secondary border-white/20">
+                    <DialogHeader>
+                      <DialogTitle className="text-white">
+                        {editingProduct ? 'Ürün Düzenle' : 'Yeni Ürün Ekle'}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                        <Label htmlFor="name" className="text-white">Ürün Adı</Label>
+                        <Input
+                          id="name"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="bg-white/10 border-white/20 text-white"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="description" className="text-white">Açıklama</Label>
+                        <Textarea
+                          id="description"
+                          value={formData.description}
+                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                          className="bg-white/10 border-white/20 text-white"
+                          rows={3}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="price" className="text-white">Fiyat (₺)</Label>
+                        <Input
+                          id="price"
+                          type="number"
+                          value={formData.price}
+                          onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                          className="bg-white/10 border-white/20 text-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="category" className="text-white">Kategori</Label>
+                        <Input
+                          id="category"
+                          value={formData.category}
+                          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                          className="bg-white/10 border-white/20 text-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="image_url" className="text-white">Görsel URL</Label>
+                        <Input
+                          id="image_url"
+                          type="url"
+                          value={formData.image_url}
+                          onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                          className="bg-white/10 border-white/20 text-white"
+                        />
+                      </div>
+                      <div className="flex gap-3">
+                        <Button 
+                          type="submit" 
+                          className="flex-1"
+                          disabled={createProductMutation.isPending || updateProductMutation.isPending}
+                        >
+                          {editingProduct ? 'Güncelle' : 'Ekle'}
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => setIsDialogOpen(false)}
+                          className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                        >
+                          İptal
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {products?.map((product) => (
@@ -107,10 +329,31 @@ const ProductsPage = () => {
                           Detayları Gör
                         </Button>
                       </Link>
-                      <Button className="bg-gradient-hero hover:shadow-tech transition-bounce">
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        İletişim
-                      </Button>
+                      {!isAdmin ? (
+                        <Button className="bg-gradient-hero hover:shadow-tech transition-bounce">
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          İletişim
+                        </Button>
+                      ) : (
+                        <div className="flex gap-2">
+                          <Button 
+                            size="icon" 
+                            variant="outline"
+                            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                            onClick={() => handleEdit(product)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            size="icon" 
+                            variant="outline"
+                            className="bg-red-500/20 border-red-500/40 text-red-300 hover:bg-red-500/30"
+                            onClick={() => handleDelete(product.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
