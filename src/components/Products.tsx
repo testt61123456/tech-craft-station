@@ -12,7 +12,10 @@ const Products = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          category:categories(id, name)
+        `)
         .eq('is_active', true)
         .order('created_at', { ascending: false })
         .limit(20);
@@ -60,7 +63,7 @@ const Products = () => {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-                    {product.category || 'Genel'}
+                    {product.category?.name || 'Genel'}
                   </Badge>
                 </div>
               </CardHeader>

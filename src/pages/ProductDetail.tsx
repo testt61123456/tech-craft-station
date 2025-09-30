@@ -18,7 +18,10 @@ const ProductDetail = () => {
       
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          category:categories(id, name)
+        `)
         .eq('id', id)
         .eq('is_active', true)
         .single();
@@ -90,7 +93,7 @@ const ProductDetail = () => {
 
               <div className="space-y-6">
                 <div>
-                  <Badge className="mb-4">{product.category || 'Genel'}</Badge>
+                  <Badge className="mb-4">{product.category?.name || 'Genel'}</Badge>
                   <h1 className="text-3xl font-bold text-primary mb-4">{product.name}</h1>
                   <div className="flex items-center space-x-2 mb-6">
                     <div className="flex items-center space-x-1">

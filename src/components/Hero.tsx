@@ -15,7 +15,10 @@ const Hero = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          category:categories(id, name)
+        `)
         .eq('is_campaign', true)
         .eq('is_active', true)
         .order('created_at', { ascending: false })
@@ -120,7 +123,7 @@ const Hero = () => {
                               {product.name}
                             </CardTitle>
                             {product.category && (
-                              <p className="text-primary text-sm mb-2">{product.category}</p>
+                              <p className="text-primary text-sm mb-2">{product.category.name}</p>
                             )}
                             <CardDescription className="text-gray-300 text-sm leading-relaxed line-clamp-3 flex-1">
                               {product.description}

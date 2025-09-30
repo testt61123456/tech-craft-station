@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Star, Plus, Edit, Trash2 } from "lucide-react";
+import { ShoppingCart, Star, Plus, Edit, Trash2, FolderPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
@@ -14,19 +14,26 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 
 const ProductsPage = () => {
   const { userRole } = useAuth();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     price: '',
-    category: '',
-    image_url: ''
+    category_id: '',
+    image_url: '',
+    is_campaign: false
+  });
+  const [categoryFormData, setCategoryFormData] = useState({
+    name: '',
+    description: ''
   });
 
   const isAdmin = userRole === 'admin' || userRole === 'superadmin';
@@ -36,9 +43,26 @@ const ProductsPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          *,
+          category:categories(id, name)
+        `)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
       
       if (error) throw error;
       return data;
@@ -115,13 +139,36 @@ const ProductsPage = () => {
     }
   });
 
+  const createCategoryMutation = useMutation({
+    mutationFn: async (categoryData: any) => {
+      const { data, error } = await supabase
+        .from('categories')
+        .insert([categoryData])
+        .select();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast.success('Kategori başarıyla eklendi');
+      setIsCategoryDialogOpen(false);
+      setCategoryFormData({ name: '', description: '' });
+    },
+    onError: (error) => {
+      toast.error('Kategori eklenirken hata oluştu');
+      console.error(error);
+    }
+  });
+
   const resetForm = () => {
     setFormData({
       name: '',
       description: '',
       price: '',
-      category: '',
-      image_url: ''
+      category_id: '',
+      image_url: '',
+      is_campaign: false
     });
     setEditingProduct(null);
   };
@@ -141,10 +188,16 @@ const ProductsPage = () => {
       name: product.name,
       description: product.description || '',
       price: product.price?.toString() || '',
-      category: product.category || '',
-      image_url: product.image_url || ''
+      category_id: product.category_id || '',
+      image_url: product.image_url || '',
+      is_campaign: product.is_campaign || false
     });
     setIsDialogOpen(true);
+  };
+
+  const handleCategorySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createCategoryMutation.mutate(categoryFormData);
   };
 
   const handleDelete = (id: string) => {
@@ -190,7 +243,63 @@ const ProductsPage = () => {
         <section className="py-20 bg-secondary">
           <div className="container mx-auto px-4">
             {isAdmin && (
-              <div className="mb-8 flex justify-end">
+              <div className="mb-8 flex justify-end gap-3">
+                <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline"
+                      className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                    >
+                      <FolderPlus className="h-4 w-4 mr-2" />
+                      Yeni Kategori Ekle
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-secondary border-white/20">
+                    <DialogHeader>
+                      <DialogTitle className="text-white">Yeni Kategori Ekle</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleCategorySubmit} className="space-y-4">
+                      <div>
+                        <Label htmlFor="category-name" className="text-white">Kategori Adı</Label>
+                        <Input
+                          id="category-name"
+                          value={categoryFormData.name}
+                          onChange={(e) => setCategoryFormData({ ...categoryFormData, name: e.target.value })}
+                          className="bg-white/10 border-white/20 text-white"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="category-description" className="text-white">Açıklama</Label>
+                        <Textarea
+                          id="category-description"
+                          value={categoryFormData.description}
+                          onChange={(e) => setCategoryFormData({ ...categoryFormData, description: e.target.value })}
+                          className="bg-white/10 border-white/20 text-white"
+                          rows={2}
+                        />
+                      </div>
+                      <div className="flex gap-3">
+                        <Button 
+                          type="submit" 
+                          className="flex-1"
+                          disabled={createCategoryMutation.isPending}
+                        >
+                          Ekle
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => setIsCategoryDialogOpen(false)}
+                          className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                        >
+                          İptal
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
                     <Button 
@@ -243,12 +352,37 @@ const ProductsPage = () => {
                       </div>
                       <div>
                         <Label htmlFor="category" className="text-white">Kategori</Label>
-                        <Input
-                          id="category"
-                          value={formData.category}
-                          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                          className="bg-white/10 border-white/20 text-white"
+                        <Select
+                          value={formData.category_id}
+                          onValueChange={(value) => setFormData({ ...formData, category_id: value })}
+                        >
+                          <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                            <SelectValue placeholder="Kategori seçin" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-secondary border-white/20 z-50">
+                            {categories?.map((category) => (
+                              <SelectItem 
+                                key={category.id} 
+                                value={category.id}
+                                className="text-white hover:bg-white/20 focus:bg-white/20"
+                              >
+                                {category.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="is_campaign"
+                          checked={formData.is_campaign}
+                          onChange={(e) => setFormData({ ...formData, is_campaign: e.target.checked })}
+                          className="w-4 h-4"
                         />
+                        <Label htmlFor="is_campaign" className="text-white cursor-pointer">
+                          Kampanyalı Ürün
+                        </Label>
                       </div>
                       <div>
                         <Label htmlFor="image_url" className="text-white">Görsel URL</Label>
@@ -293,9 +427,16 @@ const ProductsPage = () => {
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-                        {product.category || 'Genel'}
-                      </Badge>
+                      {product.category && (
+                        <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
+                          {product.category.name}
+                        </Badge>
+                      )}
+                      {product.is_campaign && (
+                        <Badge className="absolute top-4 right-4 bg-red-500 text-white">
+                          Kampanya
+                        </Badge>
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent className="p-6">
