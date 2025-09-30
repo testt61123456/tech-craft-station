@@ -1,37 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Monitor, Printer, Shield, Cog, Server } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import heroImage from "@/assets/hero-tech.jpg";
 
 const Hero = () => {
-  const services = [
-    {
-      icon: Monitor,
-      title: "Bilgisayar Hizmetleri",
-      description: "Bilgisayar, all-in-one PC, notebook ve gaming bilgisayar onarımı"
-    },
-    {
-      icon: Printer,
-      title: "Yazıcı Servisi",
-      description: "Tüm marka yazıcıların satışı, onarımı ve bakım hizmetleri"
-    },
-    {
-      icon: Shield,
-      title: "Güvenlik Sistemleri",
-      description: "Kapsamlı güvenlik sistemleri kurulum ve bakım hizmetleri"
-    },
-    {
-      icon: Cog,
-      title: "Otomasyon Sistemleri",
-      description: "Akıllı ev ve ofis otomasyon sistemleri kurulum"
-    },
-    {
-      icon: Server,
-      title: "Sunucu Hizmetleri",
-      description: "Veri yazarı kasa kurulum, yapılandırma ve onarım"
+  const navigate = useNavigate();
+
+  const { data: campaignProducts, isLoading } = useQuery({
+    queryKey: ['campaign-products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_campaign', true)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      return data;
     }
-  ];
+  });
 
   return (
     <section className="relative min-h-screen flex items-center bg-gradient-tech overflow-hidden">
@@ -91,36 +84,68 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Right Column - Services Carousel */}
+          {/* Right Column - Campaign Products Carousel */}
           <div className="lg:pl-8">
             <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-white mb-2">Hizmetlerimiz</h3>
-              <p className="text-gray-300 text-sm">Sunduğumuz teknoloji çözümleri</p>
+              <h3 className="text-2xl font-bold text-white mb-2">Kampanyalı Ürünler</h3>
+              <p className="text-gray-300 text-sm">Özel fırsatlarımızı kaçırmayın</p>
             </div>
             
-            <Carousel className="w-full max-w-xl mx-auto">
-              <CarouselContent>
-                {services.map((service, index) => (
-                  <CarouselItem key={index}>
-                    <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white h-56">
-                      <CardHeader className="text-center pb-4 px-6">
-                        <div className="w-16 h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-4">
-                          <service.icon className="w-8 h-8 text-white" />
-                        </div>
-                        <CardTitle className="text-xl text-white mb-2">
-                          {service.title}
-                        </CardTitle>
-                        <CardDescription className="text-gray-300 text-sm leading-relaxed">
-                          {service.description}
-                        </CardDescription>
-                      </CardHeader>
-                    </Card>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
-              <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
-            </Carousel>
+            {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              </div>
+            ) : campaignProducts && campaignProducts.length > 0 ? (
+              <Carousel className="w-full max-w-xl mx-auto">
+                <CarouselContent>
+                  {campaignProducts.map((product) => (
+                    <CarouselItem key={product.id}>
+                      <Card 
+                        className="bg-white/10 backdrop-blur-sm border-white/20 text-white cursor-pointer hover:bg-white/20 transition-all h-[400px] flex flex-col"
+                        onClick={() => navigate(`/products/${product.id}`)}
+                      >
+                        <CardContent className="p-0 flex-1 flex flex-col">
+                          <div className="relative h-48 overflow-hidden rounded-t-lg">
+                            <img 
+                              src={product.image_url || "/placeholder.svg"} 
+                              alt={product.name}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">
+                              Kampanya
+                            </div>
+                          </div>
+                          <div className="p-6 flex flex-col flex-1">
+                            <CardTitle className="text-xl text-white mb-2 line-clamp-2">
+                              {product.name}
+                            </CardTitle>
+                            {product.category && (
+                              <p className="text-primary text-sm mb-2">{product.category}</p>
+                            )}
+                            <CardDescription className="text-gray-300 text-sm leading-relaxed line-clamp-3 flex-1">
+                              {product.description}
+                            </CardDescription>
+                            {product.price && (
+                              <div className="text-2xl font-bold text-primary mt-4">
+                                ₺{Number(product.price).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
+                <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
+              </Carousel>
+            ) : (
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white h-64 flex items-center justify-center">
+                <CardContent>
+                  <p className="text-gray-300 text-center">Şu anda kampanyalı ürün bulunmamaktadır.</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>

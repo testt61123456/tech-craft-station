@@ -22,6 +22,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean | null
+          is_campaign: boolean | null
           name: string
           price: number | null
           updated_at: string | null
@@ -33,6 +34,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_campaign?: boolean | null
           name: string
           price?: number | null
           updated_at?: string | null
@@ -44,6 +46,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_campaign?: boolean | null
           name?: string
           price?: number | null
           updated_at?: string | null
