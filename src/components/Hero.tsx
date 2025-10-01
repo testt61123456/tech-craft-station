@@ -134,11 +134,11 @@ const Hero = () => {
 
                         <CardContent className="relative p-0 flex-1 flex flex-col h-full">
                           {/* Image Section */}
-                          <div className="relative h-44 flex-shrink-0 overflow-hidden">
+                          <div className="relative h-44 flex-shrink-0 overflow-hidden bg-gray-800">
                             <img 
                               src={product.image_url || "/placeholder.svg"} 
                               alt={product.name}
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125 group-hover:rotate-2"
+                              className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
                             

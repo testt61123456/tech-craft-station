@@ -13,6 +13,11 @@ import ProductDetail from "./pages/ProductDetail";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
 import Auth from "./pages/Auth";
+import ComputerServices from "./pages/ComputerServices";
+import PrinterServices from "./pages/PrinterServices";
+import SecuritySystems from "./pages/SecuritySystems";
+import AutomationSystems from "./pages/AutomationSystems";
+import ServerServices from "./pages/ServerServices";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +32,11 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/services/computer" element={<ComputerServices />} />
+            <Route path="/services/printer" element={<PrinterServices />} />
+            <Route path="/services/security" element={<SecuritySystems />} />
+            <Route path="/services/automation" element={<AutomationSystems />} />
+            <Route path="/services/server" element={<ServerServices />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/contact" element={<Contact />} />

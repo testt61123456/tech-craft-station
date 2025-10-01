@@ -1,37 +1,45 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Monitor, Printer, Shield, Cog, Server } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Services = () => {
+  const navigate = useNavigate();
+
   const services = [
     {
       icon: Monitor,
       title: "Bilgisayar Hizmetleri",
       description: "Bilgisayar, all-in-one PC, notebook ve gaming bilgisayar onarımı, bakımı ve satışı",
-      features: ["Donanım Onarımı", "Yazılım Kurulumu", "Performans Optimizasyonu", "Gaming Setup"]
+      features: ["Donanım Onarımı", "Yazılım Kurulumu", "Performans Optimizasyonu", "Gaming Setup"],
+      link: "/services/computer"
     },
     {
       icon: Printer,
       title: "Yazıcı Servisi",
       description: "Tüm marka yazıcıların satışı, onarımı ve bakım hizmetleri",
-      features: ["Toner Değişimi", "Mekanik Onarım", "Ağ Kurulumu", "Bakım Anlaşması"]
+      features: ["Toner Değişimi", "Mekanik Onarım", "Ağ Kurulumu", "Bakım Anlaşması"],
+      link: "/services/printer"
     },
     {
       icon: Shield,
       title: "Güvenlik Sistemleri",
       description: "Kapsamlı güvenlik sistemleri kurulum, satış ve bakım hizmetleri",
-      features: ["Kamera Sistemleri", "Alarm Sistemleri", "Erişim Kontrolü", "7/24 İzleme"]
+      features: ["Kamera Sistemleri", "Alarm Sistemleri", "Erişim Kontrolü", "7/24 İzleme"],
+      link: "/services/security"
     },
     {
       icon: Cog,
       title: "Otomasyon Sistemleri",
       description: "Akıllı ev ve ofis otomasyon sistemleri kurulum ve bakımı",
-      features: ["Akıllı Aydınlatma", "Klima Kontrolü", "Ses Sistemleri", "Uzaktan Erişim"]
+      features: ["Akıllı Aydınlatma", "Klima Kontrolü", "Ses Sistemleri", "Uzaktan Erişim"],
+      link: "/services/automation"
     },
     {
       icon: Server,
       title: "Sunucu Hizmetleri",
       description: "Veri yazarı kasa kurulum, yapılandırma ve onarım hizmetleri",
-      features: ["Sunucu Kurulumu", "Veri Yedekleme", "Ağ Yapılandırması", "Sistem Bakımı"]
+      features: ["Sunucu Kurulumu", "Veri Yedekleme", "Ağ Yapılandırması", "Sistem Bakımı"],
+      link: "/services/server"
     }
   ];
 
@@ -51,7 +59,8 @@ const Services = () => {
           {services.map((service, index) => (
             <Card 
               key={index} 
-              className="bg-white/10 backdrop-blur-sm border-white/20 hover:shadow-tech transition-bounce group h-full"
+              className="bg-white/10 backdrop-blur-sm border-white/20 hover:shadow-tech transition-bounce group h-full cursor-pointer"
+              onClick={() => navigate(service.link)}
             >
               <CardHeader className="text-center pb-4">
                 <div className="w-16 h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-bounce">
