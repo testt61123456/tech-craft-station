@@ -4,8 +4,9 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import heroImage from "@/assets/hero-tech.jpg";
+import Autoplay from "embla-carousel-autoplay";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -90,47 +91,70 @@ const Hero = () => {
           {/* Right Column - Campaign Products Carousel */}
           <div className="lg:pl-8">
             <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-white mb-2">Kampanyalı Ürünler</h3>
-              <p className="text-gray-300 text-sm">Özel fırsatlarımızı kaçırmayın</p>
+              <div className="inline-flex items-center gap-2 mb-3">
+                <Sparkles className="w-6 h-6 text-primary animate-pulse" />
+                <h3 className="text-3xl font-bold text-white">Kampanyalı Ürünler</h3>
+                <Sparkles className="w-6 h-6 text-primary animate-pulse" />
+              </div>
+              <p className="text-gray-300">Özel fırsatlarımızı kaçırmayın</p>
             </div>
             
             {isLoading ? (
-              <div className="flex justify-center items-center h-64">
-                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              <div className="flex justify-center items-center h-96">
+                <Loader2 className="w-10 h-10 text-primary animate-spin" />
               </div>
             ) : campaignProducts && campaignProducts.length > 0 ? (
-              <Carousel className="w-full max-w-xl mx-auto">
+              <Carousel 
+                className="w-full max-w-xl mx-auto"
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                plugins={[
+                  Autoplay({
+                    delay: 3000,
+                    stopOnInteraction: true,
+                  })
+                ]}
+              >
                 <CarouselContent>
                   {campaignProducts.map((product) => (
                     <CarouselItem key={product.id}>
                       <Card 
-                        className="bg-white/10 backdrop-blur-sm border-white/20 text-white cursor-pointer hover:bg-white/20 transition-all h-[400px] flex flex-col"
+                        className="group bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border-white/30 text-white cursor-pointer hover:from-white/25 hover:to-white/10 transition-all duration-500 h-[450px] flex flex-col hover:scale-[1.02] hover:shadow-2xl"
                         onClick={() => navigate(`/products/${product.id}`)}
                       >
                         <CardContent className="p-0 flex-1 flex flex-col">
-                          <div className="relative h-48 overflow-hidden rounded-t-lg">
+                          <div className="relative h-56 overflow-hidden rounded-t-lg">
                             <img 
                               src={product.image_url || "/placeholder.svg"} 
                               alt={product.name}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                             />
-                            <div className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                            <div className="absolute top-3 right-3 bg-gradient-to-r from-primary to-primary/80 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-1.5 animate-pulse">
+                              <Sparkles className="w-4 h-4" />
                               Kampanya
                             </div>
+                            {product.category && (
+                              <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-medium">
+                                {product.category.name}
+                              </div>
+                            )}
                           </div>
                           <div className="p-6 flex flex-col flex-1">
-                            <CardTitle className="text-xl text-white mb-2 line-clamp-2">
+                            <CardTitle className="text-xl text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">
                               {product.name}
                             </CardTitle>
-                            {product.category && (
-                              <p className="text-primary text-sm mb-2">{product.category.name}</p>
-                            )}
                             <CardDescription className="text-gray-300 text-sm leading-relaxed line-clamp-3 flex-1">
                               {product.description}
                             </CardDescription>
                             {product.price && (
-                              <div className="text-2xl font-bold text-primary mt-4">
-                                ₺{Number(product.price).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              <div className="mt-4 pt-4 border-t border-white/20">
+                                <div className="text-3xl font-bold text-primary">
+                                  ₺{Number(product.price).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1">KDV Dahil</p>
                               </div>
                             )}
                           </div>
@@ -139,13 +163,14 @@ const Hero = () => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
-                <CarouselNext className="bg-white/20 border-white/30 text-white hover:bg-white/30" />
+                <CarouselPrevious className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/40 hover:scale-110 transition-all" />
+                <CarouselNext className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/40 hover:scale-110 transition-all" />
               </Carousel>
             ) : (
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white h-64 flex items-center justify-center">
-                <CardContent>
-                  <p className="text-gray-300 text-center">Şu anda kampanyalı ürün bulunmamaktadır.</p>
+              <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border-white/20 text-white h-72 flex items-center justify-center">
+                <CardContent className="text-center">
+                  <Sparkles className="w-12 h-12 text-primary/50 mx-auto mb-4" />
+                  <p className="text-gray-300">Şu anda kampanyalı ürün bulunmamaktadır.</p>
                 </CardContent>
               </Card>
             )}
