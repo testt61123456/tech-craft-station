@@ -121,40 +121,54 @@ const Hero = () => {
                   {campaignProducts.map((product) => (
                     <CarouselItem key={product.id}>
                       <Card 
-                        className="group bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border-white/30 text-white cursor-pointer hover:from-white/25 hover:to-white/10 transition-all duration-500 h-[450px] flex flex-col hover:scale-[1.02] hover:shadow-2xl"
+                        className="group relative bg-gradient-to-br from-gray-900/95 to-black/95 backdrop-blur-xl border-2 border-primary/30 text-white cursor-pointer hover:border-primary transition-all duration-500 h-[380px] flex flex-col hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(var(--primary),0.3)] overflow-hidden"
                         onClick={() => navigate(`/products/${product.id}`)}
                       >
-                        <CardContent className="p-0 flex-1 flex flex-col">
-                          <div className="relative h-56 overflow-hidden rounded-t-lg">
+                        {/* Background Pattern */}
+                        <div className="absolute inset-0 opacity-5">
+                          <div className="absolute inset-0" style={{ 
+                            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+                            backgroundSize: '40px 40px'
+                          }} />
+                        </div>
+
+                        <CardContent className="relative p-0 flex-1 flex flex-col">
+                          {/* Image Section */}
+                          <div className="relative h-48 overflow-hidden">
                             <img 
                               src={product.image_url || "/placeholder.svg"} 
                               alt={product.name}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125 group-hover:rotate-2"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                            <div className="absolute top-3 right-3 bg-gradient-to-r from-primary to-primary/80 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-1.5 animate-pulse">
+                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
+                            
+                            {/* Kampanya Badge */}
+                            <div className="absolute top-4 right-4 bg-gradient-to-r from-primary via-primary to-primary/90 text-white px-5 py-2 rounded-full text-sm font-bold shadow-2xl flex items-center gap-2 animate-pulse border border-white/20">
                               <Sparkles className="w-4 h-4" />
-                              Kampanya
+                              <span className="tracking-wide">KAMPANYA</span>
                             </div>
-                            {product.category && (
-                              <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-medium">
-                                {product.category.name}
-                              </div>
-                            )}
+
+                            {/* Glow Effect */}
+                            <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-primary/20 blur-3xl rounded-full group-hover:bg-primary/30 transition-all duration-500" />
                           </div>
-                          <div className="p-6 flex flex-col flex-1">
-                            <CardTitle className="text-xl text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+
+                          {/* Content Section */}
+                          <div className="relative flex-1 flex flex-col justify-between p-6 bg-gradient-to-b from-gray-900/50 to-black/80">
+                            <CardTitle className="text-2xl font-bold text-white mb-auto line-clamp-2 group-hover:text-primary transition-colors duration-300 leading-tight">
                               {product.name}
                             </CardTitle>
-                            <CardDescription className="text-gray-300 text-sm leading-relaxed line-clamp-3 flex-1">
-                              {product.description}
-                            </CardDescription>
+                            
                             {product.price && (
-                              <div className="mt-4 pt-4 border-t border-white/20">
-                                <div className="text-3xl font-bold text-primary">
+                              <div className="mt-6 pt-5 border-t-2 border-primary/40">
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-sm text-gray-400 line-through">
+                                    ₺{(Number(product.price) * 1.2).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                  </span>
+                                </div>
+                                <div className="text-4xl font-extrabold bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent mt-1">
                                   ₺{Number(product.price).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </div>
-                                <p className="text-xs text-gray-400 mt-1">KDV Dahil</p>
+                                <p className="text-xs text-primary/80 mt-2 font-medium">⚡ Özel Kampanya Fiyatı</p>
                               </div>
                             )}
                           </div>
@@ -163,8 +177,8 @@ const Hero = () => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/40 hover:scale-110 transition-all" />
-                <CarouselNext className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/40 hover:scale-110 transition-all" />
+                <CarouselPrevious className="bg-gray-900/90 backdrop-blur-sm border-2 border-primary/50 text-primary hover:bg-primary hover:text-white hover:scale-110 transition-all shadow-lg" />
+                <CarouselNext className="bg-gray-900/90 backdrop-blur-sm border-2 border-primary/50 text-primary hover:bg-primary hover:text-white hover:scale-110 transition-all shadow-lg" />
               </Carousel>
             ) : (
               <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border-white/20 text-white h-72 flex items-center justify-center">
