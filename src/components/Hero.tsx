@@ -121,7 +121,7 @@ const Hero = () => {
                   {campaignProducts.map((product) => (
                     <CarouselItem key={product.id}>
                       <Card 
-                        className="group relative bg-gradient-to-br from-gray-900/95 to-black/95 backdrop-blur-xl border-2 border-primary/30 text-white cursor-pointer hover:border-primary transition-all duration-500 h-[380px] flex flex-col hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(var(--primary),0.3)] overflow-hidden"
+                        className="group relative bg-gradient-to-br from-gray-900/95 to-black/95 backdrop-blur-xl border-2 border-primary/30 text-white cursor-pointer hover:border-primary transition-all duration-500 h-[400px] flex flex-col hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(var(--primary),0.3)] overflow-hidden"
                         onClick={() => navigate(`/products/${product.id}`)}
                       >
                         {/* Background Pattern */}
@@ -132,9 +132,9 @@ const Hero = () => {
                           }} />
                         </div>
 
-                        <CardContent className="relative p-0 flex-1 flex flex-col">
+                        <CardContent className="relative p-0 flex-1 flex flex-col h-full">
                           {/* Image Section */}
-                          <div className="relative h-48 overflow-hidden">
+                          <div className="relative h-44 flex-shrink-0 overflow-hidden">
                             <img 
                               src={product.image_url || "/placeholder.svg"} 
                               alt={product.name}
@@ -143,8 +143,8 @@ const Hero = () => {
                             <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
                             
                             {/* Kampanya Badge */}
-                            <div className="absolute top-4 right-4 bg-gradient-to-r from-primary via-primary to-primary/90 text-white px-5 py-2 rounded-full text-sm font-bold shadow-2xl flex items-center gap-2 animate-pulse border border-white/20">
-                              <Sparkles className="w-4 h-4" />
+                            <div className="absolute top-3 right-3 bg-gradient-to-r from-primary via-primary to-primary/90 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-2xl flex items-center gap-1.5 animate-pulse border border-white/20">
+                              <Sparkles className="w-3 h-3" />
                               <span className="tracking-wide">KAMPANYA</span>
                             </div>
 
@@ -153,22 +153,22 @@ const Hero = () => {
                           </div>
 
                           {/* Content Section */}
-                          <div className="relative flex-1 flex flex-col justify-between p-6 bg-gradient-to-b from-gray-900/50 to-black/80">
-                            <CardTitle className="text-2xl font-bold text-white mb-auto line-clamp-2 group-hover:text-primary transition-colors duration-300 leading-tight">
+                          <div className="relative flex-1 flex flex-col justify-between p-5 bg-gradient-to-b from-gray-900/50 to-black/80 min-h-0">
+                            <CardTitle className="text-xl font-bold text-white line-clamp-3 group-hover:text-primary transition-colors duration-300 leading-tight mb-3">
                               {product.name}
                             </CardTitle>
                             
                             {product.price && (
-                              <div className="mt-6 pt-5 border-t-2 border-primary/40">
+                              <div className="pt-3 border-t-2 border-primary/40 flex-shrink-0">
                                 <div className="flex items-baseline gap-2">
-                                  <span className="text-sm text-gray-400 line-through">
+                                  <span className="text-xs text-gray-400 line-through">
                                     ₺{(Number(product.price) * 1.2).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                   </span>
                                 </div>
-                                <div className="text-4xl font-extrabold bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent mt-1">
+                                <div className="text-3xl font-extrabold bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent mt-1">
                                   ₺{Number(product.price).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </div>
-                                <p className="text-xs text-primary/80 mt-2 font-medium">⚡ Özel Kampanya Fiyatı</p>
+                                <p className="text-xs text-primary/80 mt-1.5 font-medium">⚡ Özel Kampanya Fiyatı</p>
                               </div>
                             )}
                           </div>
