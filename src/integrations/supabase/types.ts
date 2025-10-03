@@ -41,6 +41,112 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_devices: {
+        Row: {
+          created_at: string
+          customer_id: string
+          device_problem: string
+          device_type: Database["public"]["Enums"]["device_type"]
+          id: string
+          received_date: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          device_problem: string
+          device_type: Database["public"]["Enums"]["device_type"]
+          id?: string
+          received_date?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          device_problem?: string
+          device_type?: Database["public"]["Enums"]["device_type"]
+          id?: string
+          received_date?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_devices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          customer_name: string
+          id: string
+          phone_number: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          customer_name: string
+          id?: string
+          phone_number: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          customer_name?: string
+          id?: string
+          phone_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      materials: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          material_name: string
+          quantity: number | null
+          total_price: number | null
+          unit_price: number | null
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          material_name: string
+          quantity?: number | null
+          total_price?: number | null
+          unit_price?: number | null
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          material_name?: string
+          quantity?: number | null
+          total_price?: number | null
+          unit_price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "materials_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "customer_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category_id: string | null
@@ -151,6 +257,14 @@ export type Database = {
     }
     Enums: {
       app_role: "superadmin" | "admin" | "user" | "dealer"
+      device_type:
+        | "laptop"
+        | "desktop"
+        | "printer"
+        | "all_in_one"
+        | "server"
+        | "network_device"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -279,6 +393,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["superadmin", "admin", "user", "dealer"],
+      device_type: [
+        "laptop",
+        "desktop",
+        "printer",
+        "all_in_one",
+        "server",
+        "network_device",
+        "other",
+      ],
     },
   },
 } as const

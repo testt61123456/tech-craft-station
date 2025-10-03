@@ -18,6 +18,7 @@ import PrinterServices from "./pages/PrinterServices";
 import SecuritySystems from "./pages/SecuritySystems";
 import AutomationSystems from "./pages/AutomationSystems";
 import ServerServices from "./pages/ServerServices";
+import CustomerRegistration from "./pages/CustomerRegistration";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/services/security" element={<SecuritySystems />} />
             <Route path="/services/automation" element={<AutomationSystems />} />
             <Route path="/services/server" element={<ServerServices />} />
+            <Route path="/customer-registration" element={<CustomerRegistration />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/contact" element={<Contact />} />

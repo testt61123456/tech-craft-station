@@ -54,6 +54,13 @@ const Header = () => {
               İletişim
             </Link>
             
+            {/* Admin Only Link */}
+            {(userRole === 'admin' || userRole === 'superadmin') && (
+              <Link to="/customer-registration" className="text-sm lg:text-base text-secondary-foreground hover:text-primary transition-smooth">
+                Müşteri Kayıt
+              </Link>
+            )}
+            
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -122,6 +129,17 @@ const Header = () => {
             >
               İletişim
             </Link>
+            
+            {/* Admin Only Link - Mobile */}
+            {(userRole === 'admin' || userRole === 'superadmin') && (
+              <Link 
+                to="/customer-registration" 
+                className="block text-secondary-foreground hover:text-primary transition-smooth py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Müşteri Kayıt
+              </Link>
+            )}
             
             {user ? (
               <Button 
