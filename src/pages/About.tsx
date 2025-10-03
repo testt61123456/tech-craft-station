@@ -58,34 +58,34 @@ const AboutPage = () => {
           />
           <div className="absolute inset-0 bg-gradient-tech opacity-80" />
           
-          <div className="relative container mx-auto px-4 py-20">
+          <div className="relative container mx-auto px-4 py-12 md:py-16 lg:py-20">
             <div className="text-center max-w-4xl mx-auto">
-              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight">
                 Hakkımızda
                 <span className="text-primary block">Karadeniz Bilgisayar</span>
               </h1>
               
-              <p className="text-xl md:text-2xl text-gray-200 mb-8 leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 mb-6 md:mb-8 leading-relaxed">
                 2008 yılından bu yana teknoloji alanında 
                 <strong className="text-primary"> güvenilir hizmet</strong> anlayışıyla hizmet veriyoruz.
               </p>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-white">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-white">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">15+</div>
-                  <div className="text-sm">Yıl Tecrübe</div>
+                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">15+</div>
+                  <div className="text-xs md:text-sm">Yıl Tecrübe</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">1000+</div>
-                  <div className="text-sm">Mutlu Müşteri</div>
+                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">1000+</div>
+                  <div className="text-xs md:text-sm">Mutlu Müşteri</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">5000+</div>
-                  <div className="text-sm">Tamamlanan Proje</div>
+                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">5000+</div>
+                  <div className="text-xs md:text-sm">Tamamlanan Proje</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">24/7</div>
-                  <div className="text-sm">Destek Hizmeti</div>
+                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">24/7</div>
+                  <div className="text-xs md:text-sm">Destek Hizmeti</div>
                 </div>
               </div>
             </div>
@@ -95,9 +95,9 @@ const AboutPage = () => {
         {/* About Content Section */}
         <section className="py-20 bg-secondary">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center mb-12 md:mb-20">
               <div>
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 md:mb-8">
                   Hikayemiz
                 </h2>
                 <div className="space-y-6 text-gray-300 text-lg leading-relaxed">

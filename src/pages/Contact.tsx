@@ -13,41 +13,41 @@ const ContactPage = () => {
       <Header />
       <main>
         {/* Banner Section */}
-        <section className="relative min-h-[60vh] flex items-center bg-gradient-tech overflow-hidden">
+        <section className="relative min-h-[50vh] md:min-h-[60vh] flex items-center bg-gradient-tech overflow-hidden">
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
             style={{ backgroundImage: `url(${contactBanner})` }}
           />
           <div className="absolute inset-0 bg-gradient-tech opacity-80" />
           
-          <div className="relative container mx-auto px-4 py-20">
+          <div className="relative container mx-auto px-4 py-12 md:py-16 lg:py-20">
             <div className="text-center max-w-4xl mx-auto">
-              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight">
                 Bizimle
                 <span className="text-primary block">İletişime Geçin</span>
               </h1>
               
-              <p className="text-xl md:text-2xl text-gray-200 mb-8 leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 mb-6 md:mb-8 leading-relaxed">
                 Teknoloji ihtiyaçlarınız için bizimle iletişime geçin. 
                 <strong className="text-primary"> Uzman ekibimiz</strong> size yardımcı olmaya hazır.
               </p>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-white">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-white">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">24/7</div>
-                  <div className="text-sm">Destek Hattı</div>
+                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">24/7</div>
+                  <div className="text-xs md:text-sm">Destek Hattı</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">15+</div>
-                  <div className="text-sm">Yıl Tecrübe</div>
+                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">15+</div>
+                  <div className="text-xs md:text-sm">Yıl Tecrübe</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">1000+</div>
-                  <div className="text-sm">Mutlu Müşteri</div>
+                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">1000+</div>
+                  <div className="text-xs md:text-sm">Mutlu Müşteri</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">100%</div>
-                  <div className="text-sm">Müşteri Memnuniyeti</div>
+                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">100%</div>
+                  <div className="text-xs md:text-sm">Müşteri Memnuniyeti</div>
                 </div>
               </div>
             </div>
@@ -55,18 +55,18 @@ const ContactPage = () => {
         </section>
 
         {/* Contact Section */}
-        <section className="py-20 bg-secondary">
+        <section className="py-12 md:py-16 lg:py-20 bg-secondary">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6">
                 İletişim Formu
               </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-base md:text-lg lg:text-xl text-gray-300 max-w-3xl mx-auto">
                 Sorularınız ve talepleriniz için bizimle iletişime geçin
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
               {/* Contact Form */}
               <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
                 <CardHeader>

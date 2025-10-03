@@ -119,16 +119,16 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-secondary">
       {/* Banner Section */}
-      <section className="relative h-96 overflow-hidden">
+      <section className="relative h-64 md:h-80 lg:h-96 overflow-hidden">
         <img 
           src={authBanner} 
           alt="Giriş Banner" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center px-4">
           <div className="text-center text-white">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Giriş Yap</h1>
-            <p className="text-xl md:text-2xl">Hesabınıza güvenli giriş yapın</p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4">Giriş Yap</h1>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl">Hesabınıza güvenli giriş yapın</p>
           </div>
         </div>
         {/* Back Button */}
@@ -141,7 +141,7 @@ const Auth = () => {
       </section>
 
       {/* Auth Form Section */}
-      <div className="flex items-center justify-center py-20 bg-secondary">
+      <div className="flex items-center justify-center py-12 md:py-16 lg:py-20 bg-secondary px-4">
         <Card className="w-full max-w-md bg-white/10 backdrop-blur-sm border border-white/20">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-center text-white">Hoş Geldiniz</CardTitle>

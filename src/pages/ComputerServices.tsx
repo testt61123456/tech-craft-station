@@ -46,20 +46,20 @@ const ComputerServices = () => {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative min-h-[50vh] flex items-center bg-gradient-tech">
+      <section className="relative min-h-[40vh] md:min-h-[50vh] flex items-center bg-gradient-tech">
         <div className="absolute inset-0 bg-black/50" />
-        <div className="relative container mx-auto px-4 py-20 text-center">
-          <Monitor className="w-20 h-20 text-primary mx-auto mb-6" />
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+        <div className="relative container mx-auto px-4 py-12 md:py-16 lg:py-20 text-center">
+          <Monitor className="w-16 h-16 md:w-20 md:h-20 text-primary mx-auto mb-4 md:mb-6" />
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6">
             Bilgisayar Hizmetleri
           </h1>
-          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto mb-8">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 max-w-3xl mx-auto mb-6 md:mb-8">
             Masaüstü, dizüstü ve gaming bilgisayarlarınız için profesyonel onarım, bakım ve satış hizmetleri
           </p>
           <Button 
             size="lg" 
             onClick={() => navigate("/contact")}
-            className="bg-gradient-hero hover:shadow-tech text-lg px-8 py-6"
+            className="bg-gradient-hero hover:shadow-tech text-base md:text-lg px-6 md:px-8 py-5 md:py-6"
           >
             Randevu Alın
           </Button>
@@ -67,10 +67,10 @@ const ComputerServices = () => {
       </section>
 
       {/* Services Grid */}
-      <section className="py-20 bg-background">
+      <section className="py-12 md:py-16 lg:py-20 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
               Neler Yapıyoruz?
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">

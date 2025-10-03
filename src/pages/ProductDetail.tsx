@@ -69,18 +69,18 @@ const ProductDetail = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        <section className="py-20 bg-background">
+        <section className="py-12 md:py-16 lg:py-20 bg-background">
           <div className="container mx-auto px-4">
-            <div className="mb-8">
+            <div className="mb-6 md:mb-8">
               <Link to="/products">
-                <Button variant="ghost" className="flex items-center gap-2">
+                <Button variant="ghost" className="flex items-center gap-2 text-sm md:text-base">
                   <ArrowLeft className="w-4 h-4" />
                   Ürünlere Dön
                 </Button>
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
               <div className="space-y-6">
                 <div className="aspect-square overflow-hidden rounded-lg bg-gradient-card flex items-center justify-center">
                   <img 

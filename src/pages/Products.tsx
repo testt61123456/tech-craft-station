@@ -226,21 +226,21 @@ const ProductsPage = () => {
       <Header />
       <main>
         {/* Banner Section */}
-        <section className="relative h-96 overflow-hidden">
+        <section className="relative h-64 md:h-80 lg:h-96 overflow-hidden">
           <img 
             src={productsBanner} 
             alt="Ürünlerimiz Banner" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center px-4">
             <div className="text-center text-white">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">Ürünlerimiz</h1>
-              <p className="text-xl md:text-2xl">İhtiyaçlarınıza özel teknoloji çözümleri</p>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4">Ürünlerimiz</h1>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl">İhtiyaçlarınıza özel teknoloji çözümleri</p>
             </div>
           </div>
         </section>
 
-        <section className="py-20 bg-secondary">
+        <section className="py-12 md:py-16 lg:py-20 bg-secondary">
           <div className="container mx-auto px-4">
             {isAdmin && (
               <div className="mb-8 flex justify-end gap-3">
