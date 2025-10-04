@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState } from "react";
+import PrintReceipt from "./PrintReceipt";
 
 interface Device {
   id: string;
@@ -22,6 +23,11 @@ interface Device {
 }
 
 interface CustomerDetailsProps {
+  customer: {
+    customer_number: string;
+    customer_name: string;
+    phone_number: string;
+  };
   devices: Device[];
   customerId: string;
   onStatusUpdate: () => void;
@@ -45,7 +51,7 @@ const deviceTypeLabels: Record<string, string> = {
   other: "Diğer"
 };
 
-const CustomerDetails = ({ devices, customerId, onStatusUpdate }: CustomerDetailsProps) => {
+const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: CustomerDetailsProps) => {
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   const handleStatusChange = async (deviceId: string, newStatus: string) => {
@@ -96,12 +102,12 @@ const CustomerDetails = ({ devices, customerId, onStatusUpdate }: CustomerDetail
         return (
           <Card key={device.id} className="bg-white/5 border-white/10">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <CardTitle className="text-lg text-white flex items-center gap-2">
                   <Laptop className="h-5 w-5" />
                   {deviceTypeLabels[device.device_type] || device.device_type}
                 </CardTitle>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <StatusIcon className={`h-5 w-5 text-white ${statusColor} rounded-full p-1`} />
                   <Select
                     value={device.status}
@@ -119,6 +125,10 @@ const CustomerDetails = ({ devices, customerId, onStatusUpdate }: CustomerDetail
                       ))}
                     </SelectContent>
                   </Select>
+                  <PrintReceipt
+                    customer={customer}
+                    device={device}
+                  />
                 </div>
               </div>
             </CardHeader>

@@ -1,11 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Phone, ChevronDown, ChevronUp } from "lucide-react";
+import { Phone, ChevronDown, ChevronUp, Hash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CustomerCardProps {
   customer: {
     id: string;
+    customer_number: string;
     customer_name: string;
     phone_number: string;
     created_at: string;
@@ -22,6 +23,12 @@ const CustomerCard = ({ customer, isExpanded, onToggle, onEdit, onDelete }: Cust
       <CardContent className="p-4">
         <div className="flex items-center justify-between" onClick={onToggle}>
           <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30">
+                <Hash className="h-3 w-3 mr-1" />
+                {customer.customer_number}
+              </Badge>
+            </div>
             <h3 className="text-lg font-semibold text-white mb-1">
               {customer.customer_name}
             </h3>

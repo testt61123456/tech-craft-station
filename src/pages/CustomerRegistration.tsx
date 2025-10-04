@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Plus, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Plus, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,6 +15,7 @@ import DeleteConfirmDialog from "@/components/customer/DeleteConfirmDialog";
 
 interface Customer {
   id: string;
+  customer_number: string;
   customer_name: string;
   phone_number: string;
   created_at: string;
@@ -39,6 +41,8 @@ const CustomerRegistration = () => {
   const { user, userRole } = useAuth();
   
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [expandedCustomerId, setExpandedCustomerId] = useState<string | null>(null);
   const [customerDevices, setCustomerDevices] = useState<Record<string, CustomerDevice[]>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -57,6 +61,21 @@ const CustomerRegistration = () => {
       fetchCustomers();
     }
   }, [user, userRole]);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredCustomers(customers);
+      return;
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+    const filtered = customers.filter(customer => 
+      customer.customer_number.toLowerCase().includes(query) ||
+      customer.customer_name.toLowerCase().includes(query) ||
+      customer.phone_number.toLowerCase().includes(query)
+    );
+    setFilteredCustomers(filtered);
+  }, [searchQuery, customers]);
 
   const fetchCustomers = async (loadMore = false) => {
     try {
@@ -206,25 +225,39 @@ const CustomerRegistration = () => {
       
       <main className="py-8 md:py-12 lg:py-16">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 md:mb-12 gap-4">
-            <div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
-                Müşteri Yönetimi
-              </h1>
-              <p className="text-base md:text-lg text-gray-300">
-                Müşteri kayıtlarını görüntüleyin ve yönetin
-              </p>
+          <div className="flex flex-col gap-4 mb-8 md:mb-12">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
+                  Müşteri Yönetimi
+                </h1>
+                <p className="text-base md:text-lg text-gray-300">
+                  Müşteri kayıtlarını görüntüleyin ve yönetin
+                </p>
+              </div>
+              <Button
+                onClick={() => {
+                  setEditCustomer(null);
+                  setFormDialogOpen(true);
+                }}
+                className="bg-gradient-hero hover:shadow-tech"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Yeni Müşteri Ekle
+              </Button>
             </div>
-            <Button
-              onClick={() => {
-                setEditCustomer(null);
-                setFormDialogOpen(true);
-              }}
-              className="bg-gradient-hero hover:shadow-tech"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Yeni Müşteri Ekle
-            </Button>
+
+            {/* Arama Çubuğu */}
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Müşteri ara (numara, isim veya telefon)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+              />
+            </div>
           </div>
 
           {isLoading ? (
@@ -242,9 +275,20 @@ const CustomerRegistration = () => {
                 İlk Müşteri Kaydını Oluştur
               </Button>
             </div>
+          ) : filteredCustomers.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-gray-400 text-lg mb-4">Arama sonucu bulunamadı.</p>
+              <Button
+                onClick={() => setSearchQuery("")}
+                variant="outline"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
+                Aramayı Temizle
+              </Button>
+            </div>
           ) : (
             <div className="space-y-4">
-              {customers.map((customer) => (
+              {filteredCustomers.map((customer) => (
                 <div key={customer.id}>
                   <CustomerCard
                     customer={customer}
@@ -255,6 +299,11 @@ const CustomerRegistration = () => {
                   />
                   {expandedCustomerId === customer.id && (
                     <CustomerDetails
+                      customer={{
+                        customer_number: customer.customer_number,
+                        customer_name: customer.customer_name,
+                        phone_number: customer.phone_number
+                      }}
                       devices={customerDevices[customer.id] || []}
                       customerId={customer.id}
                       onStatusUpdate={() => fetchCustomerDevices(customer.id)}
@@ -263,7 +312,7 @@ const CustomerRegistration = () => {
                 </div>
               ))}
 
-              {hasMore && (
+              {!searchQuery && hasMore && (
                 <div className="flex justify-center pt-6">
                   <Button
                     onClick={handleLoadMore}
