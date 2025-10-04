@@ -82,6 +82,41 @@ export type Database = {
           },
         ]
       }
+      customer_logs: {
+        Row: {
+          action: string
+          created_at: string
+          customer_id: string
+          details: Json | null
+          id: string
+          performed_by: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          customer_id: string
+          details?: Json | null
+          id?: string
+          performed_by: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          customer_id?: string
+          details?: Json | null
+          id?: string
+          performed_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_logs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           created_at: string
