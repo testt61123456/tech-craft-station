@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState } from "react";
 import PrintReceipt from "./PrintReceipt";
+import StatusUpdateDialog from "./StatusUpdateDialog";
 
 interface Device {
   id: string;
@@ -57,32 +58,42 @@ const deviceTypeLabels: Record<string, string> = {
 
 const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: CustomerDetailsProps) => {
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   const handleStatusChange = async (deviceId: string, newStatus: string) => {
-    setUpdatingStatus(deviceId);
-    try {
-      const { error } = await supabase
-        .from('customer_devices')
-        .update({ status: newStatus })
-        .eq('id', deviceId);
+    // Eğer pending ise direkt güncelle, diğer durumlar için dialog aç
+    if (newStatus === 'pending') {
+      setUpdatingStatus(deviceId);
+      try {
+        const { error } = await supabase
+          .from('customer_devices')
+          .update({ status: newStatus })
+          .eq('id', deviceId);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Log the status change
-      await supabase.from('customer_logs').insert({
-        customer_id: customerId,
-        action: 'status_updated',
-        details: { device_id: deviceId, new_status: newStatus },
-        performed_by: (await supabase.auth.getUser()).data.user?.id
-      });
+        await supabase.from('customer_logs').insert({
+          customer_id: customerId,
+          action: 'status_updated',
+          details: { device_id: deviceId, new_status: newStatus },
+          performed_by: (await supabase.auth.getUser()).data.user?.id
+        });
 
-      toast.success("Durum güncellendi");
-      onStatusUpdate();
-    } catch (error) {
-      console.error('Status update error:', error);
-      toast.error("Durum güncellenirken hata oluştu");
-    } finally {
-      setUpdatingStatus(null);
+        toast.success("Durum güncellendi");
+        onStatusUpdate();
+      } catch (error) {
+        console.error('Status update error:', error);
+        toast.error("Durum güncellenirken hata oluştu");
+      } finally {
+        setUpdatingStatus(null);
+      }
+    } else {
+      // Diğer durumlar için dialog aç
+      setSelectedDeviceId(deviceId);
+      setSelectedStatus(newStatus);
+      setStatusDialogOpen(true);
     }
   };
 
@@ -97,8 +108,9 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
   }
 
   return (
-    <div className="space-y-4 mt-4">
-      {devices.map((device) => {
+    <>
+      <div className="space-y-4 mt-4">
+        {devices.map((device) => {
         const StatusIcon = statusConfig[device.status as keyof typeof statusConfig]?.icon || Clock;
         const statusLabel = statusConfig[device.status as keyof typeof statusConfig]?.label || device.status;
         const statusColor = statusConfig[device.status as keyof typeof statusConfig]?.color || "bg-gray-500";
@@ -240,8 +252,24 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
             </CardContent>
           </Card>
         );
-      })}
-    </div>
+        })}
+      </div>
+
+      {selectedDeviceId && (
+        <StatusUpdateDialog
+          open={statusDialogOpen}
+          onOpenChange={setStatusDialogOpen}
+          deviceId={selectedDeviceId}
+          customerId={customerId}
+          newStatus={selectedStatus}
+          onSuccess={() => {
+            onStatusUpdate();
+            setSelectedDeviceId(null);
+            setSelectedStatus("");
+          }}
+        />
+      )}
+    </>
   );
 };
 
