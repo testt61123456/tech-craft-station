@@ -66,10 +66,10 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-secondary">
       <Header />
       <main>
-        <section className="py-12 md:py-16 lg:py-20 bg-background">
+        <section className="py-12 md:py-16 lg:py-20 bg-gradient-to-b from-secondary via-secondary/95 to-secondary">
           <div className="container mx-auto px-4">
             <div className="mb-6 md:mb-8">
               <Link to="/products">
@@ -82,7 +82,7 @@ const ProductDetail = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
               <div className="space-y-6">
-                <div className="aspect-square overflow-hidden rounded-lg bg-gradient-card flex items-center justify-center">
+                <div className="aspect-square overflow-hidden rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm flex items-center justify-center shadow-tech hover:shadow-hero transition-all">
                   <img 
                     src={product.image_url || '/placeholder.svg'} 
                     alt={product.name}
@@ -93,8 +93,8 @@ const ProductDetail = () => {
 
               <div className="space-y-6">
                 <div>
-                  <Badge className="mb-4">{product.category?.name || 'Genel'}</Badge>
-                  <h1 className="text-3xl font-bold text-primary mb-4">{product.name}</h1>
+                  <Badge className="mb-4 bg-gradient-hero text-white border-0">{product.category?.name || 'Genel'}</Badge>
+                  <h1 className="text-3xl font-bold text-white mb-4">{product.name}</h1>
                   <div className="flex items-center space-x-2 mb-6">
                     <div className="flex items-center space-x-1">
                       {[...Array(5)].map((_, i) => (
@@ -104,40 +104,40 @@ const ProductDetail = () => {
                         />
                       ))}
                     </div>
-                    <span className="text-muted-foreground">(4.8 • 127 değerlendirme)</span>
+                    <span className="text-gray-300">(4.8 • 127 değerlendirme)</span>
                   </div>
                 </div>
 
-                <Card className="bg-gradient-card">
+                <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
                   <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-3">Ürün Açıklaması</h3>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <h3 className="text-lg font-semibold mb-3 text-white">Ürün Açıklaması</h3>
+                    <p className="text-gray-300 leading-relaxed">
                       {product.description || "Bu ürün için detaylı açıklama henüz eklenmemiş."}
                     </p>
                   </CardContent>
                 </Card>
 
-                <div className="border-t pt-6">
+                <div className="border-t border-white/10 pt-6">
                   {product.price && (
                     <div className="mb-6">
-                      <span className="text-3xl font-bold text-primary">
+                      <span className="text-3xl font-bold text-white">
                         ₺{product.price.toLocaleString('tr-TR')}
                       </span>
                     </div>
                   )}
 
-                  <Card className="bg-gradient-card mb-6">
+                  <Card className="bg-white/5 border-white/10 backdrop-blur-sm mb-6">
                     <CardContent className="p-6 space-y-4">
-                      <h3 className="text-lg font-semibold text-secondary">İletişim & Sipariş</h3>
-                      <Button className="w-full bg-gradient-hero hover:shadow-tech transition-bounce flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-white">İletişim & Sipariş</h3>
+                      <Button className="w-full bg-gradient-hero hover:shadow-tech transition-bounce flex items-center gap-2 text-white">
                         <Phone className="w-4 h-4" />
                         Hemen Ara: +90 (462) 123 45 67
                       </Button>
-                      <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground flex items-center gap-2">
-                        <Mail className="w-4 h-4" />
+                      <Button variant="outline" className="w-full border-white/20 bg-white/10 text-white hover:bg-white/20 flex items-center gap-2">
+                        <Mail className="w-4 w-4" />
                         Email Gönder
                       </Button>
-                      <p className="text-sm text-muted-foreground text-center">
+                      <p className="text-sm text-gray-400 text-center">
                         Stok durumu ve teslimat süresi için lütfen iletişime geçin
                       </p>
                     </CardContent>

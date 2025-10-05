@@ -45,32 +45,44 @@ export type Database = {
         Row: {
           created_at: string
           customer_id: string
+          delivery_date: string | null
           device_problem: string
           device_type: Database["public"]["Enums"]["device_type"]
           id: string
           received_date: string
+          return_date: string | null
           status: string | null
           updated_at: string
+          waiting_days: number | null
+          warranty_sent_date: string | null
         }
         Insert: {
           created_at?: string
           customer_id: string
+          delivery_date?: string | null
           device_problem: string
           device_type: Database["public"]["Enums"]["device_type"]
           id?: string
           received_date?: string
+          return_date?: string | null
           status?: string | null
           updated_at?: string
+          waiting_days?: number | null
+          warranty_sent_date?: string | null
         }
         Update: {
           created_at?: string
           customer_id?: string
+          delivery_date?: string | null
           device_problem?: string
           device_type?: Database["public"]["Enums"]["device_type"]
           id?: string
           received_date?: string
+          return_date?: string | null
           status?: string | null
           updated_at?: string
+          waiting_days?: number | null
+          warranty_sent_date?: string | null
         }
         Relationships: [
           {

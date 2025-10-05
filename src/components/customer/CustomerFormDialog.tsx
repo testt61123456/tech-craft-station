@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,8 +58,8 @@ interface CustomerFormDialogProps {
 }
 
 const CustomerFormDialog = ({ open, onOpenChange, onSuccess, editData }: CustomerFormDialogProps) => {
-  const [customerName, setCustomerName] = useState(editData?.customer_name || "");
-  const [phoneNumber, setPhoneNumber] = useState(editData?.phone_number || "");
+  const [customerName, setCustomerName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [devices, setDevices] = useState<Device[]>([{
     id: crypto.randomUUID(),
     type: "",
@@ -68,6 +68,24 @@ const CustomerFormDialog = ({ open, onOpenChange, onSuccess, editData }: Custome
     materials: []
   }]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // editData değiştiğinde form alanlarını güncelle
+  useEffect(() => {
+    if (editData) {
+      setCustomerName(editData.customer_name);
+      setPhoneNumber(editData.phone_number);
+    } else {
+      setCustomerName("");
+      setPhoneNumber("");
+      setDevices([{
+        id: crypto.randomUUID(),
+        type: "",
+        problem: "",
+        receivedDate: new Date(),
+        materials: []
+      }]);
+    }
+  }, [editData]);
 
   const addDevice = () => {
     setDevices([...devices, {

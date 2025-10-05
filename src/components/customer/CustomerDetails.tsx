@@ -13,6 +13,10 @@ interface Device {
   device_problem: string;
   received_date: string;
   status: string;
+  delivery_date?: string;
+  return_date?: string;
+  warranty_sent_date?: string;
+  waiting_days?: number;
   materials: Array<{
     id: string;
     material_name: string;
@@ -35,10 +39,10 @@ interface CustomerDetailsProps {
 
 const statusConfig = {
   pending: { label: "Beklemede", icon: Clock, color: "bg-yellow-500" },
-  in_progress: { label: "İşlemde", icon: AlertCircle, color: "bg-blue-500" },
-  completed: { label: "Tamamlandı", icon: CheckCircle, color: "bg-green-500" },
-  cancelled: { label: "İptal", icon: XCircle, color: "bg-red-500" },
-  waiting_parts: { label: "Parça Bekliyor", icon: Package, color: "bg-orange-500" }
+  completed: { label: "Sorun Giderildi", icon: CheckCircle, color: "bg-green-500" },
+  returned: { label: "İade Edildi", icon: XCircle, color: "bg-red-500" },
+  waiting_parts: { label: "Parça Bekleniyor", icon: Package, color: "bg-orange-500" },
+  warranty: { label: "Garanti Kapsamında", icon: AlertCircle, color: "bg-blue-500" }
 };
 
 const deviceTypeLabels: Record<string, string> = {
@@ -102,11 +106,20 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
         return (
           <Card key={device.id} className="bg-white/5 border-white/10">
             <CardHeader>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <CardTitle className="text-lg text-white flex items-center gap-2">
-                  <Laptop className="h-5 w-5" />
-                  {deviceTypeLabels[device.device_type] || device.device_type}
-                </CardTitle>
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <CardTitle className="text-lg text-white flex items-center gap-2">
+                    <Laptop className="h-5 w-5" />
+                    {deviceTypeLabels[device.device_type] || device.device_type}
+                  </CardTitle>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <PrintReceipt
+                      customer={customer}
+                      device={device}
+                    />
+                  </div>
+                </div>
+                
                 <div className="flex items-center gap-2 flex-wrap">
                   <StatusIcon className={`h-5 w-5 text-white ${statusColor} rounded-full p-1`} />
                   <Select
@@ -114,7 +127,7 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
                     onValueChange={(value) => handleStatusChange(device.id, value)}
                     disabled={updatingStatus === device.id}
                   >
-                    <SelectTrigger className="w-[180px] bg-white/10 border-white/20 text-white">
+                    <SelectTrigger className="w-[200px] bg-white/10 border-white/20 text-white">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-secondary border-white/20">
@@ -125,10 +138,6 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
                       ))}
                     </SelectContent>
                   </Select>
-                  <PrintReceipt
-                    customer={customer}
-                    device={device}
-                  />
                 </div>
               </div>
             </CardHeader>
@@ -138,15 +147,63 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
                 <p className="text-white">{device.device_problem}</p>
               </div>
               
-              <div className="flex items-center gap-2 text-sm text-gray-300">
-                <Calendar className="h-4 w-4" />
-                <span>
-                  Alındığı Tarih: {new Date(device.received_date).toLocaleDateString('tr-TR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </span>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-gray-300">
+                  <Calendar className="h-4 w-4" />
+                  <span>
+                    Alındığı Tarih: {new Date(device.received_date).toLocaleDateString('tr-TR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </span>
+                </div>
+
+                {device.status === 'completed' && device.delivery_date && (
+                  <div className="flex items-center gap-2 text-sm text-green-300">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>
+                      Teslim Tarihi: {new Date(device.delivery_date).toLocaleDateString('tr-TR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                )}
+
+                {device.status === 'returned' && device.return_date && (
+                  <div className="flex items-center gap-2 text-sm text-red-300">
+                    <XCircle className="h-4 w-4" />
+                    <span>
+                      İade Tarihi: {new Date(device.return_date).toLocaleDateString('tr-TR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                )}
+
+                {device.status === 'warranty' && device.warranty_sent_date && (
+                  <div className="flex items-center gap-2 text-sm text-blue-300">
+                    <AlertCircle className="h-4 w-4" />
+                    <span>
+                      Garantiye Gönderilme: {new Date(device.warranty_sent_date).toLocaleDateString('tr-TR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                )}
+
+                {device.status === 'waiting_parts' && device.waiting_days && (
+                  <div className="flex items-center gap-2 text-sm text-orange-300">
+                    <Clock className="h-4 w-4" />
+                    <span>Parça Bekleme Süresi: {device.waiting_days} gün</span>
+                  </div>
+                )}
               </div>
 
               {device.materials && device.materials.length > 0 && (
