@@ -122,7 +122,6 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
                 <CardTitle className="text-lg text-white flex items-center gap-2">
                   <Laptop className="h-5 w-5" />
                   {deviceTypeLabels[device.device_type] || device.device_type}
-                  <StatusIcon className={`h-5 w-5 text-white ${statusColor} rounded-full p-1`} />
                 </CardTitle>
                 <div className="flex items-center gap-2 flex-wrap">
                   <Select
