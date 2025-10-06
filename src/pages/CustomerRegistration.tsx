@@ -45,6 +45,7 @@ const CustomerRegistration = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCustomerId, setExpandedCustomerId] = useState<string | null>(null);
   const [customerDevices, setCustomerDevices] = useState<Record<string, CustomerDevice[]>>({});
+  const [customerDeviceStatuses, setCustomerDeviceStatuses] = useState<Record<string, Array<{ id: string; status: string }>>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -105,6 +106,30 @@ const CustomerRegistration = () => {
       }
 
       setHasMore((count || 0) > (loadMore ? (page + 2) : 1) * ITEMS_PER_PAGE);
+      
+      // Tüm müşterilerin cihazlarını yükle (sadece id ve status)
+      if (data && data.length > 0) {
+        const customerIds = data.map(c => c.id);
+        const { data: allDevices, error: devicesError } = await supabase
+          .from('customer_devices')
+          .select('id, customer_id, status')
+          .in('customer_id', customerIds);
+
+        if (!devicesError && allDevices) {
+          const devicesByCustomer = allDevices.reduce((acc, device) => {
+            if (!acc[device.customer_id]) {
+              acc[device.customer_id] = [];
+            }
+            acc[device.customer_id].push({ id: device.id, status: device.status });
+            return acc;
+          }, {} as Record<string, Array<{ id: string; status: string }>>);
+
+          setCustomerDeviceStatuses(prev => ({
+            ...prev,
+            ...devicesByCustomer
+          }));
+        }
+      }
     } catch (error) {
       console.error('Müşteriler yüklenirken hata:', error);
       toast.error("Müşteriler yüklenirken hata oluştu");
@@ -143,6 +168,12 @@ const CustomerRegistration = () => {
       setCustomerDevices(prev => ({
         ...prev,
         [customerId]: devicesWithMaterials
+      }));
+      
+      // Kartlardaki durum simgelerini de güncelle
+      setCustomerDeviceStatuses(prev => ({
+        ...prev,
+        [customerId]: devicesWithMaterials.map(d => ({ id: d.id, status: d.status }))
       }));
     } catch (error) {
       console.error('Cihazlar yüklenirken hata:', error);
@@ -303,6 +334,7 @@ const CustomerRegistration = () => {
                   <div key={customer.id} className="space-y-2">
                     <CustomerCard
                       customer={customer}
+                      devices={customerDeviceStatuses[customer.id]}
                       isExpanded={expandedCustomerId === customer.id}
                       onToggle={() => handleToggleExpand(customer.id)}
                       onEdit={() => handleEdit(customer)}
