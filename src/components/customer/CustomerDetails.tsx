@@ -118,20 +118,11 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
         return (
           <Card key={device.id} className="bg-white/5 border-white/10">
             <CardHeader>
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <CardTitle className="text-lg text-white flex items-center gap-2">
-                    <Laptop className="h-5 w-5" />
-                    {deviceTypeLabels[device.device_type] || device.device_type}
-                  </CardTitle>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <PrintReceipt
-                      customer={customer}
-                      device={device}
-                    />
-                  </div>
-                </div>
-                
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <CardTitle className="text-lg text-white flex items-center gap-2">
+                  <Laptop className="h-5 w-5" />
+                  {deviceTypeLabels[device.device_type] || device.device_type}
+                </CardTitle>
                 <div className="flex items-center gap-2 flex-wrap">
                   <StatusIcon className={`h-5 w-5 text-white ${statusColor} rounded-full p-1`} />
                   <Select
@@ -150,6 +141,10 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
                       ))}
                     </SelectContent>
                   </Select>
+                  <PrintReceipt
+                    customer={customer}
+                    device={device}
+                  />
                 </div>
               </div>
             </CardHeader>
