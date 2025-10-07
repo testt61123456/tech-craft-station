@@ -63,7 +63,7 @@ const CustomerRegistration = () => {
     if (user && (userRole === 'admin' || userRole === 'superadmin')) {
       fetchCustomers();
       requestNotificationPermission();
-      setupRealtimeSubscription();
+      setupDeviceStatusSubscription();
       checkOverdueDevices();
       
       // Her 2 saatte bir kontrol et
@@ -256,25 +256,9 @@ const CustomerRegistration = () => {
     toast.info(title, { description: body });
   };
 
-  const setupRealtimeSubscription = () => {
+  const setupDeviceStatusSubscription = () => {
     const channel = supabase
-      .channel('customer-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'customers'
-        },
-        (payload) => {
-          const newCustomer = payload.new as Customer;
-          showNotification(
-            'Yeni Müşteri Kaydı',
-            `${newCustomer.customer_name} adlı müşteri eklendi`
-          );
-          fetchCustomers();
-        }
-      )
+      .channel('device-status-changes')
       .on(
         'postgres_changes',
         {
