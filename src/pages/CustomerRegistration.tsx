@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Loader2, Search } from "lucide-react";
+import { Plus, Loader2, Search, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,6 +12,7 @@ import CustomerCard from "@/components/customer/CustomerCard";
 import CustomerDetails from "@/components/customer/CustomerDetails";
 import CustomerFormDialog from "@/components/customer/CustomerFormDialog";
 import DeleteConfirmDialog from "@/components/customer/DeleteConfirmDialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Customer {
   id: string;
@@ -54,12 +55,20 @@ const CustomerRegistration = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
+  const [overdueDevices, setOverdueDevices] = useState<Array<{id: string, customer_name: string, days: number}>>([]);
 
   const ITEMS_PER_PAGE = 25;
 
   useEffect(() => {
     if (user && (userRole === 'admin' || userRole === 'superadmin')) {
       fetchCustomers();
+      requestNotificationPermission();
+      setupRealtimeSubscription();
+      checkOverdueDevices();
+      
+      // Her 2 saatte bir kontrol et
+      const interval = setInterval(checkOverdueDevices, 2 * 60 * 60 * 1000);
+      return () => clearInterval(interval);
     }
   }, [user, userRole]);
 
@@ -234,6 +243,141 @@ const CustomerRegistration = () => {
     fetchCustomers(true);
   };
 
+  const requestNotificationPermission = async () => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      await Notification.requestPermission();
+    }
+  };
+
+  const showNotification = (title: string, body: string) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, { body, icon: '/favicon.ico' });
+    }
+    toast.info(title, { description: body });
+  };
+
+  const setupRealtimeSubscription = () => {
+    const channel = supabase
+      .channel('customer-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'customers'
+        },
+        (payload) => {
+          const newCustomer = payload.new as Customer;
+          showNotification(
+            'Yeni Müşteri Kaydı',
+            `${newCustomer.customer_name} adlı müşteri eklendi`
+          );
+          fetchCustomers();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'customer_devices'
+        },
+        (payload) => {
+          checkOverdueDevices();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'customer_devices'
+        },
+        (payload) => {
+          checkOverdueDevices();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
+
+  const checkOverdueDevices = async () => {
+    try {
+      const { data: devices, error } = await supabase
+        .from('customer_devices')
+        .select(`
+          id,
+          received_date,
+          status,
+          customer_id,
+          customers!inner(customer_name)
+        `)
+        .eq('status', 'pending');
+
+      if (error) throw error;
+
+      const now = new Date();
+      const overdue: Array<{id: string, customer_name: string, days: number}> = [];
+      
+      devices?.forEach((device: any) => {
+        const receivedDate = new Date(device.received_date);
+        const daysDiff = Math.floor((now.getTime() - receivedDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        // 7 gün kontrolü
+        const lastNotified7 = localStorage.getItem(`notified_7_${device.id}`);
+        if (daysDiff >= 7 && !lastNotified7) {
+          overdue.push({
+            id: device.id,
+            customer_name: device.customers.customer_name,
+            days: daysDiff
+          });
+          localStorage.setItem(`notified_7_${device.id}`, now.toISOString());
+          showNotification(
+            '7 Günlük Bekleyen Cihaz',
+            `${device.customers.customer_name} müşterisinin cihazı ${daysDiff} gündür bekliyor`
+          );
+        }
+        
+        // 15 gün kontrolü (7 gün sonra)
+        if (daysDiff >= 15) {
+          const lastNotified15 = localStorage.getItem(`notified_15_${device.id}`);
+          const lastNotified7Date = lastNotified7 ? new Date(lastNotified7) : null;
+          const daysSinceLastNotification = lastNotified7Date 
+            ? Math.floor((now.getTime() - lastNotified7Date.getTime()) / (1000 * 60 * 60 * 24))
+            : 0;
+          
+          if (daysSinceLastNotification >= 8 && !lastNotified15) {
+            overdue.push({
+              id: device.id,
+              customer_name: device.customers.customer_name,
+              days: daysDiff
+            });
+            localStorage.setItem(`notified_15_${device.id}`, now.toISOString());
+            showNotification(
+              '15 Günlük Bekleyen Cihaz - Acil!',
+              `${device.customers.customer_name} müşterisinin cihazı ${daysDiff} gündür bekliyor!`
+            );
+          }
+        }
+
+        if (daysDiff >= 7) {
+          overdue.push({
+            id: device.id,
+            customer_name: device.customers.customer_name,
+            days: daysDiff
+          });
+        }
+      });
+
+      setOverdueDevices(overdue);
+    } catch (error) {
+      console.error('Bekleyen cihazlar kontrol edilirken hata:', error);
+    }
+  };
+
   // Admin kontrolü
   if (!user || (userRole !== 'admin' && userRole !== 'superadmin')) {
     return (
@@ -257,6 +401,25 @@ const CustomerRegistration = () => {
       <main className="py-8 md:py-12 lg:py-16">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="flex flex-col gap-4 mb-8 md:mb-12">
+            {overdueDevices.length > 0 && (
+              <Alert className="bg-destructive/10 border-destructive/50">
+                <AlertCircle className="h-4 w-4 text-destructive" />
+                <AlertDescription className="text-white">
+                  <strong>{overdueDevices.length} cihaz 7 günden fazla bekliyor:</strong>
+                  <ul className="mt-2 space-y-1">
+                    {overdueDevices.slice(0, 3).map(device => (
+                      <li key={device.id}>
+                        {device.customer_name} - {device.days} gün
+                      </li>
+                    ))}
+                    {overdueDevices.length > 3 && (
+                      <li className="text-gray-300">ve {overdueDevices.length - 3} tane daha...</li>
+                    )}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
+            
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
