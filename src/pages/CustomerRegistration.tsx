@@ -477,48 +477,40 @@ const CustomerRegistration = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className={cn(
+                "grid gap-4 transition-all duration-300",
+                expandedCustomerId ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2"
+              )}>
                 {filteredCustomers.map((customer) => (
-                  <div key={customer.id} className="space-y-2">
-                    {/* Tam ekran overlay */}
-                    {expandedCustomerId === customer.id && (
-                      <div 
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fade-in"
-                        onClick={() => handleToggleExpand(customer.id)}
-                      />
+                  <div 
+                    key={customer.id} 
+                    className={cn(
+                      "space-y-2 transition-all duration-300",
+                      expandedCustomerId && expandedCustomerId !== customer.id && "hidden"
                     )}
-                    
-                    {/* Kart ve detaylar */}
-                    <div 
-                      className={cn(
-                        "transition-all duration-300",
-                        expandedCustomerId === customer.id && 
-                        "fixed inset-4 md:inset-8 lg:inset-16 z-50 overflow-y-auto animate-scale-in"
-                      )}
-                    >
-                      <CustomerCard
-                        customer={customer}
-                        devices={customerDeviceStatuses[customer.id]}
-                        isExpanded={expandedCustomerId === customer.id}
-                        onToggle={() => handleToggleExpand(customer.id)}
-                        onEdit={() => handleEdit(customer)}
-                        onDelete={() => handleDelete(customer)}
-                      />
-                      {expandedCustomerId === customer.id && (
-                        <div className="mt-2">
-                          <CustomerDetails
-                            customer={{
-                              customer_number: customer.customer_number,
-                              customer_name: customer.customer_name,
-                              phone_number: customer.phone_number
-                            }}
-                            devices={customerDevices[customer.id] || []}
-                            customerId={customer.id}
-                            onStatusUpdate={() => fetchCustomerDevices(customer.id)}
-                          />
-                        </div>
-                      )}
-                    </div>
+                  >
+                    <CustomerCard
+                      customer={customer}
+                      devices={customerDeviceStatuses[customer.id]}
+                      isExpanded={expandedCustomerId === customer.id}
+                      onToggle={() => handleToggleExpand(customer.id)}
+                      onEdit={() => handleEdit(customer)}
+                      onDelete={() => handleDelete(customer)}
+                    />
+                    {expandedCustomerId === customer.id && (
+                      <div className="animate-fade-in">
+                        <CustomerDetails
+                          customer={{
+                            customer_number: customer.customer_number,
+                            customer_name: customer.customer_name,
+                            phone_number: customer.phone_number
+                          }}
+                          devices={customerDevices[customer.id] || []}
+                          customerId={customer.id}
+                          onStatusUpdate={() => fetchCustomerDevices(customer.id)}
+                        />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
