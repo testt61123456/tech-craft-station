@@ -13,6 +13,7 @@ import CustomerDetails from "@/components/customer/CustomerDetails";
 import CustomerFormDialog from "@/components/customer/CustomerFormDialog";
 import DeleteConfirmDialog from "@/components/customer/DeleteConfirmDialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 interface Customer {
   id: string;
@@ -479,26 +480,45 @@ const CustomerRegistration = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {filteredCustomers.map((customer) => (
                   <div key={customer.id} className="space-y-2">
-                    <CustomerCard
-                      customer={customer}
-                      devices={customerDeviceStatuses[customer.id]}
-                      isExpanded={expandedCustomerId === customer.id}
-                      onToggle={() => handleToggleExpand(customer.id)}
-                      onEdit={() => handleEdit(customer)}
-                      onDelete={() => handleDelete(customer)}
-                    />
+                    {/* Tam ekran overlay */}
                     {expandedCustomerId === customer.id && (
-                      <CustomerDetails
-                        customer={{
-                          customer_number: customer.customer_number,
-                          customer_name: customer.customer_name,
-                          phone_number: customer.phone_number
-                        }}
-                        devices={customerDevices[customer.id] || []}
-                        customerId={customer.id}
-                        onStatusUpdate={() => fetchCustomerDevices(customer.id)}
+                      <div 
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fade-in"
+                        onClick={() => handleToggleExpand(customer.id)}
                       />
                     )}
+                    
+                    {/* Kart ve detaylar */}
+                    <div 
+                      className={cn(
+                        "transition-all duration-300",
+                        expandedCustomerId === customer.id && 
+                        "fixed inset-4 md:inset-8 lg:inset-16 z-50 overflow-y-auto animate-scale-in"
+                      )}
+                    >
+                      <CustomerCard
+                        customer={customer}
+                        devices={customerDeviceStatuses[customer.id]}
+                        isExpanded={expandedCustomerId === customer.id}
+                        onToggle={() => handleToggleExpand(customer.id)}
+                        onEdit={() => handleEdit(customer)}
+                        onDelete={() => handleDelete(customer)}
+                      />
+                      {expandedCustomerId === customer.id && (
+                        <div className="mt-2">
+                          <CustomerDetails
+                            customer={{
+                              customer_number: customer.customer_number,
+                              customer_name: customer.customer_name,
+                              phone_number: customer.phone_number
+                            }}
+                            devices={customerDevices[customer.id] || []}
+                            customerId={customer.id}
+                            onStatusUpdate={() => fetchCustomerDevices(customer.id)}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
