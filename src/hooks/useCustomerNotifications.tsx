@@ -40,8 +40,15 @@ export const useCustomerNotifications = () => {
               new Notification(title, { body, icon: '/favicon.ico' });
             }
             
-            // Toast notification
-            toast.info(title, { description: body });
+            // Toast notification - Kullanıcı kapatana kadar açık kalır
+            toast.info(title, { 
+              description: body,
+              duration: Infinity,
+              action: {
+                label: "Kapat",
+                onClick: () => {}
+              }
+            });
           }
         }
       )
