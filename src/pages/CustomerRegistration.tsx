@@ -477,26 +477,25 @@ const CustomerRegistration = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className={cn(
-                "grid gap-4 transition-all duration-300",
-                expandedCustomerId ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2"
-              )}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {filteredCustomers.map((customer) => (
                   <div 
                     key={customer.id} 
                     className={cn(
-                      "space-y-2 transition-all duration-300",
-                      expandedCustomerId && expandedCustomerId !== customer.id && "hidden"
+                      "space-y-2 transition-all duration-500 ease-in-out",
+                      expandedCustomerId === customer.id && "lg:col-span-2 animate-scale-in"
                     )}
                   >
-                    <CustomerCard
-                      customer={customer}
-                      devices={customerDeviceStatuses[customer.id]}
-                      isExpanded={expandedCustomerId === customer.id}
-                      onToggle={() => handleToggleExpand(customer.id)}
-                      onEdit={() => handleEdit(customer)}
-                      onDelete={() => handleDelete(customer)}
-                    />
+                    <div className="transform transition-transform duration-300 hover:scale-[1.01]">
+                      <CustomerCard
+                        customer={customer}
+                        devices={customerDeviceStatuses[customer.id]}
+                        isExpanded={expandedCustomerId === customer.id}
+                        onToggle={() => handleToggleExpand(customer.id)}
+                        onEdit={() => handleEdit(customer)}
+                        onDelete={() => handleDelete(customer)}
+                      />
+                    </div>
                     {expandedCustomerId === customer.id && (
                       <div className="animate-fade-in">
                         <CustomerDetails
