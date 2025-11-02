@@ -32,7 +32,7 @@ const ServiceCard = ({ service, isExpanded, onToggle, onEdit, onDelete }: Servic
   const statusInfo = statusLabels[service.status] || statusLabels.pending;
 
   return (
-    <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20 backdrop-blur-sm hover:shadow-tech transition-all duration-300">
+    <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm hover:shadow-tech transition-all duration-300">
       <div className="p-4 md:p-6">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div className="flex-1 space-y-3">
