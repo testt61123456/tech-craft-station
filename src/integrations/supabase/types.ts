@@ -271,6 +271,89 @@ export type Database = {
         }
         Relationships: []
       }
+      service_materials: {
+        Row: {
+          created_at: string
+          id: string
+          material_name: string
+          quantity: number | null
+          service_id: string
+          total_price: number | null
+          unit_price: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          material_name: string
+          quantity?: number | null
+          service_id: string
+          total_price?: number | null
+          unit_price?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          material_name?: string
+          quantity?: number | null
+          service_id?: string
+          total_price?: number | null
+          unit_price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_materials_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "service_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_records: {
+        Row: {
+          address: string
+          company_name: string
+          created_at: string
+          created_by: string | null
+          customer_name: string
+          description: string | null
+          id: string
+          phone_number: string
+          service_date: string
+          signature_data: string | null
+          status: Database["public"]["Enums"]["service_status"]
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          company_name: string
+          created_at?: string
+          created_by?: string | null
+          customer_name: string
+          description?: string | null
+          id?: string
+          phone_number: string
+          service_date?: string
+          signature_data?: string | null
+          status?: Database["public"]["Enums"]["service_status"]
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          company_name?: string
+          created_at?: string
+          created_by?: string | null
+          customer_name?: string
+          description?: string | null
+          id?: string
+          phone_number?: string
+          service_date?: string
+          signature_data?: string | null
+          status?: Database["public"]["Enums"]["service_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           assigned_by: string | null
@@ -315,6 +398,7 @@ export type Database = {
         | "server"
         | "network_device"
         | "other"
+      service_status: "pending" | "in_progress" | "completed" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -452,6 +536,7 @@ export const Constants = {
         "network_device",
         "other",
       ],
+      service_status: ["pending", "in_progress", "completed", "cancelled"],
     },
   },
 } as const

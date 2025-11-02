@@ -54,11 +54,16 @@ const Header = () => {
               İletişim
             </Link>
             
-            {/* Admin Only Link */}
+            {/* Admin Only Links */}
             {(userRole === 'admin' || userRole === 'superadmin') && (
-              <Link to="/customer-registration" className="text-sm lg:text-base text-secondary-foreground hover:text-primary transition-smooth">
-                Müşteri Kayıt
-              </Link>
+              <>
+                <Link to="/customer-registration" className="text-sm lg:text-base text-secondary-foreground hover:text-primary transition-smooth">
+                  Müşteri Kayıt
+                </Link>
+                <Link to="/service-records" className="text-sm lg:text-base text-secondary-foreground hover:text-primary transition-smooth">
+                  Servis Kayıtları
+                </Link>
+              </>
             )}
             
             {user ? (
@@ -130,15 +135,24 @@ const Header = () => {
               İletişim
             </Link>
             
-            {/* Admin Only Link - Mobile */}
+            {/* Admin Only Links - Mobile */}
             {(userRole === 'admin' || userRole === 'superadmin') && (
-              <Link 
-                to="/customer-registration" 
-                className="block text-secondary-foreground hover:text-primary transition-smooth py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Müşteri Kayıt
-              </Link>
+              <>
+                <Link 
+                  to="/customer-registration" 
+                  className="block text-secondary-foreground hover:text-primary transition-smooth py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Müşteri Kayıt
+                </Link>
+                <Link 
+                  to="/service-records" 
+                  className="block text-secondary-foreground hover:text-primary transition-smooth py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Servis Kayıtları
+                </Link>
+              </>
             )}
             
             {user ? (

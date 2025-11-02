@@ -20,6 +20,7 @@ import SecuritySystems from "./pages/SecuritySystems";
 import AutomationSystems from "./pages/AutomationSystems";
 import ServerServices from "./pages/ServerServices";
 import CustomerRegistration from "./pages/CustomerRegistration";
+import ServiceRecords from "./pages/ServiceRecords";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const AppContent = () => {
             <Route path="/services/automation" element={<AutomationSystems />} />
             <Route path="/services/server" element={<ServerServices />} />
             <Route path="/customer-registration" element={<CustomerRegistration />} />
+            <Route path="/service-records" element={<ServiceRecords />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/contact" element={<Contact />} />
