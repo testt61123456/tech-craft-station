@@ -326,35 +326,31 @@ const CustomerRegistration = () => {
           );
         }
         
-        // 15 gün kontrolü (7 gün sonra)
-        if (daysDiff >= 15) {
-          const lastNotified15 = localStorage.getItem(`notified_15_${device.id}`);
-          const lastNotified7Date = lastNotified7 ? new Date(lastNotified7) : null;
-          const daysSinceLastNotification = lastNotified7Date 
-            ? Math.floor((now.getTime() - lastNotified7Date.getTime()) / (1000 * 60 * 60 * 24))
-            : 0;
-          
-          if (daysSinceLastNotification >= 8 && !lastNotified15) {
-            overdue.push({
-              id: device.id,
-              customer_name: device.customers.customer_name,
-              days: daysDiff
-            });
-            localStorage.setItem(`notified_15_${device.id}`, now.toISOString());
-            showNotification(
-              '15 Günlük Bekleyen Cihaz - Acil!',
-              `${device.customers.customer_name} müşterisinin cihazı ${daysDiff} gündür bekliyor!`
-            );
-          }
+      // 15 gün kontrolü (7 gün sonra)
+      if (daysDiff >= 15) {
+        const lastNotified15 = localStorage.getItem(`notified_15_${device.id}`);
+        const lastNotified7Date = lastNotified7 ? new Date(lastNotified7) : null;
+        const daysSinceLastNotification = lastNotified7Date 
+          ? Math.floor((now.getTime() - lastNotified7Date.getTime()) / (1000 * 60 * 60 * 24))
+          : 0;
+        
+        if (daysSinceLastNotification >= 8 && !lastNotified15) {
+          localStorage.setItem(`notified_15_${device.id}`, now.toISOString());
+          showNotification(
+            '15 Günlük Bekleyen Cihaz - Acil!',
+            `${device.customers.customer_name} müşterisinin cihazı ${daysDiff} gündür bekliyor!`
+          );
         }
+      }
 
-        if (daysDiff >= 7) {
-          overdue.push({
-            id: device.id,
-            customer_name: device.customers.customer_name,
-            days: daysDiff
-          });
-        }
+      // 7 gün veya daha fazla bekleyen cihazları listeye ekle
+      if (daysDiff >= 7) {
+        overdue.push({
+          id: device.id,
+          customer_name: device.customers.customer_name,
+          days: daysDiff
+        });
+      }
       });
 
       setOverdueDevices(overdue);
