@@ -44,7 +44,11 @@ const SignaturePad = forwardRef<SignaturePadRef, SignaturePadProps>(
     useImperativeHandle(ref, () => ({
       getSignatureData: () => {
         if (!fabricCanvasRef.current) return null;
-        return fabricCanvasRef.current.toJSON();
+        try {
+          return JSON.stringify(fabricCanvasRef.current.toJSON());
+        } catch {
+          return null;
+        }
       },
       clearSignature: () => {
         if (!fabricCanvasRef.current) return;
@@ -87,7 +91,7 @@ const SignaturePad = forwardRef<SignaturePadRef, SignaturePadProps>(
           </Button>
         </div>
         <div className="border-2 border-gray-300 rounded-md overflow-hidden bg-white shadow-inner">
-          <canvas ref={canvasRef} className="touch-none" />
+          <canvas ref={canvasRef} width={width} height={height} className="block w-full h-auto cursor-crosshair" style={{ touchAction: 'none' }} />
         </div>
       </div>
     );
