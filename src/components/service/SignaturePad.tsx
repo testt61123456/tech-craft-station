@@ -31,7 +31,7 @@ const SignaturePad = forwardRef<SignaturePadRef, SignaturePadProps>(
 
       if (canvas.freeDrawingBrush) {
         canvas.freeDrawingBrush.color = "#000000";
-        canvas.freeDrawingBrush.width = 2;
+        canvas.freeDrawingBrush.width = 3;
       }
 
       fabricCanvasRef.current = canvas;
@@ -86,8 +86,8 @@ const SignaturePad = forwardRef<SignaturePadRef, SignaturePadProps>(
             Temizle
           </Button>
         </div>
-        <div className="border border-white/20 rounded-md overflow-hidden bg-white">
-          <canvas ref={canvasRef} />
+        <div className="border-2 border-gray-300 rounded-md overflow-hidden bg-white shadow-inner">
+          <canvas ref={canvasRef} className="touch-none" />
         </div>
       </div>
     );

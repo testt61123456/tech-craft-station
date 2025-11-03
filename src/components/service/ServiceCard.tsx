@@ -32,8 +32,8 @@ const ServiceCard = ({ service, isExpanded, onToggle, onEdit, onDelete }: Servic
   const statusInfo = statusLabels[service.status] || statusLabels.pending;
 
   return (
-    <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm hover:shadow-tech transition-all duration-300">
-      <div className="p-4 md:p-6">
+    <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm hover:shadow-tech transition-all duration-300 cursor-pointer">
+      <div className="p-4 md:p-6" onClick={onToggle}>
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div className="flex-1 space-y-3">
             <div className="flex items-start justify-between">
@@ -71,7 +71,10 @@ const ServiceCard = ({ service, isExpanded, onToggle, onEdit, onDelete }: Servic
             <Button
               variant="outline"
               size="sm"
-              onClick={onEdit}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
               className="flex-1 md:flex-none bg-white/10 border-white/20 text-white hover:bg-white/20"
             >
               <Edit className="h-4 w-4 md:mr-2" />
@@ -80,7 +83,10 @@ const ServiceCard = ({ service, isExpanded, onToggle, onEdit, onDelete }: Servic
             <Button
               variant="outline"
               size="sm"
-              onClick={onDelete}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
               className="flex-1 md:flex-none bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
             >
               <Trash2 className="h-4 w-4 md:mr-2" />
@@ -89,7 +95,10 @@ const ServiceCard = ({ service, isExpanded, onToggle, onEdit, onDelete }: Servic
             <Button
               variant="outline"
               size="sm"
-              onClick={onToggle}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle();
+              }}
               className="flex-1 md:flex-none bg-white/10 border-white/20 text-white hover:bg-white/20"
             >
               {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
