@@ -31,18 +31,18 @@ const statusConfig = {
 
 const CustomerCard = ({ customer, devices, isExpanded, onToggle, onEdit, onDelete }: CustomerCardProps) => {
   return (
-    <Card className="bg-white/10 backdrop-blur-sm border border-white/20 hover:border-white/40 transition-all cursor-pointer">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between" onClick={onToggle}>
+    <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm hover:shadow-tech transition-all duration-300 cursor-pointer">
+      <CardContent className="p-4 md:p-6">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4" onClick={onToggle}>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30">
+              <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30 text-xs">
                 <Hash className="h-3 w-3 mr-1" />
                 {customer.customer_number}
               </Badge>
             </div>
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-lg font-semibold text-white">
+            <div className="flex items-center gap-2 mb-2">
+              <h3 className="text-lg md:text-xl font-bold text-white">
                 {customer.customer_name}
               </h3>
               {devices && devices.length > 0 && (
@@ -57,15 +57,15 @@ const CustomerCard = ({ customer, devices, isExpanded, onToggle, onEdit, onDelet
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-2 text-gray-300">
-              <Phone className="h-4 w-4" />
-              <span className="text-sm">{customer.phone_number}</span>
+            <div className="flex items-center gap-2 text-gray-300 text-sm mb-1">
+              <Phone className="h-4 w-4 text-primary" />
+              <span>{customer.phone_number}</span>
             </div>
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-gray-400">
               Kayıt: {new Date(customer.created_at).toLocaleDateString('tr-TR')}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex md:flex-col gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -73,25 +73,32 @@ const CustomerCard = ({ customer, devices, isExpanded, onToggle, onEdit, onDelet
                 e.stopPropagation();
                 onEdit();
               }}
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="flex-1 md:flex-none bg-white/10 border-white/20 text-white hover:bg-white/20"
             >
               Düzenle
             </Button>
             <Button
-              variant="destructive"
+              variant="outline"
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete();
               }}
+              className="flex-1 md:flex-none bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
             >
               Sil
             </Button>
-            {isExpanded ? (
-              <ChevronUp className="h-5 w-5 text-white" />
-            ) : (
-              <ChevronDown className="h-5 w-5 text-white" />
-            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle();
+              }}
+              className="flex-1 md:flex-none bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
           </div>
         </div>
       </CardContent>
