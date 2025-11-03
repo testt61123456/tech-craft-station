@@ -1,5 +1,5 @@
 import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
-import { Canvas as FabricCanvas } from "fabric";
+import { Canvas as FabricCanvas, PencilBrush } from "fabric";
 import { Button } from "@/components/ui/button";
 import { Eraser } from "lucide-react";
 
@@ -26,9 +26,11 @@ const SignaturePad = forwardRef<SignaturePadRef, SignaturePadProps>(
         width,
         height,
         backgroundColor: "#ffffff",
-        isDrawingMode: true,
       });
 
+      canvas.isDrawingMode = true;
+      // Ensure a pencil brush is set for reliable drawing across environments
+      canvas.freeDrawingBrush = new PencilBrush(canvas);
       if (canvas.freeDrawingBrush) {
         canvas.freeDrawingBrush.color = "#000000";
         canvas.freeDrawingBrush.width = 3;
@@ -73,6 +75,8 @@ const SignaturePad = forwardRef<SignaturePadRef, SignaturePadProps>(
       fabricCanvasRef.current.clear();
       fabricCanvasRef.current.backgroundColor = "#ffffff";
       fabricCanvasRef.current.renderAll();
+      // Keep drawing mode on after clear
+      fabricCanvasRef.current.isDrawingMode = true;
     };
 
     return (

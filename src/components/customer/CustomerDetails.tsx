@@ -99,9 +99,9 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
 
   if (devices.length === 0) {
     return (
-      <Card className="bg-white/5 border-white/10">
+      <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm">
         <CardContent className="p-4">
-          <p className="text-gray-400 text-center">Bu müşteriye ait cihaz kaydı bulunmamaktadır.</p>
+          <p className="text-gray-300 text-center">Bu müşteriye ait cihaz kaydı bulunmamaktadır.</p>
         </CardContent>
       </Card>
     );
@@ -116,8 +116,8 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
         const statusColor = statusConfig[device.status as keyof typeof statusConfig]?.color || "bg-gray-500";
 
         return (
-          <Card key={device.id} className="bg-white/5 border-white/10">
-            <CardHeader>
+          <Card key={device.id} className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm hover:shadow-tech transition-all duration-300">
+            <CardHeader className="border-b border-white/10">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <CardTitle className="text-lg text-white flex items-center gap-2">
                   <Laptop className="h-5 w-5" />
