@@ -1,7 +1,9 @@
+import { useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Printer } from "lucide-react";
+import { Canvas as FabricCanvas } from "fabric";
 
 interface Material {
   id: string;
@@ -211,6 +213,20 @@ const ServiceDetails = ({ service, materials }: ServiceDetailsProps) => {
     printWindow.document.close();
   };
 
+  const signatureCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  useEffect(() => {
+    if (!service.signature_data || !signatureCanvasRef.current) return;
+    const canvas = new FabricCanvas(signatureCanvasRef.current, { width: 600, height: 200, backgroundColor: '#ffffff' });
+    try {
+      const json = typeof service.signature_data === 'string' ? JSON.parse(service.signature_data) : service.signature_data;
+      canvas.loadFromJSON(json, () => { canvas.renderAll(); });
+      canvas.isDrawingMode = false;
+    } catch (e) {
+      console.error('İmza yüklenirken hata:', e);
+    }
+    return () => { canvas.dispose(); };
+  }, [service.signature_data]);
+
   return (
     <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm">
       <div className="p-4 md:p-6 space-y-6">
@@ -266,7 +282,9 @@ const ServiceDetails = ({ service, materials }: ServiceDetailsProps) => {
             <h4 className="text-sm font-semibold text-white mb-2">İmza</h4>
             <div className="bg-white rounded-md p-4 border border-white/20">
               <canvas
-                id={`signature-${Math.random()}`}
+                ref={signatureCanvasRef}
+                width={600}
+                height={200}
                 className="w-full"
                 style={{ maxHeight: "200px" }}
               />
