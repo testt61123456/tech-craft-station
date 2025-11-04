@@ -45,16 +45,21 @@ const SignaturePad = forwardRef<SignaturePadRef, SignaturePadProps>(
 
     useImperativeHandle(ref, () => ({
       getSignatureData: () => {
-        if (!fabricCanvasRef.current) return null;
+        if (!fabricCanvasRef.current) {
+          console.log("Canvas ref is null");
+          return null;
+        }
         try {
-          // Check if canvas has any objects (drawings)
-          const objects = fabricCanvasRef.current.getObjects();
-          if (objects.length === 0) {
-            return null; // No signature drawn
-          }
-          
           const json = fabricCanvasRef.current.toJSON();
-          return JSON.stringify(json);
+          console.log("Canvas JSON:", json);
+          // Check if canvas has any objects (signature was drawn)
+          if (!json.objects || json.objects.length === 0) {
+            console.log("No objects in canvas");
+            return null;
+          }
+          const stringified = JSON.stringify(json);
+          console.log("Signature data:", stringified);
+          return stringified;
         } catch (error) {
           console.error("İmza verisi alınırken hata:", error);
           return null;
@@ -69,8 +74,8 @@ const SignaturePad = forwardRef<SignaturePadRef, SignaturePadProps>(
       loadSignature: (data: string) => {
         if (!fabricCanvasRef.current) return;
         try {
-          const jsonData = JSON.parse(data);
-          fabricCanvasRef.current.loadFromJSON(jsonData).then(() => {
+          const jsonData = typeof data === 'string' ? JSON.parse(data) : data;
+          fabricCanvasRef.current.loadFromJSON(jsonData, () => {
             fabricCanvasRef.current?.renderAll();
           });
         } catch (error) {
