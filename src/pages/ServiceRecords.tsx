@@ -8,6 +8,7 @@ import { Plus, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useServiceNotifications } from "@/hooks/useServiceNotifications";
 import ServiceCard from "@/components/service/ServiceCard";
 import ServiceDetails from "@/components/service/ServiceDetails";
 import ServiceFormDialog from "@/components/service/ServiceFormDialog";
@@ -38,6 +39,7 @@ interface ServiceMaterial {
 const ServiceRecords = () => {
   const navigate = useNavigate();
   const { user, userRole } = useAuth();
+  useServiceNotifications();
   
   const [services, setServices] = useState<ServiceRecord[]>([]);
   const [filteredServices, setFilteredServices] = useState<ServiceRecord[]>([]);
