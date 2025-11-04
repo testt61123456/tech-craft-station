@@ -47,8 +47,16 @@ const SignaturePad = forwardRef<SignaturePadRef, SignaturePadProps>(
       getSignatureData: () => {
         if (!fabricCanvasRef.current) return null;
         try {
-          return JSON.stringify(fabricCanvasRef.current.toJSON());
-        } catch {
+          // Check if canvas has any objects (drawings)
+          const objects = fabricCanvasRef.current.getObjects();
+          if (objects.length === 0) {
+            return null; // No signature drawn
+          }
+          
+          const json = fabricCanvasRef.current.toJSON();
+          return JSON.stringify(json);
+        } catch (error) {
+          console.error("İmza verisi alınırken hata:", error);
           return null;
         }
       },
@@ -61,7 +69,8 @@ const SignaturePad = forwardRef<SignaturePadRef, SignaturePadProps>(
       loadSignature: (data: string) => {
         if (!fabricCanvasRef.current) return;
         try {
-          fabricCanvasRef.current.loadFromJSON(data, () => {
+          const jsonData = JSON.parse(data);
+          fabricCanvasRef.current.loadFromJSON(jsonData).then(() => {
             fabricCanvasRef.current?.renderAll();
           });
         } catch (error) {
