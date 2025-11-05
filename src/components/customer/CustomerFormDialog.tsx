@@ -44,6 +44,7 @@ interface Device {
   problem: string;
   receivedDate: Date;
   materials: Material[];
+  isNew?: boolean; // Yeni eklenen cihazları işaretlemek için
 }
 
 interface CustomerFormDialogProps {
@@ -63,8 +64,23 @@ const CustomerFormDialog = ({ open, onOpenChange, onSuccess, editData }: Custome
   const [devices, setDevices] = useState<Device[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // editData değiştiğinde form alanlarını güncelle
+  // Dialog açıldığında veya editData değiştiğinde form alanlarını güncelle
   useEffect(() => {
+    if (!open) {
+      // Dialog kapatıldığında formu temizle
+      setCustomerName("");
+      setPhoneNumber("");
+      setDevices([{
+        id: crypto.randomUUID(),
+        type: "",
+        problem: "",
+        receivedDate: new Date(),
+        materials: [],
+        isNew: true
+      }]);
+      return;
+    }
+
     const load = async () => {
       if (editData) {
         setCustomerName(editData.customer_name);
@@ -75,19 +91,20 @@ const CustomerFormDialog = ({ open, onOpenChange, onSuccess, editData }: Custome
           .select('id, device_type, device_problem, received_date')
           .eq('customer_id', editData.id)
           .order('received_date', { ascending: false });
-        if (!devErr) {
-          const deviceIds = (devs || []).map(d => d.id);
+        if (!devErr && devs && devs.length > 0) {
+          const deviceIds = devs.map(d => d.id);
           let matsByDevice: Record<string, any[]> = {};
           if (deviceIds.length) {
             const { data: mats } = await supabase
               .from('materials')
-              .select('id, device_id, material_name, quantity, unit_price');
+              .select('id, device_id, material_name, quantity, unit_price')
+              .in('device_id', deviceIds);
             (mats || []).forEach(m => {
               if (!matsByDevice[m.device_id]) matsByDevice[m.device_id] = [];
               matsByDevice[m.device_id].push(m);
             });
           }
-          setDevices((devs || []).map(d => ({
+          setDevices(devs.map(d => ({
             id: d.id,
             type: d.device_type,
             problem: d.device_problem,
@@ -99,20 +116,32 @@ const CustomerFormDialog = ({ open, onOpenChange, onSuccess, editData }: Custome
               unitPrice: Number(m.unit_price) || 0,
             }))
           })));
+        } else {
+          // Düzenleme modunda cihaz yoksa boş cihaz göster
+          setDevices([{
+            id: crypto.randomUUID(),
+            type: "",
+            problem: "",
+            receivedDate: new Date(),
+            materials: []
+          }]);
         }
       } else {
-        // Yeni kayıt: en az bir boş cihaz
+        // Yeni kayıt: formu sıfırla
+        setCustomerName("");
+        setPhoneNumber("");
         setDevices([{
           id: crypto.randomUUID(),
           type: "",
           problem: "",
           receivedDate: new Date(),
-          materials: []
+          materials: [],
+          isNew: true
         }]);
       }
     };
     load();
-  }, [editData]);
+  }, [open, editData]);
 
   const addDevice = () => {
     setDevices([...devices, {
@@ -120,12 +149,40 @@ const CustomerFormDialog = ({ open, onOpenChange, onSuccess, editData }: Custome
       type: "",
       problem: "",
       receivedDate: new Date(),
-      materials: []
+      materials: [],
+      isNew: true // Yeni eklenen cihaz olarak işaretle
     }]);
   };
 
-  const removeDevice = (deviceId: string) => {
+  const removeDevice = async (deviceId: string) => {
     if (devices.length > 1) {
+      const device = devices.find(d => d.id === deviceId);
+      
+      // Eğer mevcut bir cihazsa (isNew false veya undefined), veritabanından sil
+      if (device && !device.isNew && editData) {
+        try {
+          // Önce malzemeleri sil
+          await supabase.from('materials').delete().eq('device_id', deviceId);
+          // Sonra cihazı sil
+          const { error } = await supabase
+            .from('customer_devices')
+            .delete()
+            .eq('id', deviceId);
+          
+          if (error) {
+            console.error('Cihaz silinirken hata:', error);
+            toast.error("Cihaz silinirken hata oluştu");
+            return;
+          }
+          toast.success("Cihaz silindi");
+        } catch (error) {
+          console.error('Cihaz silinirken hata:', error);
+          toast.error("Cihaz silinirken hata oluştu");
+          return;
+        }
+      }
+      
+      // State'ten sil
       setDevices(devices.filter(d => d.id !== deviceId));
     }
   };
@@ -198,20 +255,43 @@ const CustomerFormDialog = ({ open, onOpenChange, onSuccess, editData }: Custome
 
         if (customerError) throw customerError;
 
-        // Cihaz arıza ve malzeme bilgilerini güncelle
+        // Cihaz arıza ve malzeme bilgilerini güncelle veya yeni ekle
         for (const d of devices) {
-          const { error: devErr } = await supabase
-            .from('customer_devices')
-            .update({
-              device_type: (d.type as any) || undefined,
-              device_problem: d.problem,
-              received_date: d.receivedDate?.toISOString()
-            })
-            .eq('id', d.id);
-          if (devErr) throw devErr;
+          if (d.isNew) {
+            // Yeni cihaz ekle
+            if (!d.type || !d.problem.trim()) continue; // Boş cihazları atla
+            
+            const { data: newDevice, error: newDevErr } = await supabase
+              .from('customer_devices')
+              .insert({
+                customer_id: editData.id,
+                device_type: d.type as any,
+                device_problem: d.problem.trim(),
+                received_date: d.receivedDate.toISOString(),
+                status: 'pending'
+              })
+              .select()
+              .single();
+            
+            if (newDevErr) throw newDevErr;
+            d.id = newDevice.id; // Yeni ID'yi ata
+          } else {
+            // Mevcut cihazı güncelle
+            const { error: devErr } = await supabase
+              .from('customer_devices')
+              .update({
+                device_type: (d.type as any) || undefined,
+                device_problem: d.problem,
+                received_date: d.receivedDate?.toISOString()
+              })
+              .eq('id', d.id);
+            if (devErr) throw devErr;
 
-          // Mevcut malzemeleri sil ve yeniden ekle
-          await supabase.from('materials').delete().eq('device_id', d.id);
+            // Mevcut malzemeleri sil
+            await supabase.from('materials').delete().eq('device_id', d.id);
+          }
+
+          // Malzemeleri ekle (hem yeni hem mevcut cihazlar için)
           const mats = d.materials
             .filter(m => m.name.trim())
             .map(m => ({
@@ -304,17 +384,6 @@ const CustomerFormDialog = ({ open, onOpenChange, onSuccess, editData }: Custome
 
       onSuccess();
       onOpenChange(false);
-      
-      // Formu sıfırla
-      setCustomerName("");
-      setPhoneNumber("");
-      setDevices([{
-        id: crypto.randomUUID(),
-        type: "",
-        problem: "",
-        receivedDate: new Date(),
-        materials: []
-      }]);
 
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -371,8 +440,8 @@ const CustomerFormDialog = ({ open, onOpenChange, onSuccess, editData }: Custome
             </div>
           </div>
 
-          {/* Cihazlar - sadece yeni eklemede göster */}
-          {!editData && devices.map((device, deviceIndex) => (
+          {/* Cihazlar */}
+          {devices.map((device, deviceIndex) => (
             <div key={device.id} className="space-y-4 bg-white/10 p-4 rounded-lg border border-white/20">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-white">Cihaz #{deviceIndex + 1}</h3>
