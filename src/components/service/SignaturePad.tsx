@@ -6,7 +6,7 @@ import { Eraser } from "lucide-react";
 export interface SignaturePadRef {
   getSignatureData: () => string | null;
   clearSignature: () => void;
-  loadSignature: (data: string) => void;
+  loadSignature: (data: string) => Promise<void>;
 }
 
 interface SignaturePadProps {
@@ -71,13 +71,14 @@ const SignaturePad = forwardRef<SignaturePadRef, SignaturePadProps>(
         fabricCanvasRef.current.backgroundColor = "#ffffff";
         fabricCanvasRef.current.renderAll();
       },
-      loadSignature: (data: string) => {
+      loadSignature: async (data: string) => {
         if (!fabricCanvasRef.current) return;
         try {
           const jsonData = typeof data === 'string' ? JSON.parse(data) : data;
-          fabricCanvasRef.current.loadFromJSON(jsonData, () => {
-            fabricCanvasRef.current?.renderAll();
-          });
+          await fabricCanvasRef.current.loadFromJSON(jsonData);
+          fabricCanvasRef.current.renderAll();
+          // Keep drawing mode enabled for editing
+          fabricCanvasRef.current.isDrawingMode = true;
         } catch (error) {
           console.error("İmza yüklenirken hata:", error);
         }

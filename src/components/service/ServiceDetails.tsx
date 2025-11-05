@@ -217,13 +217,16 @@ const ServiceDetails = ({ service, materials }: ServiceDetailsProps) => {
   useEffect(() => {
     if (!service.signature_data || !signatureCanvasRef.current) return;
     const canvas = new FabricCanvas(signatureCanvasRef.current, { width: 600, height: 200, backgroundColor: '#ffffff' });
-    try {
-      const json = typeof service.signature_data === 'string' ? JSON.parse(service.signature_data) : service.signature_data;
-      canvas.loadFromJSON(json, () => { canvas.renderAll(); });
-      canvas.isDrawingMode = false;
-    } catch (e) {
-      console.error('İmza yüklenirken hata:', e);
-    }
+    (async () => {
+      try {
+        const json = typeof service.signature_data === 'string' ? JSON.parse(service.signature_data) : service.signature_data;
+        await canvas.loadFromJSON(json);
+        canvas.renderAll();
+        canvas.isDrawingMode = false;
+      } catch (e) {
+        console.error('İmza yüklenirken hata:', e);
+      }
+    })();
     return () => { canvas.dispose(); };
   }, [service.signature_data]);
 
