@@ -44,6 +44,7 @@ export const useServiceNotifications = () => {
             toast.info(title, { 
               description: body,
               duration: Infinity,
+              dismissible: true,
               action: {
                 label: "Kapat",
                 onClick: () => {}
