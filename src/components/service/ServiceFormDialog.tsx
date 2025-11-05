@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -47,6 +48,7 @@ const ServiceFormDialog = ({ open, onOpenChange, onSuccess, editData }: ServiceF
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [updateSignature, setUpdateSignature] = useState(false);
 
   useEffect(() => {
     if (editData) {
@@ -59,6 +61,8 @@ const ServiceFormDialog = ({ open, onOpenChange, onSuccess, editData }: ServiceF
         status: editData.status || "pending",
         customer_name: editData.customer_name || "",
       });
+      
+      setUpdateSignature(false); // Varsayılan olarak yeni imza kaydetme kapalı
       
       if (editData.signature_data && signaturePadRef.current) {
         signaturePadRef.current.loadSignature(editData.signature_data);
@@ -88,6 +92,7 @@ const ServiceFormDialog = ({ open, onOpenChange, onSuccess, editData }: ServiceF
       quantity: 1,
       unit_price: 0,
     });
+    setUpdateSignature(false);
     if (signaturePadRef.current) {
       signaturePadRef.current.clearSignature();
     }
@@ -123,7 +128,13 @@ const ServiceFormDialog = ({ open, onOpenChange, onSuccess, editData }: ServiceF
     setIsSubmitting(true);
 
     try {
-      const signatureData = signaturePadRef.current?.getSignatureData();
+      // Yeni kayıt ise veya düzenleme sırasında checkbox seçiliyse yeni imzayı al
+      let signatureData = editData?.signature_data; // Varsayılan olarak eski imzayı koru
+      
+      if (!editData || updateSignature) {
+        // Yeni kayıt veya imza güncellemesi istendi
+        signatureData = signaturePadRef.current?.getSignatureData();
+      }
 
       const serviceData = {
         ...formData,
@@ -350,7 +361,24 @@ const ServiceFormDialog = ({ open, onOpenChange, onSuccess, editData }: ServiceF
             </div>
           )}
 
-          <SignaturePad ref={signaturePadRef} width={600} height={200} />
+          <div className="space-y-3">
+            {editData && (
+              <div className="flex items-center space-x-2 bg-white/5 p-3 rounded-md border border-white/10">
+                <Checkbox
+                  id="update-signature"
+                  checked={updateSignature}
+                  onCheckedChange={(checked) => setUpdateSignature(checked as boolean)}
+                />
+                <Label
+                  htmlFor="update-signature"
+                  className="text-white text-sm cursor-pointer"
+                >
+                  Yeni imza kaydet (Seçili değilse mevcut imza korunur)
+                </Label>
+              </div>
+            )}
+            <SignaturePad ref={signaturePadRef} width={600} height={200} />
+          </div>
 
           <div className="flex gap-2 justify-end pt-4">
             <Button
