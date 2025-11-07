@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Cog, Lightbulb, Thermometer, Volume2, Smartphone, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import servicesBanner from "@/assets/services-banner.jpg";
 
 const AutomationSystems = () => {
   const navigate = useNavigate();
@@ -46,8 +47,12 @@ const AutomationSystems = () => {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative min-h-[40vh] md:min-h-[50vh] flex items-center bg-gradient-tech">
-        <div className="absolute inset-0 bg-black/50" />
+      <section className="relative min-h-[40vh] md:min-h-[50vh] flex items-center bg-gradient-tech overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+          style={{ backgroundImage: `url(${servicesBanner})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-tech opacity-80" />
         <div className="relative container mx-auto px-4 py-12 md:py-16 lg:py-20 text-center">
           <Cog className="w-16 h-16 md:w-20 md:h-20 text-primary mx-auto mb-4 md:mb-6" />
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6">
