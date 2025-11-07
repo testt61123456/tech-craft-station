@@ -43,7 +43,7 @@ const SecuritySystems = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-secondary">
       <Header />
       
       {/* Hero Section */}
@@ -72,20 +72,20 @@ const SecuritySystems = () => {
       </section>
 
       {/* Services Grid */}
-      <section className="py-12 md:py-16 lg:py-20 bg-background">
+      <section className="py-12 md:py-16 lg:py-20 bg-secondary">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
               Güvenlik Çözümlerimiz
             </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               Modern teknoloji ile maksimum güvenlik
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, index) => (
-              <Card key={index} className="bg-card border-white/10 hover:border-primary/50 transition-all group">
+              <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 hover:shadow-tech transition-all group">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                     <service.icon className="w-8 h-8 text-white" />
@@ -93,7 +93,7 @@ const SecuritySystems = () => {
                   <CardTitle className="text-white">{service.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-gray-400 text-center">
+                  <CardDescription className="text-gray-300 text-center">
                     {service.description}
                   </CardDescription>
                 </CardContent>
@@ -104,7 +104,7 @@ const SecuritySystems = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-secondary">
+      <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-white mb-4">
