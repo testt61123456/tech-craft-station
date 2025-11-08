@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Monitor, Printer, Shield, Cog, Server } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -13,36 +14,31 @@ const ServicesPage = () => {
       icon: Monitor,
       title: "Bilgisayar Hizmetleri",
       description: "Bilgisayar, all-in-one PC, notebook ve gaming bilgisayar onarımı, bakımı ve satışı",
-      features: ["Donanım Onarımı", "Yazılım Kurulumu", "Performans Optimizasyonu", "Gaming Setup"],
-      link: "/services/computer"
+      features: ["Donanım Onarımı", "Yazılım Kurulumu", "Performans Optimizasyonu", "Gaming Setup"]
     },
     {
       icon: Printer,
       title: "Yazıcı Servisi",
       description: "Tüm marka yazıcıların satışı, onarımı ve bakım hizmetleri",
-      features: ["Toner Değişimi", "Mekanik Onarım", "Ağ Kurulumu", "Bakım Anlaşması"],
-      link: "/services/printer"
+      features: ["Toner Değişimi", "Mekanik Onarım", "Ağ Kurulumu", "Bakım Anlaşması"]
     },
     {
       icon: Shield,
       title: "Güvenlik Sistemleri",
       description: "Kapsamlı güvenlik sistemleri kurulum, satış ve bakım hizmetleri",
-      features: ["Kamera Sistemleri", "Alarm Sistemleri", "Erişim Kontrolü", "7/24 İzleme"],
-      link: "/services/security"
+      features: ["Kamera Sistemleri", "Alarm Sistemleri", "Erişim Kontrolü", "7/24 İzleme"]
     },
     {
       icon: Cog,
       title: "Otomasyon Sistemleri",
       description: "Akıllı ev ve ofis otomasyon sistemleri kurulum ve bakımı",
-      features: ["Akıllı Aydınlatma", "Klima Kontrolü", "Ses Sistemleri", "Uzaktan Erişim"],
-      link: "/services/automation"
+      features: ["Akıllı Aydınlatma", "Klima Kontrolü", "Ses Sistemleri", "Uzaktan Erişim"]
     },
     {
       icon: Server,
       title: "Sunucu Hizmetleri",
       description: "Veri yazarı kasa kurulum, yapılandırma ve onarım hizmetleri",
-      features: ["Sunucu Kurulumu", "Veri Yedekleme", "Ağ Yapılandırması", "Sistem Bakımı"],
-      link: "/services/server"
+      features: ["Sunucu Kurulumu", "Veri Yedekleme", "Ağ Yapılandırması", "Sistem Bakımı"]
     }
   ];
 
@@ -108,8 +104,7 @@ const ServicesPage = () => {
               {services.map((service, index) => (
                 <Card 
                   key={index} 
-                  className="bg-white/10 backdrop-blur-sm border-white/20 hover:shadow-tech transition-bounce group h-full cursor-pointer"
-                  onClick={() => navigate(service.link)}
+                  className="bg-white/10 backdrop-blur-sm border-white/20 hover:shadow-tech transition-bounce group h-full"
                 >
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-bounce">
@@ -123,7 +118,7 @@ const ServicesPage = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-3">
+                    <ul className="space-y-3 mb-6">
                       {service.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center text-sm text-gray-300">
                           <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0" />
@@ -131,6 +126,21 @@ const ServicesPage = () => {
                         </li>
                       ))}
                     </ul>
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={() => navigate("/contact")}
+                        className="flex-1 bg-gradient-hero hover:shadow-tech"
+                      >
+                        Teklif Al
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        onClick={() => navigate("/contact")}
+                        className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
+                      >
+                        Detaylı Bilgi
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
