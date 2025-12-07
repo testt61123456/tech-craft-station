@@ -19,7 +19,7 @@ const NewProducts = () => {
         `)
         .eq('is_active', true)
         .order('created_at', { ascending: false })
-        .limit(4);
+        .limit(24);
       
       if (error) throw error;
       return data;
