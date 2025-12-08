@@ -41,22 +41,9 @@ const CustomerCard = ({ customer, devices, isExpanded, onToggle, onEdit, onDelet
                 {customer.customer_number}
               </Badge>
             </div>
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-lg md:text-xl font-bold text-white">
-                {customer.customer_name}
-              </h3>
-              {devices && devices.length > 0 && (
-                <div className="flex items-center gap-1">
-                  {devices.map((device) => {
-                    const StatusIcon = statusConfig[device.status as keyof typeof statusConfig]?.icon || Clock;
-                    const statusColor = statusConfig[device.status as keyof typeof statusConfig]?.color || "bg-gray-500";
-                    return (
-                      <StatusIcon key={device.id} className={`h-4 w-4 text-white ${statusColor} rounded-full p-0.5`} />
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            <h3 className="text-lg md:text-xl font-bold text-white mb-2">
+              {customer.customer_name}
+            </h3>
             <div className="flex items-center gap-2 text-gray-300 text-sm mb-1">
               <Phone className="h-4 w-4 text-primary" />
               <span>{customer.phone_number}</span>
@@ -65,6 +52,24 @@ const CustomerCard = ({ customer, devices, isExpanded, onToggle, onEdit, onDelet
               Kayıt: {new Date(customer.created_at).toLocaleDateString('tr-TR')}
             </p>
           </div>
+          
+          {/* Büyük Durum Simgeleri */}
+          {devices && devices.length > 0 && (
+            <div className="flex items-center gap-3 flex-wrap">
+              {devices.map((device) => {
+                const StatusIcon = statusConfig[device.status as keyof typeof statusConfig]?.icon || Clock;
+                const statusColor = statusConfig[device.status as keyof typeof statusConfig]?.color || "bg-gray-500";
+                return (
+                  <div 
+                    key={device.id} 
+                    className={`${statusColor} rounded-xl p-3 flex items-center justify-center shadow-lg`}
+                  >
+                    <StatusIcon className="h-12 w-12 md:h-16 md:w-16 text-white" />
+                  </div>
+                );
+              })}
+            </div>
+          )}
           <div className="flex md:flex-col gap-2">
             <Button
               variant="outline"
