@@ -1,25 +1,27 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Target, Award, Lightbulb, Clock, Shield } from "lucide-react";
+import { Users, Target, Award, Lightbulb, Clock, Shield, Zap, Heart } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import aboutBanner from "@/assets/about-banner.jpg";
 
 const AboutPage = () => {
   const values = [
     {
       icon: Target,
       title: "Misyonumuz",
-      description: "Teknoloji alanında müşterilerimize en kaliteli hizmeti sunarak, dijital dönüşümlerinde güvenilir partner olmak."
+      description: "Teknoloji alanında müşterilerimize en kaliteli hizmeti sunarak, dijital dönüşümlerinde güvenilir partner olmak.",
+      gradient: "from-blue-500 to-cyan-500"
     },
     {
       icon: Lightbulb,
       title: "Vizyonumuz",
-      description: "Teknoloji sektöründe öncü firma olarak, yenilikçi çözümlerle sektöre değer katmak ve örnek olmak."
+      description: "Teknoloji sektöründe öncü firma olarak, yenilikçi çözümlerle sektöre değer katmak ve örnek olmak.",
+      gradient: "from-purple-500 to-pink-500"
     },
     {
       icon: Shield,
       title: "Değerlerimiz",
-      description: "Güvenilirlik, kalite, müşteri memnuniyeti ve sürekli gelişim prensiplerimizle hareket ederiz."
+      description: "Güvenilirlik, kalite, müşteri memnuniyeti ve sürekli gelişim prensiplerimizle hareket ederiz.",
+      gradient: "from-red-500 to-orange-500"
     }
   ];
 
@@ -46,59 +48,100 @@ const AboutPage = () => {
     }
   ];
 
+  const whyUs = [
+    {
+      icon: Clock,
+      title: "Hızlı Servis",
+      description: "Acil durumlarınızda 24 saat içinde müdahale ve hızlı çözüm garantisi",
+      gradient: "from-emerald-500 to-teal-500"
+    },
+    {
+      icon: Award,
+      title: "Kaliteli Hizmet",
+      description: "Orijinal yedek parça kullanımı ve uzman teknisyen kadrosu ile kaliteli hizmet",
+      gradient: "from-amber-500 to-yellow-500"
+    },
+    {
+      icon: Shield,
+      title: "Güvence",
+      description: "Tüm işlemlerimize garanti ve müşteri memnuniyeti odaklı hizmet anlayışı",
+      gradient: "from-indigo-500 to-blue-500"
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-secondary">
       <Header />
       <main>
-        {/* Banner Section */}
-        <section className="relative min-h-[60vh] flex items-center bg-gradient-tech overflow-hidden">
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-            style={{ backgroundImage: `url(${aboutBanner})` }}
-          />
-          <div className="absolute inset-0 bg-gradient-tech opacity-80" />
+        {/* Hero Banner Section */}
+        <section className="relative min-h-[60vh] flex items-center overflow-hidden">
+          {/* Animated Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary via-secondary/95 to-secondary" />
+          <div className="absolute inset-0">
+            <div className="absolute top-20 right-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-20 left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse delay-1000" />
+          </div>
           
-          <div className="relative container mx-auto px-4 py-12 md:py-16 lg:py-20">
+          {/* Grid Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="h-full w-full" style={{
+              backgroundImage: 'linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)',
+              backgroundSize: '50px 50px'
+            }} />
+          </div>
+          
+          <div className="relative container mx-auto px-4 py-16 md:py-24">
             <div className="text-center max-w-4xl mx-auto">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight">
+              <div className="inline-flex items-center gap-2 bg-primary/20 border border-primary/30 rounded-full px-4 py-2 mb-6">
+                <Heart className="w-4 h-4 text-primary" />
+                <span className="text-sm text-primary font-medium">15 Yıldır Sizinle</span>
+              </div>
+              
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
                 Hakkımızda
-                <span className="text-primary block">Karadeniz Bilgisayar</span>
+                <span className="block bg-gradient-to-r from-primary via-red-400 to-primary bg-clip-text text-transparent">
+                  Karadeniz Bilgisayar
+                </span>
               </h1>
               
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 mb-6 md:mb-8 leading-relaxed">
+              <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
                 2008 yılından bu yana teknoloji alanında 
-                <strong className="text-primary"> güvenilir hizmet</strong> anlayışıyla hizmet veriyoruz.
+                <span className="text-primary font-semibold"> güvenilir hizmet</span> anlayışıyla hizmet veriyoruz.
               </p>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-white">
-                <div className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">15+</div>
-                  <div className="text-xs md:text-sm">Yıl Tecrübe</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">1000+</div>
-                  <div className="text-xs md:text-sm">Mutlu Müşteri</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">5000+</div>
-                  <div className="text-xs md:text-sm">Tamamlanan Proje</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">24/7</div>
-                  <div className="text-xs md:text-sm">Destek Hizmeti</div>
-                </div>
+              {/* Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+                {[
+                  { value: "15+", label: "Yıl Tecrübe" },
+                  { value: "1000+", label: "Mutlu Müşteri" },
+                  { value: "5000+", label: "Tamamlanan Proje" },
+                  { value: "24/7", label: "Destek Hizmeti" }
+                ].map((stat, index) => (
+                  <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-6">
+                    <div className="text-2xl md:text-3xl font-bold text-primary mb-1">{stat.value}</div>
+                    <div className="text-sm text-gray-400">{stat.label}</div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* About Content Section */}
-        <section className="py-20 bg-secondary">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center mb-12 md:mb-20">
+        {/* Story & Values Section */}
+        <section className="py-20 bg-secondary relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
+          
+          <div className="container mx-auto px-4 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start mb-20">
               <div>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 md:mb-8">
-                  Hikayemiz
+                <div className="inline-flex items-center gap-2 bg-primary/20 border border-primary/30 rounded-full px-4 py-2 mb-6">
+                  <Zap className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-primary font-medium">Hikayemiz</span>
+                </div>
+                
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-8">
+                  Teknolojiye Olan
+                  <span className="text-primary"> Tutkumuz</span>
                 </h2>
                 <div className="space-y-6 text-gray-300 text-lg leading-relaxed">
                   <p>
@@ -119,17 +162,17 @@ const AboutPage = () => {
               
               <div className="space-y-6">
                 {values.map((value, index) => (
-                  <Card key={index} className="bg-white/10 backdrop-blur-sm border border-white/20">
+                  <Card key={index} className="group bg-white/5 backdrop-blur-sm border border-white/10 hover:border-primary/50 transition-all duration-300">
                     <CardHeader className="flex flex-row items-center space-y-0 pb-4">
-                      <div className="w-12 h-12 bg-gradient-hero rounded-lg flex items-center justify-center mr-4">
-                        <value.icon className="w-6 h-6 text-white" />
+                      <div className={`w-14 h-14 bg-gradient-to-br ${value.gradient} rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                        <value.icon className="w-7 h-7 text-white" />
                       </div>
-                      <CardTitle className="text-xl text-white">
+                      <CardTitle className="text-xl text-white group-hover:text-primary transition-colors">
                         {value.title}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <CardDescription className="text-gray-300 text-base">
+                      <CardDescription className="text-gray-400 text-base leading-relaxed">
                         {value.description}
                       </CardDescription>
                     </CardContent>
@@ -139,97 +182,77 @@ const AboutPage = () => {
             </div>
 
             {/* Team Section */}
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Ekibimiz
-              </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                Alanında uzman ve deneyimli ekibimizle size en iyi hizmeti sunuyoruz
-              </p>
-            </div>
+            <div className="mb-20">
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center gap-2 bg-primary/20 border border-primary/30 rounded-full px-4 py-2 mb-6">
+                  <Users className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-primary font-medium">Uzman Kadro</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
+                  Ekibimiz
+                </h2>
+                <p className="text-lg text-gray-400 max-w-3xl mx-auto">
+                  Alanında uzman ve deneyimli ekibimizle size en iyi hizmeti sunuyoruz
+                </p>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {team.map((member, index) => (
-                <Card key={index} className="bg-white/10 backdrop-blur-sm border border-white/20 text-center">
-                  <CardHeader className="pb-4">
-                    <div className="w-20 h-20 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Users className="w-10 h-10 text-white" />
-                    </div>
-                    <CardTitle className="text-xl text-white">
-                      {member.name}
-                    </CardTitle>
-                    <CardDescription className="text-primary font-medium">
-                      {member.role}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-300 text-sm">
-                      {member.experience}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {team.map((member, index) => (
+                  <Card key={index} className="group bg-white/5 backdrop-blur-sm border border-white/10 hover:border-primary/50 transition-all duration-300 text-center hover:-translate-y-2">
+                    <CardHeader className="pb-4">
+                      <div className="w-24 h-24 bg-gradient-to-br from-primary to-red-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <Users className="w-12 h-12 text-white" />
+                      </div>
+                      <CardTitle className="text-xl text-white group-hover:text-primary transition-colors">
+                        {member.name}
+                      </CardTitle>
+                      <CardDescription className="text-primary font-medium">
+                        {member.role}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-400 text-sm">
+                        {member.experience}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
 
             {/* Why Choose Us Section */}
-            <div className="mt-20">
-              <div className="text-center mb-16">
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <div>
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center gap-2 bg-primary/20 border border-primary/30 rounded-full px-4 py-2 mb-6">
+                  <Award className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-primary font-medium">Neden Biz?</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
                   Neden Bizi Tercih Etmelisiniz?
                 </h2>
-                <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                <p className="text-lg text-gray-400 max-w-3xl mx-auto">
                   Müşterilerimizin bizi tercih etmesinin sebepleri
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
-                  <CardHeader className="text-center">
-                    <div className="w-16 h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-4">
-                      <Clock className="w-8 h-8 text-white" />
-                    </div>
-                    <CardTitle className="text-xl text-white">
-                      Hızlı Servis
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-gray-300 text-center">
-                      Acil durumlarınızda 24 saat içinde müdahale ve hızlı çözüm garantisi
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
-                  <CardHeader className="text-center">
-                    <div className="w-16 h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-4">
-                      <Award className="w-8 h-8 text-white" />
-                    </div>
-                    <CardTitle className="text-xl text-white">
-                      Kaliteli Hizmet
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-gray-300 text-center">
-                      Orijinal yedek parça kullanımı ve uzman teknisyen kadrosu ile kaliteli hizmet
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/10 backdrop-blur-sm border border-white/20">
-                  <CardHeader className="text-center">
-                    <div className="w-16 h-16 bg-gradient-hero rounded-lg flex items-center justify-center mx-auto mb-4">
-                      <Shield className="w-8 h-8 text-white" />
-                    </div>
-                    <CardTitle className="text-xl text-white">
-                      Güvence
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-gray-300 text-center">
-                      Tüm işlemlerimize garanti ve müşteri memnuniyeti odaklı hizmet anlayışı
-                    </CardDescription>
-                  </CardContent>
-                </Card>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {whyUs.map((item, index) => (
+                  <Card key={index} className="group bg-white/5 backdrop-blur-sm border border-white/10 hover:border-primary/50 transition-all duration-300 hover:-translate-y-2">
+                    <CardHeader className="text-center">
+                      <div className={`w-16 h-16 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                        <item.icon className="w-8 h-8 text-white" />
+                      </div>
+                      <CardTitle className="text-xl text-white group-hover:text-primary transition-colors">
+                        {item.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CardDescription className="text-gray-400 text-center leading-relaxed">
+                        {item.description}
+                      </CardDescription>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
           </div>

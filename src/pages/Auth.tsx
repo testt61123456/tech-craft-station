@@ -8,8 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
-import { ArrowLeft } from "lucide-react";
-import authBanner from "@/assets/auth-banner.jpg";
+import { ArrowLeft, Lock, Mail, User } from "lucide-react";
 
 const authSchema = z.object({
   email: z.string().email({ message: "Geçerli bir e-posta adresi girin" }),
@@ -25,7 +24,6 @@ const Auth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Kullanıcı zaten giriş yapmışsa ana sayfaya yönlendir
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -35,7 +33,6 @@ const Auth = () => {
     
     checkUser();
 
-    // Auth durumu değişikliklerini dinle
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
         navigate("/");
@@ -117,131 +114,184 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-secondary">
-      {/* Banner Section */}
-      <section className="relative h-64 md:h-80 lg:h-96 overflow-hidden">
-        <img 
-          src={authBanner} 
-          alt="Giriş Banner" 
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/60 flex items-center justify-center px-4">
-          <div className="text-center text-white">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4">Giriş Yap</h1>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl">Hesabınıza güvenli giriş yapın</p>
-          </div>
-        </div>
-        {/* Back Button */}
-        <Link 
-          to="/" 
-          className="absolute top-6 left-6 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Link>
-      </section>
+    <div className="min-h-screen bg-secondary relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
+      </div>
+      
+      {/* Grid Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="h-full w-full" style={{
+          backgroundImage: 'linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)',
+          backgroundSize: '50px 50px'
+        }} />
+      </div>
+
+      {/* Back Button */}
+      <Link 
+        to="/" 
+        className="absolute top-6 left-6 z-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full p-3 text-white hover:bg-white/20 hover:border-primary/50 transition-all group"
+      >
+        <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+      </Link>
 
       {/* Auth Form Section */}
-      <div className="flex items-center justify-center py-12 md:py-16 lg:py-20 bg-secondary px-4">
-        <Card className="w-full max-w-md bg-white/10 backdrop-blur-sm border border-white/20">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center text-white">Hoş Geldiniz</CardTitle>
-            <CardDescription className="text-center text-gray-300">
-              Hesabınıza giriş yapın veya yeni hesap oluşturun
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="signin" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-2 bg-white/10">
-                <TabsTrigger value="signin" className="text-white data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Giriş Yap</TabsTrigger>
-                <TabsTrigger value="signup" className="text-white data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Kayıt Ol</TabsTrigger>
-              </TabsList>
-            
-            <TabsContent value="signin">
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email" className="text-white">E-posta</Label>
-                    <Input
-                      id="signin-email"
-                      type="email"
-                      placeholder="ornek@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password" className="text-white">Şifre</Label>
-                    <Input
-                      id="signin-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
-                    onClick={() => toast.info("Şifre sıfırlama özelliği yakında eklenecek")}
+      <div className="relative flex items-center justify-center min-h-screen py-12 px-4">
+        <div className="w-full max-w-md">
+          {/* Logo/Brand */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Karadeniz<span className="text-primary">.</span>
+            </h1>
+            <p className="text-gray-400">Hesabınıza güvenli giriş yapın</p>
+          </div>
+
+          <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+            <CardHeader className="text-center pb-2">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Lock className="w-8 h-8 text-white" />
+              </div>
+              <CardTitle className="text-2xl font-bold text-white">Hoş Geldiniz</CardTitle>
+              <CardDescription className="text-gray-400">
+                Hesabınıza giriş yapın veya yeni hesap oluşturun
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="signin" className="space-y-6">
+                <TabsList className="grid w-full grid-cols-2 bg-white/5 p-1 rounded-xl">
+                  <TabsTrigger 
+                    value="signin" 
+                    className="text-gray-400 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-red-600 data-[state=active]:text-white rounded-lg transition-all"
                   >
-                    Şifremi Unuttum
-                  </Button>
-                </form>
-            </TabsContent>
-            
-            <TabsContent value="signup">
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name" className="text-white">Ad Soyad</Label>
-                    <Input
-                      id="signup-name"
-                      type="text"
-                      placeholder="Adınız Soyadınız"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email" className="text-white">E-posta</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="ornek@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password" className="text-white">Şifre</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Kayıt oluşturuluyor..." : "Kayıt Ol"}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+                    Giriş Yap
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="signup" 
+                    className="text-gray-400 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-red-600 data-[state=active]:text-white rounded-lg transition-all"
+                  >
+                    Kayıt Ol
+                  </TabsTrigger>
+                </TabsList>
+              
+                <TabsContent value="signin">
+                  <form onSubmit={handleSignIn} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-email" className="text-gray-300">E-posta</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                        <Input
+                          id="signin-email"
+                          type="email"
+                          placeholder="ornek@email.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-primary h-12 rounded-xl"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-password" className="text-gray-300">Şifre</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                        <Input
+                          id="signin-password"
+                          type="password"
+                          placeholder="••••••••"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-primary h-12 rounded-xl"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-gradient-to-r from-primary to-red-600 hover:from-red-600 hover:to-primary text-white h-12 rounded-xl text-base font-medium" 
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      className="w-full text-gray-400 hover:text-primary hover:bg-white/5"
+                      onClick={() => toast.info("Şifre sıfırlama özelliği yakında eklenecek")}
+                    >
+                      Şifremi Unuttum
+                    </Button>
+                  </form>
+                </TabsContent>
+              
+                <TabsContent value="signup">
+                  <form onSubmit={handleSignUp} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-name" className="text-gray-300">Ad Soyad</Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                        <Input
+                          id="signup-name"
+                          type="text"
+                          placeholder="Adınız Soyadınız"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-primary h-12 rounded-xl"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email" className="text-gray-300">E-posta</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                        <Input
+                          id="signup-email"
+                          type="email"
+                          placeholder="ornek@email.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-primary h-12 rounded-xl"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password" className="text-gray-300">Şifre</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                        <Input
+                          id="signup-password"
+                          type="password"
+                          placeholder="••••••••"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-primary h-12 rounded-xl"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-gradient-to-r from-primary to-red-600 hover:from-red-600 hover:to-primary text-white h-12 rounded-xl text-base font-medium" 
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Kayıt oluşturuluyor..." : "Kayıt Ol"}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+
+          {/* Footer Text */}
+          <p className="text-center text-gray-500 text-sm mt-6">
+            Giriş yaparak <span className="text-primary hover:underline cursor-pointer">Kullanım Şartları</span> ve{" "}
+            <span className="text-primary hover:underline cursor-pointer">Gizlilik Politikası</span>'nı kabul etmiş olursunuz.
+          </p>
+        </div>
       </div>
     </div>
   );

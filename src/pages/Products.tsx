@@ -225,17 +225,34 @@ const ProductsPage = () => {
     <div className="min-h-screen bg-secondary">
       <Header />
       <main>
-        {/* Banner Section */}
-        <section className="relative h-64 md:h-80 lg:h-96 overflow-hidden">
-          <img 
-            src={productsBanner} 
-            alt="Ürünlerimiz Banner" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center px-4">
-            <div className="text-center text-white">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4">Ürünlerimiz</h1>
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl">İhtiyaçlarınıza özel teknoloji çözümleri</p>
+        {/* Hero Banner Section */}
+        <section className="relative min-h-[50vh] flex items-center overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary via-secondary/95 to-secondary" />
+          <div className="absolute inset-0">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse delay-1000" />
+          </div>
+          <div className="absolute inset-0 opacity-5">
+            <div className="h-full w-full" style={{
+              backgroundImage: 'linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)',
+              backgroundSize: '50px 50px'
+            }} />
+          </div>
+          <div className="relative container mx-auto px-4 py-16 md:py-20">
+            <div className="text-center max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-2 bg-primary/20 border border-primary/30 rounded-full px-4 py-2 mb-6">
+                <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                <span className="text-sm text-primary font-medium">Kaliteli Ürünler</span>
+              </div>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+                Tüm
+                <span className="block bg-gradient-to-r from-primary via-red-400 to-primary bg-clip-text text-transparent">
+                  Ürünlerimiz
+                </span>
+              </h1>
+              <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                İhtiyaçlarınıza özel <span className="text-primary font-semibold">teknoloji çözümleri</span> ve ürünler
+              </p>
             </div>
           </div>
         </section>
