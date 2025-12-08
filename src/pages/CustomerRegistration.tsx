@@ -58,7 +58,7 @@ const CustomerRegistration = () => {
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
   const [overdueDevices, setOverdueDevices] = useState<Array<{id: string, customer_name: string, days: number}>>([]);
 
-  const ITEMS_PER_PAGE = 25;
+  const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
     if (user && (userRole === 'admin' || userRole === 'superadmin')) {
@@ -79,14 +79,52 @@ const CustomerRegistration = () => {
       return;
     }
 
-    const query = searchQuery.toLowerCase().trim();
-    const filtered = customers.filter(customer => 
-      customer.customer_number.toLowerCase().includes(query) ||
-      customer.customer_name.toLowerCase().includes(query) ||
-      customer.phone_number.toLowerCase().includes(query)
-    );
-    setFilteredCustomers(filtered);
-  }, [searchQuery, customers]);
+    // Veritabanında arama yap
+    const searchDatabase = async () => {
+      const query = searchQuery.toLowerCase().trim();
+      try {
+        const { data, error } = await supabase
+          .from('customers')
+          .select('*')
+          .or(`customer_number.ilike.%${query}%,customer_name.ilike.%${query}%,phone_number.ilike.%${query}%`)
+          .order('created_at', { ascending: false })
+          .limit(50);
+
+        if (error) throw error;
+        
+        setFilteredCustomers(data || []);
+        
+        // Bulunan müşterilerin cihaz durumlarını da yükle
+        if (data && data.length > 0) {
+          const customerIds = data.map(c => c.id);
+          const { data: allDevices, error: devicesError } = await supabase
+            .from('customer_devices')
+            .select('id, customer_id, status')
+            .in('customer_id', customerIds);
+
+          if (!devicesError && allDevices) {
+            const devicesByCustomer = allDevices.reduce((acc, device) => {
+              if (!acc[device.customer_id]) {
+                acc[device.customer_id] = [];
+              }
+              acc[device.customer_id].push({ id: device.id, status: device.status });
+              return acc;
+            }, {} as Record<string, Array<{ id: string; status: string }>>);
+
+            setCustomerDeviceStatuses(prev => ({
+              ...prev,
+              ...devicesByCustomer
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Arama hatası:', error);
+      }
+    };
+
+    const debounceTimer = setTimeout(searchDatabase, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery]);
 
   const fetchCustomers = async (loadMore = false) => {
     try {
@@ -473,13 +511,13 @@ const CustomerRegistration = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 [grid-auto-flow:dense]">
+              <div className="grid grid-cols-1 gap-4">
                 {filteredCustomers.map((customer) => (
                   <div 
                     key={customer.id} 
                     className={cn(
                       "space-y-2 transition-all duration-500 ease-in-out",
-                      expandedCustomerId === customer.id && "lg:col-span-2 animate-scale-in"
+                      expandedCustomerId === customer.id && "animate-scale-in"
                     )}
                   >
                     <div className="transform transition-transform duration-300 hover:scale-[1.01]">
