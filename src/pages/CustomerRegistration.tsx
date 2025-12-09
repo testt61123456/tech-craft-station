@@ -134,7 +134,8 @@ const CustomerRegistration = () => {
         setIsLoading(true);
       }
 
-      const from = loadMore ? (page + 1) * ITEMS_PER_PAGE : 0;
+      const currentPage = loadMore ? page + 1 : 0;
+      const from = currentPage * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
       const { data, error, count } = await supabase
@@ -145,15 +146,19 @@ const CustomerRegistration = () => {
 
       if (error) throw error;
 
+      const newCustomers = data || [];
+      
       if (loadMore) {
-        setCustomers(prev => [...prev, ...(data || [])]);
-        setPage(prev => prev + 1);
+        setCustomers(prev => [...prev, ...newCustomers]);
+        setPage(currentPage);
       } else {
-        setCustomers(data || []);
+        setCustomers(newCustomers);
         setPage(0);
       }
 
-      setHasMore((count || 0) > (loadMore ? (page + 2) : 1) * ITEMS_PER_PAGE);
+      // Toplam kayıt sayısı yüklenen kayıtlardan fazlaysa daha fazla var demektir
+      const totalLoaded = loadMore ? (currentPage + 1) * ITEMS_PER_PAGE : ITEMS_PER_PAGE;
+      setHasMore((count || 0) > totalLoaded);
       
       // Tüm müşterilerin cihazlarını yükle (sadece id ve status)
       if (data && data.length > 0) {

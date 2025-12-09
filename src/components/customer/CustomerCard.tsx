@@ -62,9 +62,9 @@ const CustomerCard = ({ customer, devices, isExpanded, onToggle, onEdit, onDelet
                 return (
                   <div 
                     key={device.id} 
-                    className={`${statusColor} rounded-xl p-3 flex items-center justify-center shadow-lg`}
+                    className={`${statusColor} rounded-lg p-2 flex items-center justify-center shadow-md`}
                   >
-                    <StatusIcon className="h-12 w-12 md:h-16 md:w-16 text-white" />
+                    <StatusIcon className="h-8 w-8 text-white" />
                   </div>
                 );
               })}
