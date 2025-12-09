@@ -73,9 +73,16 @@ const CustomerRegistration = () => {
     }
   }, [user, userRole]);
 
+  // customers değiştiğinde filteredCustomers'ı güncelle (arama yoksa)
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredCustomers(customers);
+    }
+  }, [customers, searchQuery]);
+
+  // Arama işlemi
+  useEffect(() => {
+    if (!searchQuery.trim()) {
       return;
     }
 
