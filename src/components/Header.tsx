@@ -52,7 +52,8 @@ const Header = () => {
 
   const adminLinks = [
     { to: "/customer-registration", label: "Müşteri Kayıt" },
-    { to: "/service-records", label: "Servis Kayıtları" }
+    { to: "/service-records", label: "Servis Kayıtları" },
+    { to: "/quote-form", label: "Teklif Formu" }
   ];
 
   return (

@@ -17,6 +17,7 @@ import About from "./pages/About";
 import Auth from "./pages/Auth";
 import CustomerRegistration from "./pages/CustomerRegistration";
 import ServiceRecords from "./pages/ServiceRecords";
+import QuoteForm from "./pages/QuoteForm";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const AppContent = () => {
             <Route path="/services" element={<Services />} />
             <Route path="/customer-registration" element={<CustomerRegistration />} />
             <Route path="/service-records" element={<ServiceRecords />} />
+            <Route path="/quote-form" element={<QuoteForm />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/contact" element={<Contact />} />
