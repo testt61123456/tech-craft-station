@@ -78,9 +78,10 @@ const QuoteForm = () => {
     return calculateUnitPriceTRY(item) * (1 + item.profitMargin / 100);
   };
 
-  // Teklif toplam
+  // Teklif toplam (KDV dahil)
   const calculateQuoteTotal = (item: QuoteItem): number => {
-    return calculateQuoteUnitPrice(item) * item.quantity;
+    const base = calculateQuoteUnitPrice(item) * item.quantity;
+    return base * (1 + kdvRate / 100);
   };
 
   const updateItem = (id: number, field: keyof QuoteItem, value: string | number) => {
@@ -121,7 +122,7 @@ const QuoteForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-900">
       <Header />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <Card className="bg-card border-border shadow-xl">
@@ -222,11 +223,11 @@ const QuoteForm = () => {
                     <th className="border border-border px-2 py-2 text-center font-semibold w-16">ADET</th>
                     <th className="border border-border px-2 py-2 text-center font-semibold w-24">FİYAT</th>
                     <th className="border border-border px-2 py-2 text-center font-semibold w-24">KUR</th>
-                    <th className="border border-border px-2 py-2 text-center font-semibold w-16">KÂR %</th>
-                    <th className="border border-border px-2 py-2 text-right font-semibold w-28">BİRİM FİYATI</th>
-                    <th className="border border-border px-2 py-2 text-right font-semibold w-28">TOPLAM FİYATI</th>
+                    <th className="border border-border px-2 py-2 text-center font-semibold w-16 print:hidden">KÂR %</th>
+                    <th className="border border-border px-2 py-2 text-right font-semibold w-28 print:hidden">BİRİM FİYATI</th>
+                    <th className="border border-border px-2 py-2 text-right font-semibold w-28 print:hidden">TOPLAM FİYATI</th>
                     <th className="border border-border px-2 py-2 text-right font-semibold w-28">TKLF BİRİM FYT</th>
-                    <th className="border border-border px-2 py-2 text-right font-semibold w-28">TEKLİF TOPLAM</th>
+                    <th className="border border-border px-2 py-2 text-right font-semibold w-28">TEKLİF TOPLAM (KDV)</th>
                     <th className="border border-border px-2 py-2 text-center w-12 print:hidden"></th>
                   </tr>
                 </thead>
@@ -278,7 +279,7 @@ const QuoteForm = () => {
                           </SelectContent>
                         </Select>
                       </td>
-                      <td className="border border-border px-1 py-1">
+                      <td className="border border-border px-1 py-1 print:hidden">
                         <Input
                           type="number"
                           step="1"
@@ -289,16 +290,16 @@ const QuoteForm = () => {
                           className="h-8 text-sm bg-background border-0 focus:ring-1 text-center text-foreground"
                         />
                       </td>
-                      <td className="border border-border px-2 py-1 text-right text-foreground font-mono bg-muted/30">
+                      <td className="border border-border px-2 py-1 text-right text-foreground font-mono bg-muted/30 print:hidden">
                         {formatCurrency(calculateUnitPriceTRY(item))}
                       </td>
-                      <td className="border border-border px-2 py-1 text-right text-foreground font-mono bg-muted/30">
+                      <td className="border border-border px-2 py-1 text-right text-foreground font-mono bg-muted/30 print:hidden">
                         {formatCurrency(calculateTotalPrice(item))}
                       </td>
                       <td className="border border-border px-2 py-1 text-right text-foreground font-mono bg-green-100 dark:bg-green-950/40">
                         {formatCurrency(calculateQuoteUnitPrice(item))}
                       </td>
-                      <td className="border border-border px-2 py-1 text-right text-primary font-mono font-bold bg-green-100 dark:bg-green-950/40">
+                      <td className="border border-border px-2 py-1 text-right text-primary font-mono font-bold bg-primary/20">
                         {formatCurrency(calculateQuoteTotal(item))}
                       </td>
                       <td className="border border-border px-1 py-1 text-center print:hidden">
@@ -329,34 +330,16 @@ const QuoteForm = () => {
             {/* Toplamlar */}
             <div className="flex justify-end mt-6">
               <div className="w-full md:w-96 space-y-2">
-                <div className="flex justify-between items-center py-2 px-4 bg-muted/50 rounded">
+                <div className="flex justify-between items-center py-2 px-4 bg-muted/50 rounded print:hidden">
                   <span className="font-medium text-foreground">Maliyet Toplam:</span>
                   <span className="font-mono text-foreground">{formatCurrency(totalCost)}</span>
                 </div>
-                <div className="flex justify-between items-center py-2 px-4 bg-muted/50 rounded">
+                <div className="flex justify-between items-center py-2 px-4 bg-muted/50 rounded print:hidden">
                   <span className="font-medium text-foreground">Kâr:</span>
                   <span className="font-mono text-green-600 dark:text-green-400">{formatCurrency(totalProfit)}</span>
                 </div>
-                <div className="flex justify-between items-center py-2 px-4 bg-primary/10 rounded">
-                  <span className="font-medium text-foreground">Toplam:</span>
-                  <span className="font-mono font-semibold text-foreground">{formatCurrency(subTotal)}</span>
-                </div>
-                <div className="flex justify-between items-center py-2 px-4 bg-muted/50 rounded">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-foreground">KDV %</span>
-                    <Input 
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={kdvRate}
-                      onChange={(e) => setKdvRate(parseFloat(e.target.value) || 0)}
-                      className="w-16 h-7 text-sm text-center bg-background border-border text-foreground"
-                    />
-                  </div>
-                  <span className="font-mono text-foreground">{formatCurrency(kdvAmount)}</span>
-                </div>
                 <div className="flex justify-between items-center py-3 px-4 bg-primary text-primary-foreground rounded font-bold text-lg">
-                  <span>GENEL TOPLAM:</span>
+                  <span>GENEL TOPLAM (KDV DAHİL):</span>
                   <span className="font-mono">{formatCurrency(grandTotal)}</span>
                 </div>
               </div>
