@@ -85,30 +85,30 @@ const QuoteForm = () => {
     );
   }
 
-  // Birim fiyatı hesaplama (kura göre TL'ye çevir)
+  // Birim Fiyatı = Fiyat * Kur (TL'ye çevir)
   const calculateUnitPriceTRY = (item: QuoteItem): number => {
     if (item.currency === 'USD') {
       return item.price * dollarRate;
     } else if (item.currency === 'EUR') {
       return item.price * euroRate;
     }
-    return item.price; // TRY ise direkt
+    return item.price;
   };
 
-  // Toplam fiyat (maliyet)
+  // Toplam Fiyat = Birim Fiyat * Adet
   const calculateTotalPrice = (item: QuoteItem): number => {
     return calculateUnitPriceTRY(item) * item.quantity;
   };
 
-  // Teklif birim fiyatı (kar dahil)
+  // Teklif Birim Fiyat = (Birim Fiyat * Kâr) + Birim Fiyat
   const calculateQuoteUnitPrice = (item: QuoteItem): number => {
-    return calculateUnitPriceTRY(item) * (1 + item.profitMargin / 100);
+    const unitPrice = calculateUnitPriceTRY(item);
+    return (unitPrice * item.profitMargin / 100) + unitPrice;
   };
 
-  // Teklif toplam (KDV dahil - ürün bazlı)
-  const calculateQuoteTotal = (item: QuoteItem): number => {
-    const base = calculateQuoteUnitPrice(item) * item.quantity;
-    return base * (1 + item.kdvRate / 100);
+  // Teklif Toplam Fiyat = Teklif Birim Fiyat * Adet
+  const calculateQuoteTotalWithoutKdv = (item: QuoteItem): number => {
+    return calculateQuoteUnitPrice(item) * item.quantity;
   };
 
   const updateItem = (id: number, field: keyof QuoteItem, value: string | number) => {
@@ -133,15 +133,33 @@ const QuoteForm = () => {
     }
   };
 
-  // Toplamlar
-  const subTotalWithoutKdv = items.reduce((sum, item) => sum + (calculateQuoteUnitPrice(item) * item.quantity), 0);
-  const totalCost = items.reduce((sum, item) => sum + calculateTotalPrice(item), 0);
-  const totalProfit = subTotalWithoutKdv - totalCost;
-  const totalKdv = items.reduce((sum, item) => {
-    const base = calculateQuoteUnitPrice(item) * item.quantity;
-    return sum + (base * item.kdvRate / 100);
-  }, 0);
-  const grandTotal = subTotalWithoutKdv + totalKdv;
+  // Maliyet Toplam Fiyat = Toplam Fiyat Sütunu Toplamı
+  const maliyetToplam = items.reduce((sum, item) => sum + calculateTotalPrice(item), 0);
+  
+  // Teklif Toplam Fiyat = Teklif Toplam Sütunu Toplamı
+  const teklifToplam = items.reduce((sum, item) => sum + calculateQuoteTotalWithoutKdv(item), 0);
+  
+  // Kâr Toplam Fiyat = Teklif Toplam Fiyat – Maliyet Toplam Fiyat
+  const karToplam = teklifToplam - maliyetToplam;
+  
+  // Maliyet Toplam Fiyat KDV = Maliyet Toplam Fiyat * KDV (ortalama KDV kullan)
+  const avgKdvRate = items.length > 0 ? items.reduce((sum, item) => sum + item.kdvRate, 0) / items.length : 20;
+  const maliyetKdv = maliyetToplam * avgKdvRate / 100;
+  
+  // Teklif Toplam Fiyat KDV = Teklif Toplam Fiyat * KDV
+  const teklifKdv = teklifToplam * avgKdvRate / 100;
+  
+  // Kâr KDV Fiyat = Teklif Toplam Fiyat KDV - Maliyet Toplam Fiyat KDV
+  const karKdv = teklifKdv - maliyetKdv;
+  
+  // Genel Toplam Maliyet = Maliyet Toplam Fiyat + Maliyet Toplam Fiyat KDV
+  const genelToplamMaliyet = maliyetToplam + maliyetKdv;
+  
+  // Kâr = Kâr Toplam Fiyat + Kâr KDV Fiyat
+  const karGenel = karToplam + karKdv;
+  
+  // Genel Toplam Teklif Fiyat = Teklif Toplam Fiyat + Teklif Toplam Fiyat KDV
+  const genelToplamTeklif = teklifToplam + teklifKdv;
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺";
@@ -291,7 +309,7 @@ const QuoteForm = () => {
                           min="1"
                           value={item.quantity}
                           onChange={(e) => updateItem(item.id, "quantity", parseInt(e.target.value) || 1)}
-                          className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-center text-white"
+                          className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-center text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                       </td>
                       <td className="border border-slate-600 px-1 py-1 print:hidden">
@@ -301,7 +319,7 @@ const QuoteForm = () => {
                           min="0"
                           value={item.price}
                           onChange={(e) => updateItem(item.id, "price", parseFloat(e.target.value) || 0)}
-                          className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-right text-white"
+                          className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-right text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                       </td>
                       <td className="border border-slate-600 px-1 py-1 print:hidden">
@@ -327,7 +345,7 @@ const QuoteForm = () => {
                           max="100"
                           value={item.profitMargin}
                           onChange={(e) => updateItem(item.id, "profitMargin", parseFloat(e.target.value) || 0)}
-                          className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-center text-white"
+                          className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-center text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                       </td>
                       <td className="border border-slate-600 px-1 py-1 print:hidden">
@@ -338,7 +356,7 @@ const QuoteForm = () => {
                           max="100"
                           value={item.kdvRate}
                           onChange={(e) => updateItem(item.id, "kdvRate", parseFloat(e.target.value) || 0)}
-                          className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-center text-white"
+                          className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-center text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                       </td>
                       <td className="border border-slate-600 px-2 py-1 text-right text-white font-mono bg-slate-700/50 print:hidden">
@@ -351,7 +369,7 @@ const QuoteForm = () => {
                         {formatCurrency(calculateQuoteUnitPrice(item))}
                       </td>
                       <td className="border border-slate-600 px-2 py-1 text-right text-primary font-mono font-bold bg-primary/20">
-                        {formatCurrency(calculateQuoteTotal(item))}
+                        {formatCurrency(calculateQuoteTotalWithoutKdv(item))}
                       </td>
                       <td className="border border-slate-600 px-1 py-1 text-center print:hidden">
                         <Button
@@ -383,19 +401,19 @@ const QuoteForm = () => {
               <div className="w-full md:w-96 space-y-2">
                 <div className="flex justify-between items-center py-2 px-4 bg-slate-800 rounded">
                   <span className="font-medium text-slate-300">Toplam:</span>
-                  <span className="font-mono text-white">{formatCurrency(subTotalWithoutKdv)}</span>
+                  <span className="font-mono text-white">{formatCurrency(teklifToplam)}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 px-4 bg-slate-800 rounded print:hidden">
                   <span className="font-medium text-slate-300">Kâr:</span>
-                  <span className="font-mono text-green-400">{formatCurrency(totalProfit)}</span>
+                  <span className="font-mono text-green-400">{formatCurrency(karGenel)}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 px-4 bg-slate-800 rounded">
-                  <span className="font-medium text-slate-300">KDV:</span>
-                  <span className="font-mono text-white">{formatCurrency(totalKdv)}</span>
+                  <span className="font-medium text-slate-300">KDV ({avgKdvRate.toFixed(0)}%):</span>
+                  <span className="font-mono text-white">{formatCurrency(teklifKdv)}</span>
                 </div>
                 <div className="flex justify-between items-center py-3 px-4 bg-primary text-primary-foreground rounded font-bold text-lg">
                   <span>GENEL TOPLAM:</span>
-                  <span className="font-mono">{formatCurrency(grandTotal)}</span>
+                  <span className="font-mono">{formatCurrency(genelToplamTeklif)}</span>
                 </div>
               </div>
             </div>
