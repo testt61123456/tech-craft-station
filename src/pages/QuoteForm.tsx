@@ -284,8 +284,10 @@ const QuoteForm = () => {
                     <th className="border border-slate-600 px-2 py-2 text-center font-semibold w-16 print:hidden">KDV %</th>
                     <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28 print:hidden">BİRİM FİYATI</th>
                     <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28 print:hidden">TOPLAM FİYATI</th>
-                    <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28">TKLF BİRİM FYT</th>
-                    <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28">TEKLİF TOPLAM</th>
+                    <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28 hidden print:table-cell">BİRİM FİYAT</th>
+                    <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28 print:hidden">TKLF BİRİM FYT</th>
+                    <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28 hidden print:table-cell">TOPLAM FİYAT</th>
+                    <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28 print:hidden">TEKLİF TOPLAM</th>
                     <th className="border border-slate-600 px-2 py-2 text-center w-12 print:hidden"></th>
                   </tr>
                 </thead>
@@ -365,10 +367,16 @@ const QuoteForm = () => {
                       <td className="border border-slate-600 px-2 py-1 text-right text-white font-mono bg-slate-700/50 print:hidden">
                         {formatCurrency(calculateTotalPrice(item))}
                       </td>
-                      <td className="border border-slate-600 px-2 py-1 text-right text-white font-mono bg-green-900/40">
+                      <td className="border border-slate-600 px-2 py-1 text-right text-white font-mono bg-green-900/40 hidden print:table-cell print:bg-white print:text-black">
                         {formatCurrency(calculateQuoteUnitPrice(item))}
                       </td>
-                      <td className="border border-slate-600 px-2 py-1 text-right text-primary font-mono font-bold bg-primary/20">
+                      <td className="border border-slate-600 px-2 py-1 text-right text-white font-mono bg-green-900/40 print:hidden">
+                        {formatCurrency(calculateQuoteUnitPrice(item))}
+                      </td>
+                      <td className="border border-slate-600 px-2 py-1 text-right text-primary font-mono font-bold bg-primary/20 hidden print:table-cell print:bg-white print:text-black">
+                        {formatCurrency(calculateQuoteTotalWithoutKdv(item))}
+                      </td>
+                      <td className="border border-slate-600 px-2 py-1 text-right text-primary font-mono font-bold bg-primary/20 print:hidden">
                         {formatCurrency(calculateQuoteTotalWithoutKdv(item))}
                       </td>
                       <td className="border border-slate-600 px-1 py-1 text-center print:hidden">
@@ -440,18 +448,31 @@ const QuoteForm = () => {
           body {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
-          }
-          .bg-slate-900, .bg-slate-950 {
             background-color: white !important;
           }
-          .text-white, .text-slate-300, .text-slate-400 {
-            color: black !important;
+          * {
+            background-color: white !important;
           }
-          .bg-slate-800 {
-            background-color: #f3f4f6 !important;
+          .bg-slate-900, .bg-slate-950, .bg-slate-800, .bg-slate-700, .bg-slate-700\\/50, .bg-green-900\\/40, .bg-primary\\/20 {
+            background-color: white !important;
+          }
+          .text-white, .text-slate-300, .text-slate-400, .text-primary {
+            color: black !important;
           }
           .border-slate-600, .border-slate-700 {
             border-color: #d1d5db !important;
+          }
+          table, th, td {
+            background-color: white !important;
+          }
+          .print\\:table-cell {
+            display: table-cell !important;
+          }
+          .print\\:bg-white {
+            background-color: white !important;
+          }
+          .print\\:text-black {
+            color: black !important;
           }
         }
       `}</style>
