@@ -67,6 +67,9 @@ const QuoteForm = () => {
   const [euroRate, setEuroRate] = useState(38);
   const [loadingRates, setLoadingRates] = useState(false);
   
+  // Görüntüleme para birimi (sayfadaki tüm hesaplamalar için)
+  const [displayCurrency, setDisplayCurrency] = useState<'TRY' | 'USD' | 'EUR'>('TRY');
+  
   const [items, setItems] = useState<QuoteItem[]>([
     { id: 1, materialType: "", quantity: 1, price: 0, currency: 'USD', profitMargin: 20, kdvRate: 20 }
   ]);
@@ -130,7 +133,7 @@ const QuoteForm = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-secondary">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
@@ -139,12 +142,12 @@ const QuoteForm = () => {
   // Sadece admin ve superadmin erişebilir
   if (userRole !== 'admin' && userRole !== 'superadmin') {
     return (
-      <div className="min-h-screen bg-slate-950">
+      <div className="min-h-screen bg-secondary">
         <Header />
         <main className="container mx-auto px-4 pt-24 pb-12">
           <div className="text-center py-20">
-            <h1 className="text-2xl font-bold text-white">Erişim Reddedildi</h1>
-            <p className="text-slate-400 mt-2">Bu sayfaya erişim yetkiniz bulunmamaktadır.</p>
+            <h1 className="text-2xl font-bold text-secondary-foreground">Erişim Reddedildi</h1>
+            <p className="text-muted-foreground mt-2">Bu sayfaya erişim yetkiniz bulunmamaktadır.</p>
           </div>
         </main>
         <Footer />
@@ -239,6 +242,18 @@ const QuoteForm = () => {
   
   // Genel Toplam Teklif Fiyat = Teklif Toplam Fiyat + Teklif Toplam Fiyat KDV
   const genelToplamTeklif = teklifToplam + teklifKdv;
+
+  // Görüntü para birimine göre formatla
+  const formatDisplayCurrency = (valueTRY: number): string => {
+    if (displayCurrency === 'USD') {
+      const valueUSD = valueTRY / dollarRate;
+      return valueUSD.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $";
+    } else if (displayCurrency === 'EUR') {
+      const valueEUR = valueTRY / euroRate;
+      return valueEUR.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    }
+    return valueTRY.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺";
+  };
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺";
@@ -348,55 +363,55 @@ const QuoteForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-secondary">
       <Header />
       <main className="container mx-auto px-4 pt-24 pb-12">
-        <Card className="bg-slate-900 border-slate-700 shadow-xl">
-          <CardHeader className="border-b border-slate-700">
+        <Card className="bg-secondary/90 border-secondary shadow-xl">
+          <CardHeader className="border-b border-muted">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="flex items-center gap-4">
                 <FileText className="w-10 h-10 text-primary" />
                 <div>
-                  <CardTitle className="text-2xl font-bold text-white">Teklif Formu</CardTitle>
+                  <CardTitle className="text-2xl font-bold text-secondary-foreground">Teklif Formu</CardTitle>
                   {editingQuoteId && (
                     <span className="text-sm text-primary">Düzenleniyor</span>
                   )}
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2 print:hidden">
-                <Button variant="outline" onClick={handleNewQuote} className="border-slate-600 text-slate-300 hover:bg-slate-700">
+              <div className="flex flex-wrap gap-2 print:hidden items-center">
+                <Button variant="outline" onClick={handleNewQuote} className="border-muted text-muted-foreground hover:bg-muted">
                   <Plus className="w-4 h-4 mr-2" />
                   Yeni
                 </Button>
                 <Dialog open={showQuotesDialog} onOpenChange={setShowQuotesDialog}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" onClick={fetchSavedQuotes} className="border-slate-600 text-slate-300 hover:bg-slate-700">
+                    <Button variant="outline" onClick={fetchSavedQuotes} className="border-muted text-muted-foreground hover:bg-muted">
                       <FolderOpen className="w-4 h-4 mr-2" />
                       Kayıtlı Teklifler
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-slate-900 border-slate-700">
+                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-secondary border-muted">
                     <DialogHeader>
-                      <DialogTitle className="text-white">Kayıtlı Teklifler</DialogTitle>
+                      <DialogTitle className="text-secondary-foreground">Kayıtlı Teklifler</DialogTitle>
                     </DialogHeader>
                     {loadingQuotes ? (
                       <div className="flex justify-center py-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                       </div>
                     ) : savedQuotes.length === 0 ? (
-                      <p className="text-slate-400 text-center py-8">Kayıtlı teklif bulunmuyor</p>
+                      <p className="text-muted-foreground text-center py-8">Kayıtlı teklif bulunmuyor</p>
                     ) : (
                       <div className="space-y-3">
                         {savedQuotes.map((quote) => (
-                          <div key={quote.id} className="flex items-center justify-between p-4 bg-slate-800 rounded-lg border border-slate-700">
+                          <div key={quote.id} className="flex items-center justify-between p-4 bg-muted rounded-lg border border-muted">
                             <div>
-                              <h4 className="font-semibold text-white">{quote.company_name}</h4>
-                              <p className="text-sm text-slate-400">
+                              <h4 className="font-semibold text-secondary-foreground">{quote.company_name}</h4>
+                              <p className="text-sm text-muted-foreground">
                                 {formatDate(quote.quote_date)} • {formatCurrency(quote.grand_total)}
                               </p>
                             </div>
                             <div className="flex gap-2">
-                              <Button size="sm" variant="outline" onClick={() => handleLoadQuote(quote)} className="border-slate-600 text-slate-300 hover:bg-slate-700">
+                              <Button size="sm" variant="outline" onClick={() => handleLoadQuote(quote)} className="border-muted text-muted-foreground hover:bg-muted">
                                 <Edit className="w-4 h-4" />
                               </Button>
                               <Button size="sm" variant="destructive" onClick={() => setDeleteQuoteId(quote.id)}>
@@ -409,6 +424,17 @@ const QuoteForm = () => {
                     )}
                   </DialogContent>
                 </Dialog>
+                {/* Görüntü Kuru Seçimi */}
+                <Select value={displayCurrency} onValueChange={(value: 'TRY' | 'USD' | 'EUR') => setDisplayCurrency(value)}>
+                  <SelectTrigger className="w-28 bg-muted border-muted text-secondary-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="TRY">₺ TRY</SelectItem>
+                    <SelectItem value="USD">$ USD</SelectItem>
+                    <SelectItem value="EUR">€ EUR</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Button onClick={handleSaveQuote} disabled={saving} className="bg-green-600 hover:bg-green-700">
                   <Save className="w-4 h-4 mr-2" />
                   {saving ? "Kaydediliyor..." : editingQuoteId ? "Güncelle" : "Kaydet"}
@@ -427,7 +453,7 @@ const QuoteForm = () => {
               {/* Firma Logosu */}
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-primary">Karadeniz</h2>
-                <p className="text-slate-400">Bilişim Teknolojileri</p>
+                <p className="text-muted-foreground">Bilişim Teknolojileri</p>
               </div>
 
               {/* Firma Bilgileri & Kur Ayarları */}
@@ -435,30 +461,30 @@ const QuoteForm = () => {
                 {/* Sol - Firma Bilgileri */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-slate-300 font-medium">Kurum:</Label>
+                    <Label className="w-20 text-muted-foreground font-medium">Kurum:</Label>
                     <Input
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
                       placeholder="Teklif yapılacak firma"
-                      className="flex-1 bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"
+                      className="flex-1 bg-muted border-muted text-secondary-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-slate-300 font-medium">Şehir:</Label>
+                    <Label className="w-20 text-muted-foreground font-medium">Şehir:</Label>
                     <Input
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="Şehir"
-                      className="flex-1 bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"
+                      className="flex-1 bg-muted border-muted text-secondary-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-slate-300 font-medium">Telefon:</Label>
+                    <Label className="w-20 text-muted-foreground font-medium">Telefon:</Label>
                     <Input
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Telefon numarası"
-                      className="flex-1 bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"
+                      className="flex-1 bg-muted border-muted text-secondary-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                 </div>
@@ -466,47 +492,47 @@ const QuoteForm = () => {
                 {/* Sağ - Tarih & Kur Ayarları */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-slate-300 font-medium">Tarih:</Label>
+                    <Label className="w-20 text-muted-foreground font-medium">Tarih:</Label>
                     <Input
                       type="date"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      className="flex-1 bg-slate-800 border-slate-600 text-white"
+                      className="flex-1 bg-muted border-muted text-secondary-foreground"
                     />
                   </div>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-slate-300 font-medium">Dolar ($):</Label>
+                    <Label className="w-20 text-muted-foreground font-medium">Dolar ($):</Label>
                     <Input
                       type="number"
                       step="0.0001"
                       value={dollarRate}
                       onChange={(e) => setDollarRate(parseFloat(e.target.value) || 0)}
-                      className="flex-1 bg-slate-800 border-slate-600 text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="flex-1 bg-muted border-muted text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <Button 
                       variant="outline" 
                       size="icon" 
                       onClick={fetchExchangeRates} 
                       disabled={loadingRates}
-                      className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                      className="border-muted text-muted-foreground hover:bg-muted"
                     >
                       <RefreshCw className={`w-4 h-4 ${loadingRates ? 'animate-spin' : ''}`} />
                     </Button>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-slate-300 font-medium">Euro (€):</Label>
+                    <Label className="w-20 text-muted-foreground font-medium">Euro (€):</Label>
                     <Input
                       type="number"
                       step="0.0001"
                       value={euroRate}
                       onChange={(e) => setEuroRate(parseFloat(e.target.value) || 0)}
-                      className="flex-1 bg-slate-800 border-slate-600 text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="flex-1 bg-muted border-muted text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-slate-300 font-medium">Çıktı Kuru:</Label>
+                    <Label className="w-20 text-muted-foreground font-medium">Çıktı Kuru:</Label>
                     <Select value={printCurrency} onValueChange={(value: 'TRY' | 'USD' | 'EUR') => setPrintCurrency(value)}>
-                      <SelectTrigger className="flex-1 bg-slate-800 border-slate-600 text-white">
+                      <SelectTrigger className="flex-1 bg-muted border-muted text-secondary-foreground">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -524,59 +550,59 @@ const QuoteForm = () => {
                 <table className="w-full border-collapse text-sm">
                   <thead>
                     <tr className="bg-primary text-primary-foreground">
-                      <th className="border border-slate-600 px-2 py-2 text-center font-semibold w-12">NO</th>
-                      <th className="border border-slate-600 px-2 py-2 text-left font-semibold min-w-[180px]">MALZEME CİNSİ</th>
-                      <th className="border border-slate-600 px-2 py-2 text-center font-semibold w-16">ADET</th>
-                      <th className="border border-slate-600 px-2 py-2 text-center font-semibold w-24">FİYAT</th>
-                      <th className="border border-slate-600 px-2 py-2 text-center font-semibold w-24">KUR</th>
-                      <th className="border border-slate-600 px-2 py-2 text-center font-semibold w-16">KÂR %</th>
-                      <th className="border border-slate-600 px-2 py-2 text-center font-semibold w-16">KDV %</th>
-                      <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28">BİRİM FİYATI</th>
-                      <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28">TOPLAM FİYATI</th>
-                      <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28">TKLF BİRİM FYT</th>
-                      <th className="border border-slate-600 px-2 py-2 text-right font-semibold w-28">TEKLİF TOPLAM</th>
-                      <th className="border border-slate-600 px-2 py-2 text-center w-12"></th>
+                      <th className="border border-muted px-2 py-2 text-center font-semibold w-12">NO</th>
+                      <th className="border border-muted px-2 py-2 text-left font-semibold min-w-[180px]">MALZEME CİNSİ</th>
+                      <th className="border border-muted px-2 py-2 text-center font-semibold w-16">ADET</th>
+                      <th className="border border-muted px-2 py-2 text-center font-semibold w-24">FİYAT</th>
+                      <th className="border border-muted px-2 py-2 text-center font-semibold w-24">KUR</th>
+                      <th className="border border-muted px-2 py-2 text-center font-semibold w-16">KÂR %</th>
+                      <th className="border border-muted px-2 py-2 text-center font-semibold w-16">KDV %</th>
+                      <th className="border border-muted px-2 py-2 text-right font-semibold w-28">BİRİM FİYATI</th>
+                      <th className="border border-muted px-2 py-2 text-right font-semibold w-28">TOPLAM FİYATI</th>
+                      <th className="border border-muted px-2 py-2 text-right font-semibold w-28">TKLF BİRİM FYT</th>
+                      <th className="border border-muted px-2 py-2 text-right font-semibold w-28">TEKLİF TOPLAM</th>
+                      <th className="border border-muted px-2 py-2 text-center w-12"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {items.map((item, index) => (
-                      <tr key={item.id} className="hover:bg-slate-800/50 transition-colors bg-slate-800">
-                        <td className="border border-slate-600 px-2 py-1 text-center text-white font-medium">
+                      <tr key={item.id} className="hover:bg-muted/50 transition-colors bg-muted">
+                        <td className="border border-muted px-2 py-1 text-center text-secondary-foreground font-medium">
                           {index + 1}
                         </td>
-                        <td className="border border-slate-600 px-1 py-1">
+                        <td className="border border-muted px-1 py-1">
                           <Input
                             value={item.materialType}
                             onChange={(e) => updateItem(item.id, "materialType", e.target.value)}
-                            className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-white"
+                            className="h-8 text-sm bg-secondary border-0 focus:ring-1 text-secondary-foreground"
                             placeholder="Malzeme adı"
                           />
                         </td>
-                        <td className="border border-slate-600 px-1 py-1">
+                        <td className="border border-muted px-1 py-1">
                           <Input
                             type="number"
                             min="1"
                             value={item.quantity}
                             onChange={(e) => updateItem(item.id, "quantity", parseInt(e.target.value) || 1)}
-                            className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-center text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-8 text-sm bg-secondary border-0 focus:ring-1 text-center text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </td>
-                        <td className="border border-slate-600 px-1 py-1">
+                        <td className="border border-muted px-1 py-1">
                           <Input
                             type="number"
                             step="0.01"
                             min="0"
                             value={item.price}
                             onChange={(e) => updateItem(item.id, "price", parseFloat(e.target.value) || 0)}
-                            className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-right text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-8 text-sm bg-secondary border-0 focus:ring-1 text-right text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </td>
-                        <td className="border border-slate-600 px-1 py-1">
+                        <td className="border border-muted px-1 py-1">
                           <Select 
                             value={item.currency} 
                             onValueChange={(value: 'USD' | 'EUR' | 'TRY') => updateItem(item.id, 'currency', value)}
                           >
-                            <SelectTrigger className="h-8 text-sm border-0 bg-slate-700 text-white">
+                            <SelectTrigger className="h-8 text-sm border-0 bg-secondary text-secondary-foreground">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -586,7 +612,7 @@ const QuoteForm = () => {
                             </SelectContent>
                           </Select>
                         </td>
-                        <td className="border border-slate-600 px-1 py-1">
+                        <td className="border border-muted px-1 py-1">
                           <Input
                             type="number"
                             step="1"
@@ -594,10 +620,10 @@ const QuoteForm = () => {
                             max="100"
                             value={item.profitMargin}
                             onChange={(e) => updateItem(item.id, "profitMargin", parseFloat(e.target.value) || 0)}
-                            className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-center text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-8 text-sm bg-secondary border-0 focus:ring-1 text-center text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </td>
-                        <td className="border border-slate-600 px-1 py-1">
+                        <td className="border border-muted px-1 py-1">
                           <Input
                             type="number"
                             step="1"
@@ -605,22 +631,22 @@ const QuoteForm = () => {
                             max="100"
                             value={item.kdvRate}
                             onChange={(e) => updateItem(item.id, "kdvRate", parseFloat(e.target.value) || 0)}
-                            className="h-8 text-sm bg-slate-700 border-0 focus:ring-1 text-center text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-8 text-sm bg-secondary border-0 focus:ring-1 text-center text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </td>
-                        <td className="border border-slate-600 px-2 py-1 text-right text-white font-mono bg-slate-700/50">
-                          {formatCurrency(calculateUnitPriceTRY(item))}
+                        <td className="border border-muted px-2 py-1 text-right text-secondary-foreground font-mono bg-secondary/50">
+                          {formatDisplayCurrency(calculateUnitPriceTRY(item))}
                         </td>
-                        <td className="border border-slate-600 px-2 py-1 text-right text-white font-mono bg-slate-700/50">
-                          {formatCurrency(calculateTotalPrice(item))}
+                        <td className="border border-muted px-2 py-1 text-right text-secondary-foreground font-mono bg-secondary/50">
+                          {formatDisplayCurrency(calculateTotalPrice(item))}
                         </td>
-                        <td className="border border-slate-600 px-2 py-1 text-right text-white font-mono bg-green-900/40">
-                          {formatCurrency(calculateQuoteUnitPrice(item))}
+                        <td className="border border-muted px-2 py-1 text-right text-secondary-foreground font-mono bg-green-900/40">
+                          {formatDisplayCurrency(calculateQuoteUnitPrice(item))}
                         </td>
-                        <td className="border border-slate-600 px-2 py-1 text-right text-primary font-mono font-bold bg-primary/20">
-                          {formatCurrency(calculateQuoteTotalWithoutKdv(item))}
+                        <td className="border border-muted px-2 py-1 text-right text-primary font-mono font-bold bg-primary/20">
+                          {formatDisplayCurrency(calculateQuoteTotalWithoutKdv(item))}
                         </td>
-                        <td className="border border-slate-600 px-1 py-1 text-center">
+                        <td className="border border-muted px-1 py-1 text-center">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -639,7 +665,7 @@ const QuoteForm = () => {
 
               {/* Satır Ekle Butonu */}
               <div className="mt-4">
-                <Button onClick={addRow} variant="outline" className="w-full md:w-auto border-slate-600 text-slate-300 hover:bg-slate-700">
+                <Button onClick={addRow} variant="outline" className="w-full md:w-auto border-muted text-muted-foreground hover:bg-muted">
                   <Plus className="w-4 h-4 mr-2" />
                   Yeni Satır Ekle
                 </Button>
@@ -648,27 +674,27 @@ const QuoteForm = () => {
               {/* Toplamlar - Düzenleme */}
               <div className="flex justify-end mt-6">
                 <div className="w-full md:w-96 space-y-2">
-                  <div className="flex justify-between items-center py-2 px-4 bg-slate-800 rounded">
-                    <span className="font-medium text-slate-300">Toplam:</span>
-                    <span className="font-mono text-white">{formatCurrency(teklifToplam)}</span>
+                  <div className="flex justify-between items-center py-2 px-4 bg-muted rounded">
+                    <span className="font-medium text-muted-foreground">Toplam:</span>
+                    <span className="font-mono text-secondary-foreground">{formatDisplayCurrency(teklifToplam)}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 px-4 bg-slate-800 rounded">
-                    <span className="font-medium text-slate-300">Kâr:</span>
-                    <span className="font-mono text-green-400">{formatCurrency(karGenel)}</span>
+                  <div className="flex justify-between items-center py-2 px-4 bg-muted rounded">
+                    <span className="font-medium text-muted-foreground">Kâr:</span>
+                    <span className="font-mono text-green-400">{formatDisplayCurrency(karGenel)}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 px-4 bg-slate-800 rounded">
-                    <span className="font-medium text-slate-300">KDV ({avgKdvRate.toFixed(0)}%):</span>
-                    <span className="font-mono text-white">{formatCurrency(teklifKdv)}</span>
+                  <div className="flex justify-between items-center py-2 px-4 bg-muted rounded">
+                    <span className="font-medium text-muted-foreground">KDV ({avgKdvRate.toFixed(0)}%):</span>
+                    <span className="font-mono text-secondary-foreground">{formatDisplayCurrency(teklifKdv)}</span>
                   </div>
                   <div className="flex justify-between items-center py-3 px-4 bg-primary text-primary-foreground rounded font-bold text-lg">
                     <span>GENEL TOPLAM:</span>
-                    <span className="font-mono">{formatCurrency(genelToplamTeklif)}</span>
+                    <span className="font-mono">{formatDisplayCurrency(genelToplamTeklif)}</span>
                   </div>
                 </div>
               </div>
 
               {/* Alt Bilgi */}
-              <div className="mt-6 pt-4 border-t border-slate-700 text-sm text-slate-400">
+              <div className="mt-6 pt-4 border-t border-muted text-sm text-muted-foreground">
                 <p>📞 Fiyat teklifi 15 gün süre geçerlidir.</p>
                 <p className="mt-1">İletişim: 0(506) 389 68 00</p>
               </div>
@@ -772,15 +798,15 @@ const QuoteForm = () => {
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteQuoteId} onOpenChange={() => setDeleteQuoteId(null)}>
-        <AlertDialogContent className="bg-slate-900 border-slate-700">
+        <AlertDialogContent className="bg-secondary border-muted">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Teklifi Sil</AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-400">
+            <AlertDialogTitle className="text-secondary-foreground">Teklifi Sil</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               Bu teklifi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-slate-800 text-white border-slate-600 hover:bg-slate-700">İptal</AlertDialogCancel>
+            <AlertDialogCancel className="bg-muted text-secondary-foreground border-muted hover:bg-muted/80">İptal</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteQuote} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Sil
             </AlertDialogAction>
@@ -826,11 +852,11 @@ const QuoteForm = () => {
             box-shadow: none !important;
           }
           
-          .bg-slate-900, .bg-slate-950 {
+          .bg-secondary, .bg-secondary\\/90 {
             background-color: white !important;
           }
           
-          .border-slate-700 {
+          .border-muted, .border-secondary {
             border-color: transparent !important;
           }
           
