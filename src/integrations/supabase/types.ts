@@ -271,6 +271,66 @@ export type Database = {
         }
         Relationships: []
       }
+      quotes: {
+        Row: {
+          city: string | null
+          company_name: string
+          created_at: string
+          created_by: string | null
+          dollar_rate: number
+          euro_rate: number
+          grand_total: number
+          id: string
+          items: Json
+          notes: string | null
+          phone: string | null
+          print_currency: string
+          profit_amount: number
+          quote_date: string
+          total_amount: number
+          total_kdv: number
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          company_name: string
+          created_at?: string
+          created_by?: string | null
+          dollar_rate?: number
+          euro_rate?: number
+          grand_total?: number
+          id?: string
+          items?: Json
+          notes?: string | null
+          phone?: string | null
+          print_currency?: string
+          profit_amount?: number
+          quote_date?: string
+          total_amount?: number
+          total_kdv?: number
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          company_name?: string
+          created_at?: string
+          created_by?: string | null
+          dollar_rate?: number
+          euro_rate?: number
+          grand_total?: number
+          id?: string
+          items?: Json
+          notes?: string | null
+          phone?: string | null
+          print_currency?: string
+          profit_amount?: number
+          quote_date?: string
+          total_amount?: number
+          total_kdv?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       service_materials: {
         Row: {
           created_at: string
