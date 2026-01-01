@@ -713,63 +713,59 @@ const QuoteForm = () => {
 
             {/* YAZDIRMA ALANI - A4 Modern Tasarım */}
             <div className="hidden print:block print-area">
-              {/* Header - Logo Sol, Kur/Tarih Sağ */}
-              <div className="flex justify-between items-start mb-6 pb-4 border-b-2 border-gray-800">
-                {/* Sol - Logo ve Firma Bilgileri */}
-                <div className="flex flex-col">
-                  <div className="mb-3">
-                    <img src={karadenizLogo} alt="Karadeniz Logo" className="h-16 w-auto" />
-                  </div>
-                  <div className="text-sm text-gray-700 space-y-0.5">
-                    <p><strong>Kurum:</strong> {companyName}</p>
-                    {city && <p><strong>Şehir:</strong> {city}</p>}
-                    {phone && <p><strong>Telefon:</strong> {phone}</p>}
-                  </div>
-                </div>
-
+              {/* Header - Kompakt ve Modern */}
+              <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-300">
+                {/* Sol - Logo */}
+                <img src={karadenizLogo} alt="Logo" className="h-10 w-auto" />
+                
                 {/* Sağ - Tarih ve Kur */}
-                <div className="text-right">
-                  <div className="bg-gray-100 rounded-lg p-3 inline-block">
-                    <p className="text-lg font-bold text-gray-800 mb-1">
-                      {new Date(date).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })}
-                    </p>
-                    {printCurrency === 'USD' && (
-                      <p className="text-sm text-gray-600">1 $ = {dollarRate.toFixed(2)} ₺</p>
-                    )}
-                    {printCurrency === 'EUR' && (
-                      <p className="text-sm text-gray-600">1 € = {euroRate.toFixed(2)} ₺</p>
-                    )}
-                  </div>
+                <div className="text-right text-xs">
+                  <p className="font-semibold text-gray-800">
+                    {new Date(date).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                  </p>
+                  {printCurrency === 'USD' && (
+                    <p className="text-gray-500">1 $ = {dollarRate.toFixed(2)} ₺</p>
+                  )}
+                  {printCurrency === 'EUR' && (
+                    <p className="text-gray-500">1 € = {euroRate.toFixed(2)} ₺</p>
+                  )}
                 </div>
               </div>
 
+              {/* Firma Bilgileri */}
+              <div className="mb-4 text-xs text-gray-700">
+                <p><span className="font-semibold">Kurum:</span> {companyName}</p>
+                {city && <p><span className="font-semibold">Şehir:</span> {city}</p>}
+                {phone && <p><span className="font-semibold">Telefon:</span> {phone}</p>}
+              </div>
+
               {/* Tablo - Yazdırma */}
-              <table className="w-full border-collapse text-sm mb-6">
+              <table className="w-full border-collapse text-xs mb-4">
                 <thead>
-                  <tr className="bg-gray-800 text-white">
-                    <th className="border border-gray-400 px-3 py-2 text-center font-semibold w-12">NO</th>
-                    <th className="border border-gray-400 px-3 py-2 text-left font-semibold">MALZEME CİNSİ</th>
-                    <th className="border border-gray-400 px-3 py-2 text-center font-semibold w-16">ADET</th>
-                    <th className="border border-gray-400 px-3 py-2 text-right font-semibold w-32">BİRİM FİYAT</th>
-                    <th className="border border-gray-400 px-3 py-2 text-right font-semibold w-32">TOPLAM FİYAT</th>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 px-2 py-1.5 text-center font-semibold w-8 text-gray-800">NO</th>
+                    <th className="border border-gray-300 px-2 py-1.5 text-left font-semibold text-gray-800">MALZEME CİNSİ</th>
+                    <th className="border border-gray-300 px-2 py-1.5 text-center font-semibold w-12 text-gray-800">ADET</th>
+                    <th className="border border-gray-300 px-2 py-1.5 text-right font-semibold w-24 text-gray-800">BİRİM FİYAT</th>
+                    <th className="border border-gray-300 px-2 py-1.5 text-right font-semibold w-24 text-gray-800">TOPLAM</th>
                   </tr>
                 </thead>
                 <tbody>
                   {items.map((item, index) => (
-                    <tr key={item.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="border border-gray-300 px-3 py-2 text-center font-medium">
+                    <tr key={item.id}>
+                      <td className="border border-gray-300 px-2 py-1 text-center text-gray-700">
                         {index + 1}
                       </td>
-                      <td className="border border-gray-300 px-3 py-2 text-left">
+                      <td className="border border-gray-300 px-2 py-1 text-left text-gray-700">
                         {item.materialType || '-'}
                       </td>
-                      <td className="border border-gray-300 px-3 py-2 text-center">
+                      <td className="border border-gray-300 px-2 py-1 text-center text-gray-700">
                         {item.quantity}
                       </td>
-                      <td className="border border-gray-300 px-3 py-2 text-right font-mono">
+                      <td className="border border-gray-300 px-2 py-1 text-right font-mono text-gray-700">
                         {formatPrintCurrency(calculateQuoteUnitPrice(item))}
                       </td>
-                      <td className="border border-gray-300 px-3 py-2 text-right font-mono font-semibold">
+                      <td className="border border-gray-300 px-2 py-1 text-right font-mono font-medium text-gray-800">
                         {formatPrintCurrency(calculateQuoteTotalWithoutKdv(item))}
                       </td>
                     </tr>
@@ -779,16 +775,16 @@ const QuoteForm = () => {
 
               {/* Toplamlar - Yazdırma */}
               <div className="flex justify-end">
-                <div className="w-72">
-                  <div className="flex justify-between items-center py-2 px-4 border-b border-gray-300">
-                    <span className="font-medium text-gray-700">Toplam:</span>
-                    <span className="font-mono font-semibold">{formatPrintCurrency(teklifToplam)}</span>
+                <div className="w-56 text-xs">
+                  <div className="flex justify-between items-center py-1 px-3 border-b border-gray-200">
+                    <span className="text-gray-600">Toplam:</span>
+                    <span className="font-mono font-medium text-gray-800">{formatPrintCurrency(teklifToplam)}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 px-4 border-b border-gray-300">
-                    <span className="font-medium text-gray-700">KDV ({avgKdvRate.toFixed(0)}%):</span>
-                    <span className="font-mono font-semibold">{formatPrintCurrency(teklifKdv)}</span>
+                  <div className="flex justify-between items-center py-1 px-3 border-b border-gray-200">
+                    <span className="text-gray-600">KDV (%{avgKdvRate.toFixed(0)}):</span>
+                    <span className="font-mono font-medium text-gray-800">{formatPrintCurrency(teklifKdv)}</span>
                   </div>
-                  <div className="flex justify-between items-center py-3 px-4 bg-gray-800 text-white rounded-b-lg font-bold text-lg">
+                  <div className="flex justify-between items-center py-2 px-3 bg-gray-100 font-bold text-sm text-gray-900">
                     <span>GENEL TOPLAM:</span>
                     <span className="font-mono">{formatPrintCurrency(genelToplamTeklif)}</span>
                   </div>
@@ -796,9 +792,8 @@ const QuoteForm = () => {
               </div>
 
               {/* Footer */}
-              <div className="mt-8 pt-4 border-t border-gray-300 text-sm text-gray-600">
-                <p className="font-medium">📞 Fiyat teklifi 15 gün süre geçerlidir.</p>
-                <p className="mt-1">İletişim: 0(506) 389 68 00</p>
+              <div className="mt-6 pt-3 border-t border-gray-200 text-xs text-gray-500">
+                <p>Fiyat teklifi 15 gün süre geçerlidir. | İletişim: 0(506) 389 68 00</p>
               </div>
             </div>
           </CardContent>
