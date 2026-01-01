@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Printer, FileText, RefreshCw, Save, FolderOpen, Edit, Download } from "lucide-react";
+import { Plus, Trash2, Printer, RefreshCw, Save, FolderOpen, Edit } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import karadenizLogo from "@/assets/karadeniz-logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -363,55 +364,64 @@ const QuoteForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-secondary">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <Header />
       <main className="container mx-auto px-4 pt-24 pb-12">
-        <Card className="bg-secondary/90 border-secondary shadow-xl">
-          <CardHeader className="border-b border-muted">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <Card className="bg-[#141414] border-[#2a2a2a] shadow-2xl">
+          {/* Modern Header with Logo */}
+          <div className="p-6 border-b border-[#2a2a2a]">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              {/* Logo */}
               <div className="flex items-center gap-4">
-                <FileText className="w-10 h-10 text-primary" />
-                <div>
-                  <CardTitle className="text-2xl font-bold text-secondary-foreground">Teklif Formu</CardTitle>
-                  {editingQuoteId && (
-                    <span className="text-sm text-primary">Düzenleniyor</span>
-                  )}
-                </div>
+                <img src={karadenizLogo} alt="Karadeniz Logo" className="h-14 w-auto" />
+                {editingQuoteId && (
+                  <span className="text-sm bg-primary/20 text-primary px-3 py-1 rounded-full font-medium">Düzenleniyor</span>
+                )}
               </div>
+              
+              {/* Action Buttons */}
               <div className="flex flex-wrap gap-2 print:hidden items-center">
-                <Button variant="outline" onClick={handleNewQuote} className="border-muted text-muted-foreground hover:bg-muted">
+                <Button 
+                  variant="outline" 
+                  onClick={handleNewQuote} 
+                  className="bg-[#1a1a1a] border-[#333] text-gray-300 hover:bg-[#252525] hover:text-white hover:border-[#444]"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Yeni
                 </Button>
                 <Dialog open={showQuotesDialog} onOpenChange={setShowQuotesDialog}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" onClick={fetchSavedQuotes} className="border-muted text-muted-foreground hover:bg-muted">
+                    <Button 
+                      variant="outline" 
+                      onClick={fetchSavedQuotes} 
+                      className="bg-[#1a1a1a] border-[#333] text-gray-300 hover:bg-[#252525] hover:text-white hover:border-[#444]"
+                    >
                       <FolderOpen className="w-4 h-4 mr-2" />
                       Kayıtlı Teklifler
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-secondary border-muted">
+                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-[#1a1a1a] border-[#333]">
                     <DialogHeader>
-                      <DialogTitle className="text-secondary-foreground">Kayıtlı Teklifler</DialogTitle>
+                      <DialogTitle className="text-white">Kayıtlı Teklifler</DialogTitle>
                     </DialogHeader>
                     {loadingQuotes ? (
                       <div className="flex justify-center py-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                       </div>
                     ) : savedQuotes.length === 0 ? (
-                      <p className="text-muted-foreground text-center py-8">Kayıtlı teklif bulunmuyor</p>
+                      <p className="text-gray-400 text-center py-8">Kayıtlı teklif bulunmuyor</p>
                     ) : (
                       <div className="space-y-3">
                         {savedQuotes.map((quote) => (
-                          <div key={quote.id} className="flex items-center justify-between p-4 bg-muted rounded-lg border border-muted">
+                          <div key={quote.id} className="flex items-center justify-between p-4 bg-[#252525] rounded-lg border border-[#333] hover:border-[#444] transition-colors">
                             <div>
-                              <h4 className="font-semibold text-secondary-foreground">{quote.company_name}</h4>
-                              <p className="text-sm text-muted-foreground">
+                              <h4 className="font-semibold text-white">{quote.company_name}</h4>
+                              <p className="text-sm text-gray-400">
                                 {formatDate(quote.quote_date)} • {formatCurrency(quote.grand_total)}
                               </p>
                             </div>
                             <div className="flex gap-2">
-                              <Button size="sm" variant="outline" onClick={() => handleLoadQuote(quote)} className="border-muted text-muted-foreground hover:bg-muted">
+                              <Button size="sm" variant="outline" onClick={() => handleLoadQuote(quote)} className="bg-[#1a1a1a] border-[#333] text-gray-300 hover:bg-[#2a2a2a] hover:text-white">
                                 <Edit className="w-4 h-4" />
                               </Button>
                               <Button size="sm" variant="destructive" onClick={() => setDeleteQuoteId(quote.id)}>
@@ -426,116 +436,113 @@ const QuoteForm = () => {
                 </Dialog>
                 {/* Görüntü Kuru Seçimi */}
                 <Select value={displayCurrency} onValueChange={(value: 'TRY' | 'USD' | 'EUR') => setDisplayCurrency(value)}>
-                  <SelectTrigger className="w-28 bg-muted border-muted text-secondary-foreground">
+                  <SelectTrigger className="w-28 bg-[#1a1a1a] border-[#333] text-white hover:border-[#444]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-[#1a1a1a] border-[#333]">
                     <SelectItem value="TRY">₺ TRY</SelectItem>
                     <SelectItem value="USD">$ USD</SelectItem>
                     <SelectItem value="EUR">€ EUR</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button onClick={handleSaveQuote} disabled={saving} className="bg-green-600 hover:bg-green-700">
+                <Button onClick={handleSaveQuote} disabled={saving} className="bg-green-600 hover:bg-green-700 text-white">
                   <Save className="w-4 h-4 mr-2" />
                   {saving ? "Kaydediliyor..." : editingQuoteId ? "Güncelle" : "Kaydet"}
                 </Button>
-                <Button onClick={handlePrint}>
+                <Button onClick={handlePrint} className="bg-primary hover:bg-primary/90">
                   <Printer className="w-4 h-4 mr-2" />
                   Yazdır
                 </Button>
               </div>
             </div>
-          </CardHeader>
+          </div>
           
           <CardContent className="p-6">
             {/* Düzenleme Alanı - Sadece Ekranda */}
             <div className="print:hidden">
-              {/* Firma Logosu */}
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-primary">Karadeniz</h2>
-                <p className="text-muted-foreground">Bilişim Teknolojileri</p>
-              </div>
 
               {/* Firma Bilgileri & Kur Ayarları */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 {/* Sol - Firma Bilgileri */}
-                <div className="space-y-3">
+                <div className="bg-[#1a1a1a] rounded-xl p-5 border border-[#2a2a2a] space-y-4">
+                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Müşteri Bilgileri</h3>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-muted-foreground font-medium">Kurum:</Label>
+                    <Label className="w-20 text-gray-400 font-medium">Kurum:</Label>
                     <Input
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
                       placeholder="Teklif yapılacak firma"
-                      className="flex-1 bg-muted border-muted text-secondary-foreground placeholder:text-muted-foreground"
+                      className="flex-1 bg-[#252525] border-[#333] text-white placeholder:text-gray-500 focus:border-primary focus:ring-primary/20"
                     />
                   </div>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-muted-foreground font-medium">Şehir:</Label>
+                    <Label className="w-20 text-gray-400 font-medium">Şehir:</Label>
                     <Input
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="Şehir"
-                      className="flex-1 bg-muted border-muted text-secondary-foreground placeholder:text-muted-foreground"
+                      className="flex-1 bg-[#252525] border-[#333] text-white placeholder:text-gray-500 focus:border-primary focus:ring-primary/20"
                     />
                   </div>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-muted-foreground font-medium">Telefon:</Label>
+                    <Label className="w-20 text-gray-400 font-medium">Telefon:</Label>
                     <Input
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Telefon numarası"
-                      className="flex-1 bg-muted border-muted text-secondary-foreground placeholder:text-muted-foreground"
+                      className="flex-1 bg-[#252525] border-[#333] text-white placeholder:text-gray-500 focus:border-primary focus:ring-primary/20"
                     />
                   </div>
                 </div>
                 
                 {/* Sağ - Tarih & Kur Ayarları */}
-                <div className="space-y-3">
+                <div className="bg-[#1a1a1a] rounded-xl p-5 border border-[#2a2a2a] space-y-4">
+                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Tarih & Kur Ayarları</h3>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-muted-foreground font-medium">Tarih:</Label>
+                    <Label className="w-20 text-gray-400 font-medium">Tarih:</Label>
                     <Input
                       type="date"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      className="flex-1 bg-muted border-muted text-secondary-foreground"
+                      className="flex-1 bg-[#252525] border-[#333] text-white focus:border-primary [color-scheme:dark]"
                     />
                   </div>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-muted-foreground font-medium">Dolar ($):</Label>
+                    <Label className="w-20 text-gray-400 font-medium">Dolar ($):</Label>
                     <Input
                       type="number"
                       step="0.0001"
                       value={dollarRate}
                       onChange={(e) => setDollarRate(parseFloat(e.target.value) || 0)}
-                      className="flex-1 bg-muted border-muted text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="flex-1 bg-[#252525] border-[#333] text-white focus:border-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <Button 
                       variant="outline" 
                       size="icon" 
                       onClick={fetchExchangeRates} 
                       disabled={loadingRates}
-                      className="border-muted text-muted-foreground hover:bg-muted"
+                      className="bg-[#252525] border-[#333] text-gray-300 hover:bg-[#2a2a2a] hover:text-white hover:border-[#444]"
                     >
                       <RefreshCw className={`w-4 h-4 ${loadingRates ? 'animate-spin' : ''}`} />
                     </Button>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-muted-foreground font-medium">Euro (€):</Label>
+                    <Label className="w-20 text-gray-400 font-medium">Euro (€):</Label>
                     <Input
                       type="number"
                       step="0.0001"
                       value={euroRate}
                       onChange={(e) => setEuroRate(parseFloat(e.target.value) || 0)}
-                      className="flex-1 bg-muted border-muted text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="flex-1 bg-[#252525] border-[#333] text-white focus:border-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
                   <div className="flex items-center gap-3">
-                    <Label className="w-20 text-muted-foreground font-medium">Çıktı Kuru:</Label>
+                    <Label className="w-20 text-gray-400 font-medium">Çıktı Kuru:</Label>
                     <Select value={printCurrency} onValueChange={(value: 'TRY' | 'USD' | 'EUR') => setPrintCurrency(value)}>
-                      <SelectTrigger className="flex-1 bg-muted border-muted text-secondary-foreground">
+                      <SelectTrigger className="flex-1 bg-[#252525] border-[#333] text-white hover:border-[#444]">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-[#1a1a1a] border-[#333]">
                         <SelectItem value="TRY">₺ Türk Lirası</SelectItem>
                         <SelectItem value="USD">$ Amerikan Doları</SelectItem>
                         <SelectItem value="EUR">€ Euro</SelectItem>
@@ -546,73 +553,73 @@ const QuoteForm = () => {
               </div>
 
               {/* Tablo - Düzenleme */}
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto rounded-xl border border-[#2a2a2a]">
                 <table className="w-full border-collapse text-sm">
                   <thead>
-                    <tr className="bg-primary text-primary-foreground">
-                      <th className="border border-muted px-2 py-2 text-center font-semibold w-12">NO</th>
-                      <th className="border border-muted px-2 py-2 text-left font-semibold min-w-[180px]">MALZEME CİNSİ</th>
-                      <th className="border border-muted px-2 py-2 text-center font-semibold w-16">ADET</th>
-                      <th className="border border-muted px-2 py-2 text-center font-semibold w-24">FİYAT</th>
-                      <th className="border border-muted px-2 py-2 text-center font-semibold w-24">KUR</th>
-                      <th className="border border-muted px-2 py-2 text-center font-semibold w-16">KÂR %</th>
-                      <th className="border border-muted px-2 py-2 text-center font-semibold w-16">KDV %</th>
-                      <th className="border border-muted px-2 py-2 text-right font-semibold w-28">BİRİM FİYATI</th>
-                      <th className="border border-muted px-2 py-2 text-right font-semibold w-28">TOPLAM FİYATI</th>
-                      <th className="border border-muted px-2 py-2 text-right font-semibold w-28">TKLF BİRİM FYT</th>
-                      <th className="border border-muted px-2 py-2 text-right font-semibold w-28">TEKLİF TOPLAM</th>
-                      <th className="border border-muted px-2 py-2 text-center w-12"></th>
+                    <tr className="bg-gradient-to-r from-primary to-primary/80 text-white">
+                      <th className="border-b border-[#333] px-3 py-3 text-center font-semibold w-12">NO</th>
+                      <th className="border-b border-[#333] px-3 py-3 text-left font-semibold min-w-[180px]">MALZEME CİNSİ</th>
+                      <th className="border-b border-[#333] px-3 py-3 text-center font-semibold w-16">ADET</th>
+                      <th className="border-b border-[#333] px-3 py-3 text-center font-semibold w-24">FİYAT</th>
+                      <th className="border-b border-[#333] px-3 py-3 text-center font-semibold w-24">KUR</th>
+                      <th className="border-b border-[#333] px-3 py-3 text-center font-semibold w-16">KÂR %</th>
+                      <th className="border-b border-[#333] px-3 py-3 text-center font-semibold w-16">KDV %</th>
+                      <th className="border-b border-[#333] px-3 py-3 text-right font-semibold w-28">BİRİM FİYATI</th>
+                      <th className="border-b border-[#333] px-3 py-3 text-right font-semibold w-28">TOPLAM FİYATI</th>
+                      <th className="border-b border-[#333] px-3 py-3 text-right font-semibold w-28">TKLF BİRİM FYT</th>
+                      <th className="border-b border-[#333] px-3 py-3 text-right font-semibold w-28">TEKLİF TOPLAM</th>
+                      <th className="border-b border-[#333] px-3 py-3 text-center w-12"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {items.map((item, index) => (
-                      <tr key={item.id} className="hover:bg-muted/50 transition-colors bg-muted">
-                        <td className="border border-muted px-2 py-1 text-center text-secondary-foreground font-medium">
+                      <tr key={item.id} className="hover:bg-[#1f1f1f] transition-colors bg-[#181818] border-b border-[#252525]">
+                        <td className="px-3 py-2 text-center text-gray-300 font-medium">
                           {index + 1}
                         </td>
-                        <td className="border border-muted px-1 py-1">
+                        <td className="px-1 py-1">
                           <Input
                             value={item.materialType}
                             onChange={(e) => updateItem(item.id, "materialType", e.target.value)}
-                            className="h-8 text-sm bg-secondary border-0 focus:ring-1 text-secondary-foreground"
+                            className="h-9 text-sm bg-[#252525] border-[#333] text-white placeholder:text-gray-500 focus:border-primary"
                             placeholder="Malzeme adı"
                           />
                         </td>
-                        <td className="border border-muted px-1 py-1">
+                        <td className="px-1 py-1">
                           <Input
                             type="number"
                             min="1"
                             value={item.quantity}
                             onChange={(e) => updateItem(item.id, "quantity", parseInt(e.target.value) || 1)}
-                            className="h-8 text-sm bg-secondary border-0 focus:ring-1 text-center text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-9 text-sm bg-[#252525] border-[#333] text-white text-center focus:border-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </td>
-                        <td className="border border-muted px-1 py-1">
+                        <td className="px-1 py-1">
                           <Input
                             type="number"
                             step="0.01"
                             min="0"
                             value={item.price}
                             onChange={(e) => updateItem(item.id, "price", parseFloat(e.target.value) || 0)}
-                            className="h-8 text-sm bg-secondary border-0 focus:ring-1 text-right text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-9 text-sm bg-[#252525] border-[#333] text-white text-right focus:border-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </td>
-                        <td className="border border-muted px-1 py-1">
+                        <td className="px-1 py-1">
                           <Select 
                             value={item.currency} 
                             onValueChange={(value: 'USD' | 'EUR' | 'TRY') => updateItem(item.id, 'currency', value)}
                           >
-                            <SelectTrigger className="h-8 text-sm border-0 bg-secondary text-secondary-foreground">
+                            <SelectTrigger className="h-9 text-sm bg-[#252525] border-[#333] text-white">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-[#1a1a1a] border-[#333]">
                               <SelectItem value="USD">$ USD</SelectItem>
                               <SelectItem value="EUR">€ EUR</SelectItem>
                               <SelectItem value="TRY">₺ TRY</SelectItem>
                             </SelectContent>
                           </Select>
                         </td>
-                        <td className="border border-muted px-1 py-1">
+                        <td className="px-1 py-1">
                           <Input
                             type="number"
                             step="1"
@@ -620,10 +627,10 @@ const QuoteForm = () => {
                             max="100"
                             value={item.profitMargin}
                             onChange={(e) => updateItem(item.id, "profitMargin", parseFloat(e.target.value) || 0)}
-                            className="h-8 text-sm bg-secondary border-0 focus:ring-1 text-center text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-9 text-sm bg-[#252525] border-[#333] text-white text-center focus:border-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </td>
-                        <td className="border border-muted px-1 py-1">
+                        <td className="px-1 py-1">
                           <Input
                             type="number"
                             step="1"
@@ -631,27 +638,27 @@ const QuoteForm = () => {
                             max="100"
                             value={item.kdvRate}
                             onChange={(e) => updateItem(item.id, "kdvRate", parseFloat(e.target.value) || 0)}
-                            className="h-8 text-sm bg-secondary border-0 focus:ring-1 text-center text-secondary-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-9 text-sm bg-[#252525] border-[#333] text-white text-center focus:border-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </td>
-                        <td className="border border-muted px-2 py-1 text-right text-secondary-foreground font-mono bg-secondary/50">
+                        <td className="px-3 py-2 text-right text-gray-300 font-mono bg-[#1f1f1f]">
                           {formatDisplayCurrency(calculateUnitPriceTRY(item))}
                         </td>
-                        <td className="border border-muted px-2 py-1 text-right text-secondary-foreground font-mono bg-secondary/50">
+                        <td className="px-3 py-2 text-right text-gray-300 font-mono bg-[#1f1f1f]">
                           {formatDisplayCurrency(calculateTotalPrice(item))}
                         </td>
-                        <td className="border border-muted px-2 py-1 text-right text-secondary-foreground font-mono bg-green-900/40">
+                        <td className="px-3 py-2 text-right text-emerald-400 font-mono bg-emerald-950/30">
                           {formatDisplayCurrency(calculateQuoteUnitPrice(item))}
                         </td>
-                        <td className="border border-muted px-2 py-1 text-right text-primary font-mono font-bold bg-primary/20">
+                        <td className="px-3 py-2 text-right text-primary font-mono font-bold bg-primary/10">
                           {formatDisplayCurrency(calculateQuoteTotalWithoutKdv(item))}
                         </td>
-                        <td className="border border-muted px-1 py-1 text-center">
+                        <td className="px-2 py-1 text-center">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => removeRow(item.id)}
-                            className="h-7 w-7 p-0 text-destructive hover:bg-destructive/10"
+                            className="h-8 w-8 p-0 text-gray-400 hover:text-red-400 hover:bg-red-500/10"
                             disabled={items.length === 1}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -665,7 +672,11 @@ const QuoteForm = () => {
 
               {/* Satır Ekle Butonu */}
               <div className="mt-4">
-                <Button onClick={addRow} variant="outline" className="w-full md:w-auto border-muted text-muted-foreground hover:bg-muted">
+                <Button 
+                  onClick={addRow} 
+                  variant="outline" 
+                  className="w-full md:w-auto bg-[#1a1a1a] border-[#333] border-dashed text-gray-300 hover:bg-[#252525] hover:text-white hover:border-primary/50"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Yeni Satır Ekle
                 </Button>
@@ -674,19 +685,19 @@ const QuoteForm = () => {
               {/* Toplamlar - Düzenleme */}
               <div className="flex justify-end mt-6">
                 <div className="w-full md:w-96 space-y-2">
-                  <div className="flex justify-between items-center py-2 px-4 bg-muted rounded">
-                    <span className="font-medium text-muted-foreground">Toplam:</span>
-                    <span className="font-mono text-secondary-foreground">{formatDisplayCurrency(teklifToplam)}</span>
+                  <div className="flex justify-between items-center py-3 px-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
+                    <span className="font-medium text-gray-400">Toplam:</span>
+                    <span className="font-mono text-white">{formatDisplayCurrency(teklifToplam)}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 px-4 bg-muted rounded">
-                    <span className="font-medium text-muted-foreground">Kâr:</span>
-                    <span className="font-mono text-green-400">{formatDisplayCurrency(karGenel)}</span>
+                  <div className="flex justify-between items-center py-3 px-4 bg-emerald-950/30 border border-emerald-900/50 rounded-lg">
+                    <span className="font-medium text-emerald-400">Kâr:</span>
+                    <span className="font-mono text-emerald-400">{formatDisplayCurrency(karGenel)}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 px-4 bg-muted rounded">
-                    <span className="font-medium text-muted-foreground">KDV ({avgKdvRate.toFixed(0)}%):</span>
-                    <span className="font-mono text-secondary-foreground">{formatDisplayCurrency(teklifKdv)}</span>
+                  <div className="flex justify-between items-center py-3 px-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
+                    <span className="font-medium text-gray-400">KDV ({avgKdvRate.toFixed(0)}%):</span>
+                    <span className="font-mono text-white">{formatDisplayCurrency(teklifKdv)}</span>
                   </div>
-                  <div className="flex justify-between items-center py-3 px-4 bg-primary text-primary-foreground rounded font-bold text-lg">
+                  <div className="flex justify-between items-center py-4 px-4 bg-gradient-to-r from-primary to-primary/80 text-white rounded-lg font-bold text-lg shadow-lg shadow-primary/20">
                     <span>GENEL TOPLAM:</span>
                     <span className="font-mono">{formatDisplayCurrency(genelToplamTeklif)}</span>
                   </div>
@@ -694,7 +705,7 @@ const QuoteForm = () => {
               </div>
 
               {/* Alt Bilgi */}
-              <div className="mt-6 pt-4 border-t border-muted text-sm text-muted-foreground">
+              <div className="mt-8 pt-4 border-t border-[#2a2a2a] text-sm text-gray-400">
                 <p>📞 Fiyat teklifi 15 gün süre geçerlidir.</p>
                 <p className="mt-1">İletişim: 0(506) 389 68 00</p>
               </div>
@@ -707,8 +718,7 @@ const QuoteForm = () => {
                 {/* Sol - Logo ve Firma Bilgileri */}
                 <div className="flex flex-col">
                   <div className="mb-3">
-                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">KARADENIZ</h1>
-                    <p className="text-sm text-gray-600 font-medium">Bilişim Teknolojileri</p>
+                    <img src={karadenizLogo} alt="Karadeniz Logo" className="h-16 w-auto" />
                   </div>
                   <div className="text-sm text-gray-700 space-y-0.5">
                     <p><strong>Kurum:</strong> {companyName}</p>
@@ -798,16 +808,16 @@ const QuoteForm = () => {
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteQuoteId} onOpenChange={() => setDeleteQuoteId(null)}>
-        <AlertDialogContent className="bg-secondary border-muted">
+        <AlertDialogContent className="bg-[#1a1a1a] border-[#333]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-secondary-foreground">Teklifi Sil</AlertDialogTitle>
-            <AlertDialogDescription className="text-muted-foreground">
+            <AlertDialogTitle className="text-white">Teklifi Sil</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
               Bu teklifi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-muted text-secondary-foreground border-muted hover:bg-muted/80">İptal</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteQuote} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogCancel className="bg-[#252525] text-white border-[#333] hover:bg-[#2a2a2a]">İptal</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteQuote} className="bg-destructive text-white hover:bg-destructive/90">
               Sil
             </AlertDialogAction>
           </AlertDialogFooter>
