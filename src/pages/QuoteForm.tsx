@@ -819,54 +819,67 @@ const QuoteForm = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Print Styles - A4 */}
+      {/* Print Styles - A4 Modern */}
       <style>{`
         @media print {
           @page {
             size: A4;
-            margin: 15mm;
+            margin: 20mm;
+          }
+          
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           
           html, body {
-            width: 210mm;
-            height: 297mm;
+            width: 210mm !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
           }
           
-          header, footer, .print\\:hidden, nav {
-            display: none !important;
+          /* Hide everything except print area */
+          body > * {
+            visibility: hidden !important;
           }
           
-          main {
+          .print-area,
+          .print-area * {
+            visibility: visible !important;
+          }
+          
+          .print-area {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            background: white !important;
             padding: 0 !important;
             margin: 0 !important;
           }
           
-          body {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-            background-color: white !important;
-            color: black !important;
+          header, footer, nav, .print\\:hidden {
+            display: none !important;
           }
           
-          .print-area {
-            display: block !important;
-            background: white !important;
-          }
-          
-          * {
+          /* Remove all dark backgrounds and shadows */
+          div, main, section, article {
+            background: transparent !important;
             box-shadow: none !important;
+            border: none !important;
           }
           
-          .bg-secondary, .bg-secondary\\/90 {
-            background-color: white !important;
+          /* Keep table borders */
+          .print-area table,
+          .print-area th,
+          .print-area td {
+            border: 1px solid #e5e5e5 !important;
           }
           
-          .border-muted, .border-secondary {
-            border-color: transparent !important;
-          }
-          
-          .shadow-xl {
-            box-shadow: none !important;
+          .print-area .bg-gray-100 {
+            background-color: #f5f5f5 !important;
           }
         }
       `}</style>
