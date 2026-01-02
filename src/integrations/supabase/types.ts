@@ -287,6 +287,7 @@ export type Database = {
           print_currency: string
           profit_amount: number
           quote_date: string
+          quote_number: string | null
           total_amount: number
           total_kdv: number
           updated_at: string
@@ -306,6 +307,7 @@ export type Database = {
           print_currency?: string
           profit_amount?: number
           quote_date?: string
+          quote_number?: string | null
           total_amount?: number
           total_kdv?: number
           updated_at?: string
@@ -325,6 +327,7 @@ export type Database = {
           print_currency?: string
           profit_amount?: number
           quote_date?: string
+          quote_number?: string | null
           total_amount?: number
           total_kdv?: number
           updated_at?: string

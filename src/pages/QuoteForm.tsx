@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Printer, RefreshCw, Save, FolderOpen, Edit } from "lucide-react";
+import { Plus, Trash2, Printer, RefreshCw, Save, FolderOpen, Edit, Search } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import karadenizLogo from "@/assets/karadeniz-logo.png";
@@ -41,6 +41,7 @@ interface QuoteItem {
 
 interface SavedQuote {
   id: string;
+  quote_number: string | null;
   company_name: string;
   city: string | null;
   phone: string | null;
@@ -80,8 +81,11 @@ const QuoteForm = () => {
   const [loadingQuotes, setLoadingQuotes] = useState(false);
   const [showQuotesDialog, setShowQuotesDialog] = useState(false);
   const [editingQuoteId, setEditingQuoteId] = useState<string | null>(null);
+  const [editingQuoteNumber, setEditingQuoteNumber] = useState<string | null>(null);
   const [deleteQuoteId, setDeleteQuoteId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
   // TCMB'den kur çekme
   const fetchExchangeRates = async () => {
@@ -325,7 +329,10 @@ const QuoteForm = () => {
     setItems(quote.items);
     setPrintCurrency(quote.print_currency as 'TRY' | 'USD' | 'EUR');
     setEditingQuoteId(quote.id);
+    setEditingQuoteNumber(quote.quote_number);
     setShowQuotesDialog(false);
+    setShowSearchResults(false);
+    setSearchQuery("");
     toast.success("Teklif yüklendi");
   };
 
@@ -356,8 +363,22 @@ const QuoteForm = () => {
     setDate(new Date().toISOString().split('T')[0]);
     setItems([{ id: 1, materialType: "", quantity: 1, price: 0, currency: 'USD', profitMargin: 20, kdvRate: 20 }]);
     setEditingQuoteId(null);
+    setEditingQuoteNumber(null);
+    setSearchQuery("");
+    setShowSearchResults(false);
     toast.success("Yeni teklif formu hazır");
   };
+
+  // Arama sonuçlarını filtrele
+  const filteredQuotes = savedQuotes.filter(quote => {
+    const query = searchQuery.toLowerCase();
+    return (
+      quote.company_name.toLowerCase().includes(query) ||
+      (quote.quote_number && quote.quote_number.toLowerCase().includes(query)) ||
+      (quote.city && quote.city.toLowerCase().includes(query)) ||
+      (quote.phone && quote.phone.includes(query))
+    );
+  });
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('tr-TR');
@@ -371,11 +392,72 @@ const QuoteForm = () => {
           {/* Modern Header with Logo */}
           <div className="p-6 border-b border-[#2a2a2a]">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              {/* Logo */}
+              {/* Logo and Editing Info */}
               <div className="flex items-center gap-4">
                 <img src={karadenizLogo} alt="Karadeniz Logo" className="h-14 w-auto" />
-                {editingQuoteId && (
-                  <span className="text-sm bg-primary/20 text-primary px-3 py-1 rounded-full font-medium">Düzenleniyor</span>
+                {editingQuoteId && editingQuoteNumber && (
+                  <span className="text-sm bg-primary/20 text-primary px-3 py-1 rounded-full font-medium">
+                    {editingQuoteNumber} - Düzenleniyor
+                  </span>
+                )}
+              </div>
+              
+              {/* Search Bar */}
+              <div className="relative flex-1 max-w-md">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      if (e.target.value.length > 0) {
+                        setShowSearchResults(true);
+                        fetchSavedQuotes();
+                      } else {
+                        setShowSearchResults(false);
+                      }
+                    }}
+                    onFocus={() => {
+                      if (searchQuery.length > 0) {
+                        setShowSearchResults(true);
+                      }
+                    }}
+                    placeholder="Teklif ara (No, Kurum, Şehir...)"
+                    className="pl-10 bg-[#1a1a1a] border-[#333] text-white placeholder:text-gray-500 focus:border-primary"
+                  />
+                </div>
+                {/* Search Results Dropdown */}
+                {showSearchResults && searchQuery.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-[#1a1a1a] border border-[#333] rounded-lg shadow-xl z-50 max-h-80 overflow-y-auto">
+                    {loadingQuotes ? (
+                      <div className="flex justify-center py-4">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                      </div>
+                    ) : filteredQuotes.length === 0 ? (
+                      <p className="text-gray-400 text-center py-4 text-sm">Sonuç bulunamadı</p>
+                    ) : (
+                      <div className="py-1">
+                        {filteredQuotes.slice(0, 10).map((quote) => (
+                          <button
+                            key={quote.id}
+                            onClick={() => handleLoadQuote(quote)}
+                            className="w-full text-left px-4 py-3 hover:bg-[#252525] transition-colors border-b border-[#252525] last:border-b-0"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <span className="text-primary font-mono text-xs mr-2">{quote.quote_number}</span>
+                                <span className="text-white font-medium">{quote.company_name}</span>
+                              </div>
+                              <span className="text-gray-400 text-xs">{formatDate(quote.quote_date)}</span>
+                            </div>
+                            <p className="text-gray-400 text-xs mt-1">
+                              {quote.city && `${quote.city} • `}{formatCurrency(quote.grand_total)}
+                            </p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
               
@@ -415,7 +497,10 @@ const QuoteForm = () => {
                         {savedQuotes.map((quote) => (
                           <div key={quote.id} className="flex items-center justify-between p-4 bg-[#252525] rounded-lg border border-[#333] hover:border-[#444] transition-colors">
                             <div>
-                              <h4 className="font-semibold text-white">{quote.company_name}</h4>
+                              <div className="flex items-center gap-2">
+                                <span className="text-primary font-mono text-xs">{quote.quote_number}</span>
+                                <h4 className="font-semibold text-white">{quote.company_name}</h4>
+                              </div>
                               <p className="text-sm text-gray-400">
                                 {formatDate(quote.quote_date)} • {formatCurrency(quote.grand_total)}
                               </p>
@@ -713,13 +798,16 @@ const QuoteForm = () => {
 
             {/* YAZDIRMA ALANI - A4 Modern Tasarım */}
             <div className="hidden print:block print-area">
-              {/* Header - Kompakt ve Modern */}
-              <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-300">
+              {/* Header - Logo Büyük ve Teklif No */}
+              <div className="flex justify-between items-start mb-6 pb-4 border-b-2 border-gray-300">
                 {/* Sol - Logo */}
-                <img src={karadenizLogo} alt="Logo" className="h-10 w-auto" />
+                <img src={karadenizLogo} alt="Logo" className="h-16 w-auto" />
                 
-                {/* Sağ - Tarih ve Kur */}
+                {/* Sağ - Teklif No, Tarih ve Kur */}
                 <div className="text-right text-xs">
+                  {editingQuoteNumber && (
+                    <p className="font-bold text-gray-900 text-sm mb-1">{editingQuoteNumber}</p>
+                  )}
                   <p className="font-semibold text-gray-800">
                     {new Date(date).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })}
                   </p>
@@ -746,8 +834,8 @@ const QuoteForm = () => {
                     <th className="border border-gray-300 px-2 py-1.5 text-center font-semibold w-8 text-gray-800">NO</th>
                     <th className="border border-gray-300 px-2 py-1.5 text-left font-semibold text-gray-800">MALZEME CİNSİ</th>
                     <th className="border border-gray-300 px-2 py-1.5 text-center font-semibold w-12 text-gray-800">ADET</th>
-                    <th className="border border-gray-300 px-2 py-1.5 text-right font-semibold w-24 text-gray-800">BİRİM FİYAT</th>
-                    <th className="border border-gray-300 px-2 py-1.5 text-right font-semibold w-24 text-gray-800">TOPLAM</th>
+                    <th className="border border-gray-300 px-2 py-1.5 text-right font-semibold w-28 text-gray-800">BİRİM FİYAT</th>
+                    <th className="border border-gray-300 px-2 py-1.5 text-right font-semibold w-32 text-gray-800">TOPLAM</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -762,10 +850,10 @@ const QuoteForm = () => {
                       <td className="border border-gray-300 px-2 py-1 text-center text-gray-700">
                         {item.quantity}
                       </td>
-                      <td className="border border-gray-300 px-2 py-1 text-right font-mono text-gray-700">
+                      <td className="border border-gray-300 px-2 py-1.5 text-right font-mono text-gray-700 whitespace-nowrap">
                         {formatPrintCurrency(calculateQuoteUnitPrice(item))}
                       </td>
-                      <td className="border border-gray-300 px-2 py-1 text-right font-mono font-medium text-gray-800">
+                      <td className="border border-gray-300 px-2 py-1.5 text-right font-mono font-medium text-gray-800 whitespace-nowrap">
                         {formatPrintCurrency(calculateQuoteTotalWithoutKdv(item))}
                       </td>
                     </tr>
@@ -773,20 +861,20 @@ const QuoteForm = () => {
                 </tbody>
               </table>
 
-              {/* Toplamlar - Yazdırma */}
+              {/* Toplamlar - Yazdırma - Genişletilmiş Kutucuklar */}
               <div className="flex justify-end">
-                <div className="w-56 text-xs">
-                  <div className="flex justify-between items-center py-1 px-3 border-b border-gray-200">
+                <div className="w-72 text-xs">
+                  <div className="flex justify-between items-center py-1.5 px-4 border-b border-gray-200">
                     <span className="text-gray-600">Toplam:</span>
-                    <span className="font-mono font-medium text-gray-800">{formatPrintCurrency(teklifToplam)}</span>
+                    <span className="font-mono font-medium text-gray-800 whitespace-nowrap">{formatPrintCurrency(teklifToplam)}</span>
                   </div>
-                  <div className="flex justify-between items-center py-1 px-3 border-b border-gray-200">
+                  <div className="flex justify-between items-center py-1.5 px-4 border-b border-gray-200">
                     <span className="text-gray-600">KDV (%{avgKdvRate.toFixed(0)}):</span>
-                    <span className="font-mono font-medium text-gray-800">{formatPrintCurrency(teklifKdv)}</span>
+                    <span className="font-mono font-medium text-gray-800 whitespace-nowrap">{formatPrintCurrency(teklifKdv)}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 px-3 bg-gray-100 font-bold text-sm text-gray-900">
-                    <span>GENEL TOPLAM:</span>
-                    <span className="font-mono">{formatPrintCurrency(genelToplamTeklif)}</span>
+                  <div className="flex justify-between items-center py-2.5 px-4 bg-gray-100 font-bold text-sm text-gray-900">
+                    <span className="whitespace-nowrap">GENEL TOPLAM:</span>
+                    <span className="font-mono whitespace-nowrap">{formatPrintCurrency(genelToplamTeklif)}</span>
                   </div>
                 </div>
               </div>
