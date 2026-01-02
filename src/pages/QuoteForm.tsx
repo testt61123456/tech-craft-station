@@ -861,27 +861,29 @@ const QuoteForm = () => {
                 </tbody>
               </table>
 
-              {/* Toplamlar - Yazdırma - Genişletilmiş Kutucuklar */}
-              <div className="flex justify-end">
-                <div className="w-72 text-xs">
-                  <div className="flex justify-between items-center py-1.5 px-4 border-b border-gray-200">
-                    <span className="text-gray-600">Toplam:</span>
-                    <span className="font-mono font-medium text-gray-800 whitespace-nowrap">{formatPrintCurrency(teklifToplam)}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-1.5 px-4 border-b border-gray-200">
-                    <span className="text-gray-600">KDV (%{avgKdvRate.toFixed(0)}):</span>
-                    <span className="font-mono font-medium text-gray-800 whitespace-nowrap">{formatPrintCurrency(teklifKdv)}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2.5 px-4 bg-gray-100 font-bold text-sm text-gray-900">
-                    <span className="whitespace-nowrap">GENEL TOPLAM:</span>
-                    <span className="font-mono whitespace-nowrap">{formatPrintCurrency(genelToplamTeklif)}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer */}
+              {/* Footer - İletişim */}
               <div className="mt-6 pt-3 border-t border-gray-200 text-xs text-gray-500">
                 <p>Fiyat teklifi 15 gün süre geçerlidir. | İletişim: 0(506) 389 68 00</p>
+              </div>
+
+              {/* Toplamlar - Yazdırma - Sayfanın En Altında Kutucuklar */}
+              <div className="mt-auto pt-8">
+                <div className="flex justify-end">
+                  <div className="w-80 border border-gray-400 rounded">
+                    <div className="flex justify-between items-center py-2 px-4 border-b border-gray-400">
+                      <span className="text-gray-700 font-medium text-xs">Toplam:</span>
+                      <span className="font-mono font-medium text-gray-800 text-sm whitespace-nowrap">{formatPrintCurrency(teklifToplam)}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 px-4 border-b border-gray-400">
+                      <span className="text-gray-700 font-medium text-xs">Toplam KDV (%{avgKdvRate.toFixed(0)}):</span>
+                      <span className="font-mono font-medium text-gray-800 text-sm whitespace-nowrap">{formatPrintCurrency(teklifKdv)}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-3 px-4 bg-gray-100 font-bold text-gray-900">
+                      <span className="whitespace-nowrap text-sm">GENEL TOPLAM:</span>
+                      <span className="font-mono whitespace-nowrap text-base">{formatPrintCurrency(genelToplamTeklif)}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
