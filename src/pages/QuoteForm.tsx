@@ -861,13 +861,14 @@ const QuoteForm = () => {
                 </tbody>
               </table>
 
-              {/* Footer - İletişim */}
-              <div className="mt-6 pt-3 border-t border-gray-200 text-xs text-gray-500">
-                <p>Fiyat teklifi 15 gün süre geçerlidir. | İletişim: 0(506) 389 68 00</p>
-              </div>
+              {/* Footer ve Toplamlar - Sayfanın En Altına Sabitlenecek */}
+              <div className="print-bottom-section">
+                {/* Footer - İletişim */}
+                <div className="pt-3 border-t border-gray-200 text-xs text-gray-500 mb-4">
+                  <p>Fiyat teklifi 15 gün süre geçerlidir. | İletişim: 0(506) 389 68 00</p>
+                </div>
 
-              {/* Toplamlar - Yazdırma - Sayfanın En Altında Tablo Formatı */}
-              <div className="print-totals-section">
+                {/* Toplamlar - Tablo Formatı */}
                 <div className="flex justify-end">
                   <table className="w-80 border-collapse text-sm totals-table">
                     <tbody>
@@ -916,7 +917,7 @@ const QuoteForm = () => {
         @media print {
           @page {
             size: A4;
-            margin: 15mm 20mm;
+            margin: 10mm 15mm 10mm 15mm;
           }
           
           * {
@@ -947,7 +948,7 @@ const QuoteForm = () => {
             left: 0 !important;
             top: 0 !important;
             width: 100% !important;
-            min-height: calc(297mm - 30mm) !important;
+            height: calc(297mm - 20mm) !important;
             background: white !important;
             padding: 0 !important;
             margin: 0 !important;
@@ -984,10 +985,14 @@ const QuoteForm = () => {
             background-color: #f3f4f6 !important;
           }
           
-          /* Totals section at page bottom */
-          .print-totals-section {
-            margin-top: auto !important;
-            padding-top: 20px !important;
+          /* Bottom section fixed to page bottom */
+          .print-bottom-section {
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            background: white !important;
+            padding-top: 10px !important;
           }
         }
       `}</style>
