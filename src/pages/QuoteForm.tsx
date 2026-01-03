@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Printer, RefreshCw, Save, FolderOpen, Edit, Search } from "lucide-react";
+import { Plus, Trash2, Printer, RefreshCw, Save, FolderOpen, Edit, Search, Download } from "lucide-react";
+import html2pdf from 'html2pdf.js';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import karadenizLogo from "@/assets/karadeniz-logo.png";
@@ -264,8 +265,25 @@ const QuoteForm = () => {
     return value.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺";
   };
 
+  const printRef = useRef<HTMLDivElement>(null);
+
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownloadPdf = () => {
+    const element = printRef.current;
+    if (!element) return;
+
+    const opt = {
+      margin: [8, 10, 8, 10],
+      filename: `teklif-${editingQuoteNumber || 'yeni'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
   };
 
   const handleSaveQuote = async () => {
@@ -538,6 +556,10 @@ const QuoteForm = () => {
                   <Printer className="w-4 h-4 mr-2" />
                   Yazdır
                 </Button>
+                <Button onClick={handleDownloadPdf} variant="outline" className="bg-[#1a1a1a] border-[#333] text-gray-300 hover:bg-[#252525] hover:text-white hover:border-[#444]">
+                  <Download className="w-4 h-4 mr-2" />
+                  PDF
+                </Button>
               </div>
             </div>
           </div>
@@ -797,7 +819,7 @@ const QuoteForm = () => {
             </div>
 
             {/* YAZDIRMA ALANI - A4 Modern Tasarım */}
-            <div className="hidden print:block print-area">
+            <div ref={printRef} className="hidden print:block print-area" style={{ background: 'white' }}>
               {/* Header - Logo Daha Büyük ve Teklif No */}
               <div className="flex justify-between items-start mb-6 pb-4 border-b-2 border-gray-300">
                 {/* Sol - Logo Büyük */}
@@ -806,14 +828,12 @@ const QuoteForm = () => {
                 {/* Sağ - Teklif No, Tarih ve Kur */}
                 <div className="text-right text-xs">
                   {editingQuoteNumber && (
-                    <p className="font-bold text-gray-900 text-sm mb-1">{editingQuoteNumber}</p>
+                    <p className="font-bold text-gray-900 text-sm mb-1">No: {editingQuoteNumber.replace('TKL-', '')}</p>
                   )}
                   <p className="font-semibold text-gray-800">
                     {new Date(date).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })}
                   </p>
-                  {printCurrency === 'USD' && (
-                    <p className="text-gray-500">1 $ = {dollarRate.toFixed(2)} ₺</p>
-                  )}
+                  <p className="text-gray-500">1 $ = {dollarRate.toFixed(2)} ₺</p>
                   {printCurrency === 'EUR' && (
                     <p className="text-gray-500">1 € = {euroRate.toFixed(2)} ₺</p>
                   )}
@@ -913,12 +933,12 @@ const QuoteForm = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Print Styles - A4 Optimized */}
+      {/* Print Styles - A4 Optimized - Single Page */}
       <style>{`
         @media print {
           @page {
             size: A4 portrait;
-            margin: 8mm 10mm 8mm 10mm;
+            margin: 10mm;
           }
           
           * {
@@ -929,7 +949,8 @@ const QuoteForm = () => {
           
           html, body {
             width: 210mm !important;
-            height: 297mm !important;
+            height: auto !important;
+            max-height: 297mm !important;
             margin: 0 !important;
             padding: 0 !important;
             background: white !important;
@@ -938,23 +959,27 @@ const QuoteForm = () => {
           
           /* Hide everything except print area */
           body > * {
-            visibility: hidden !important;
+            display: none !important;
+          }
+          
+          .print-area {
+            display: block !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 190mm !important;
+            max-height: 277mm !important;
+            background: white !important;
+            padding: 5mm !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+            page-break-inside: avoid !important;
+            page-break-after: avoid !important;
           }
           
           .print-area,
           .print-area * {
             visibility: visible !important;
-          }
-          
-          .print-area {
-            position: fixed !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 190mm !important;
-            height: 281mm !important;
-            background: white !important;
-            padding: 0 !important;
-            margin: 0 !important;
           }
           
           header, footer, nav, .print\\:hidden {
@@ -965,7 +990,6 @@ const QuoteForm = () => {
           div, main, section, article {
             background: transparent !important;
             box-shadow: none !important;
-            border: none !important;
           }
           
           /* Keep table borders */
@@ -986,16 +1010,21 @@ const QuoteForm = () => {
             background-color: #f3f4f6 !important;
           }
           
-          /* Bottom section fixed to page bottom */
+          /* Bottom section at the end */
           .print-bottom-section {
-            position: fixed !important;
-            bottom: 8mm !important;
-            left: 0 !important;
-            right: 10mm !important;
-            width: 190mm !important;
-            background: white !important;
-            padding-top: 8px !important;
+            margin-top: auto !important;
+            padding-top: 10px !important;
             border-top: 1px solid #e5e7eb !important;
+          }
+          
+          /* Prevent page break */
+          .print-area table {
+            page-break-inside: avoid !important;
+          }
+          
+          .print-area table tr {
+            page-break-inside: avoid !important;
+            page-break-after: auto !important;
           }
         }
       `}</style>
