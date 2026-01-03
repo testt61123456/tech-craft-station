@@ -798,10 +798,10 @@ const QuoteForm = () => {
 
             {/* YAZDIRMA ALANI - A4 Modern Tasarım */}
             <div className="hidden print:block print-area">
-              {/* Header - Logo Büyük ve Teklif No */}
+              {/* Header - Logo Daha Büyük ve Teklif No */}
               <div className="flex justify-between items-start mb-6 pb-4 border-b-2 border-gray-300">
-                {/* Sol - Logo */}
-                <img src={karadenizLogo} alt="Logo" className="h-16 w-auto" />
+                {/* Sol - Logo Büyük */}
+                <img src={karadenizLogo} alt="Logo" className="h-20 w-auto" />
                 
                 {/* Sağ - Teklif No, Tarih ve Kur */}
                 <div className="text-right text-xs">
@@ -866,23 +866,25 @@ const QuoteForm = () => {
                 <p>Fiyat teklifi 15 gün süre geçerlidir. | İletişim: 0(506) 389 68 00</p>
               </div>
 
-              {/* Toplamlar - Yazdırma - Sayfanın En Altında Kutucuklar */}
-              <div className="mt-auto pt-8">
+              {/* Toplamlar - Yazdırma - Sayfanın En Altında Tablo Formatı */}
+              <div className="print-totals-section">
                 <div className="flex justify-end">
-                  <div className="w-80 border border-gray-400 rounded">
-                    <div className="flex justify-between items-center py-2 px-4 border-b border-gray-400">
-                      <span className="text-gray-700 font-medium text-xs">Toplam:</span>
-                      <span className="font-mono font-medium text-gray-800 text-sm whitespace-nowrap">{formatPrintCurrency(teklifToplam)}</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 px-4 border-b border-gray-400">
-                      <span className="text-gray-700 font-medium text-xs">Toplam KDV (%{avgKdvRate.toFixed(0)}):</span>
-                      <span className="font-mono font-medium text-gray-800 text-sm whitespace-nowrap">{formatPrintCurrency(teklifKdv)}</span>
-                    </div>
-                    <div className="flex justify-between items-center py-3 px-4 bg-gray-100 font-bold text-gray-900">
-                      <span className="whitespace-nowrap text-sm">GENEL TOPLAM:</span>
-                      <span className="font-mono whitespace-nowrap text-base">{formatPrintCurrency(genelToplamTeklif)}</span>
-                    </div>
-                  </div>
+                  <table className="w-80 border-collapse text-sm totals-table">
+                    <tbody>
+                      <tr>
+                        <td className="border border-gray-400 px-4 py-2 text-left text-gray-700 font-medium bg-white">Toplam:</td>
+                        <td className="border border-gray-400 px-4 py-2 text-right font-mono font-medium text-gray-800 bg-white whitespace-nowrap">{formatPrintCurrency(teklifToplam)}</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 px-4 py-2 text-left text-gray-700 font-medium bg-white">Toplam KDV (%{avgKdvRate.toFixed(0)}):</td>
+                        <td className="border border-gray-400 px-4 py-2 text-right font-mono font-medium text-gray-800 bg-white whitespace-nowrap">{formatPrintCurrency(teklifKdv)}</td>
+                      </tr>
+                      <tr className="bg-gray-100">
+                        <td className="border border-gray-400 px-4 py-3 text-left font-bold text-gray-900">GENEL TOPLAM:</td>
+                        <td className="border border-gray-400 px-4 py-3 text-right font-mono font-bold text-gray-900 text-base whitespace-nowrap">{formatPrintCurrency(genelToplamTeklif)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -914,7 +916,7 @@ const QuoteForm = () => {
         @media print {
           @page {
             size: A4;
-            margin: 20mm;
+            margin: 15mm 20mm;
           }
           
           * {
@@ -924,7 +926,7 @@ const QuoteForm = () => {
           
           html, body {
             width: 210mm !important;
-            height: auto !important;
+            height: 297mm !important;
             margin: 0 !important;
             padding: 0 !important;
             background: white !important;
@@ -945,9 +947,12 @@ const QuoteForm = () => {
             left: 0 !important;
             top: 0 !important;
             width: 100% !important;
+            min-height: calc(297mm - 30mm) !important;
             background: white !important;
             padding: 0 !important;
             margin: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
           }
           
           header, footer, nav, .print\\:hidden {
@@ -965,11 +970,24 @@ const QuoteForm = () => {
           .print-area table,
           .print-area th,
           .print-area td {
-            border: 1px solid #e5e5e5 !important;
+            border: 1px solid #d1d5db !important;
+          }
+          
+          /* Totals table special styling */
+          .print-area .totals-table,
+          .print-area .totals-table th,
+          .print-area .totals-table td {
+            border: 1px solid #9ca3af !important;
           }
           
           .print-area .bg-gray-100 {
-            background-color: #f5f5f5 !important;
+            background-color: #f3f4f6 !important;
+          }
+          
+          /* Totals section at page bottom */
+          .print-totals-section {
+            margin-top: auto !important;
+            padding-top: 20px !important;
           }
         }
       `}</style>
