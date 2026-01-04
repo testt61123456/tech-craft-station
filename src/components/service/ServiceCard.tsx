@@ -32,42 +32,40 @@ const ServiceCard = ({ service, isExpanded, onToggle, onEdit, onDelete }: Servic
   const statusInfo = statusLabels[service.status] || statusLabels.pending;
 
   return (
-    <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm hover:shadow-tech transition-all duration-300 cursor-pointer">
-      <div className="p-4 md:p-6" onClick={onToggle}>
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="flex-1 space-y-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-lg md:text-xl font-bold text-white mb-1">
-                  {service.company_name}
-                </h3>
-                <Badge variant={statusInfo.variant} className="text-xs">
-                  {statusInfo.label}
-                </Badge>
-              </div>
+    <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm hover:shadow-tech transition-all duration-300 cursor-pointer print:break-inside-avoid print:page-break-inside-avoid print:mb-4">
+      <div className="p-3 md:p-4" onClick={onToggle}>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="flex-1 space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-base md:text-lg font-bold text-white truncate">
+                {service.company_name}
+              </h3>
+              <Badge variant={statusInfo.variant} className="text-xs shrink-0">
+                {statusInfo.label}
+              </Badge>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-              <div className="flex items-center gap-2 text-gray-300">
-                <User className="h-4 w-4 text-primary" />
-                <span>{service.customer_name}</span>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs md:text-sm">
+              <div className="flex items-center gap-1.5 text-gray-300 truncate">
+                <User className="h-3.5 w-3.5 text-primary shrink-0" />
+                <span className="truncate">{service.customer_name}</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-300">
-                <Phone className="h-4 w-4 text-primary" />
-                <span>{service.phone_number}</span>
+              <div className="flex items-center gap-1.5 text-gray-300 truncate">
+                <Phone className="h-3.5 w-3.5 text-primary shrink-0" />
+                <span className="truncate">{service.phone_number}</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-300">
-                <Calendar className="h-4 w-4 text-primary" />
-                <span>{format(new Date(service.service_date), "d MMMM yyyy", { locale: tr })}</span>
+              <div className="flex items-center gap-1.5 text-gray-300 truncate">
+                <Calendar className="h-3.5 w-3.5 text-primary shrink-0" />
+                <span>{format(new Date(service.service_date), "d MMM yyyy", { locale: tr })}</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-300">
-                <MapPin className="h-4 w-4 text-primary" />
+              <div className="flex items-center gap-1.5 text-gray-300 truncate">
+                <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
                 <span className="truncate">{service.address}</span>
               </div>
             </div>
           </div>
 
-          <div className="flex md:flex-col gap-2">
+          <div className="flex gap-1.5 print:hidden">
             <Button
               variant="outline"
               size="sm"
@@ -75,10 +73,9 @@ const ServiceCard = ({ service, isExpanded, onToggle, onEdit, onDelete }: Servic
                 e.stopPropagation();
                 onEdit();
               }}
-              className="flex-1 md:flex-none bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 h-8 px-2"
             >
-              <Edit className="h-4 w-4 md:mr-2" />
-              <span className="hidden md:inline">Düzenle</span>
+              <Edit className="h-3.5 w-3.5" />
             </Button>
             <Button
               variant="outline"
@@ -87,10 +84,9 @@ const ServiceCard = ({ service, isExpanded, onToggle, onEdit, onDelete }: Servic
                 e.stopPropagation();
                 onDelete();
               }}
-              className="flex-1 md:flex-none bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
+              className="bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20 h-8 px-2"
             >
-              <Trash2 className="h-4 w-4 md:mr-2" />
-              <span className="hidden md:inline">Sil</span>
+              <Trash2 className="h-3.5 w-3.5" />
             </Button>
             <Button
               variant="outline"
@@ -99,9 +95,9 @@ const ServiceCard = ({ service, isExpanded, onToggle, onEdit, onDelete }: Servic
                 e.stopPropagation();
                 onToggle();
               }}
-              className="flex-1 md:flex-none bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 h-8 px-2"
             >
-              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </Button>
           </div>
         </div>
