@@ -11,7 +11,6 @@ import { useAuth } from "@/hooks/useAuth";
 import ServiceCard from "@/components/service/ServiceCard";
 import ServiceDetails from "@/components/service/ServiceDetails";
 import ServiceFormDialog from "@/components/service/ServiceFormDialog";
-import { cn } from "@/lib/utils";
 import DeleteConfirmDialog from "@/components/customer/DeleteConfirmDialog";
 
 interface ServiceRecord {
@@ -45,10 +44,15 @@ const ServiceRecords = () => {
   const [expandedServiceId, setExpandedServiceId] = useState<string | null>(null);
   const [serviceMaterials, setServiceMaterials] = useState<Record<string, ServiceMaterial[]>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
   const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<ServiceRecord | null>(null);
   const [editService, setEditService] = useState<ServiceRecord | null>(null);
+
+  const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
     if (user && (userRole === 'admin' || userRole === 'superadmin')) {
@@ -56,39 +60,83 @@ const ServiceRecords = () => {
     }
   }, [user, userRole]);
 
+  // services değiştiğinde filteredServices'ı güncelle (arama yoksa)
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredServices(services);
+    }
+  }, [services, searchQuery]);
+
+  // Arama işlemi - veritabanında ara
+  useEffect(() => {
+    if (!searchQuery.trim()) {
       return;
     }
 
-    const query = searchQuery.toLowerCase().trim();
-    const filtered = services.filter(service => 
-      service.company_name.toLowerCase().includes(query) ||
-      service.customer_name.toLowerCase().includes(query) ||
-      service.phone_number.toLowerCase().includes(query) ||
-      service.address.toLowerCase().includes(query)
-    );
-    setFilteredServices(filtered);
-  }, [searchQuery, services]);
+    const searchDatabase = async () => {
+      const query = searchQuery.toLowerCase().trim();
+      try {
+        const { data, error } = await supabase
+          .from('service_records')
+          .select('*')
+          .or(`company_name.ilike.%${query}%,customer_name.ilike.%${query}%,phone_number.ilike.%${query}%,address.ilike.%${query}%`)
+          .order('created_at', { ascending: false })
+          .limit(50);
 
-  const fetchServices = async () => {
+        if (error) throw error;
+        setFilteredServices(data || []);
+      } catch (error) {
+        console.error('Arama hatası:', error);
+      }
+    };
+
+    const debounceTimer = setTimeout(searchDatabase, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery]);
+
+  const fetchServices = async (loadMore = false) => {
     try {
-      setIsLoading(true);
+      if (loadMore) {
+        setIsLoadingMore(true);
+      } else {
+        setIsLoading(true);
+      }
 
-      const { data, error } = await supabase
+      const currentPage = loadMore ? page + 1 : 0;
+      const from = currentPage * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
+      const { data, error, count } = await supabase
         .from('service_records')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
-      setServices(data || []);
+
+      const newServices = data || [];
+      
+      if (loadMore) {
+        setServices(prev => [...prev, ...newServices]);
+        setPage(currentPage);
+      } else {
+        setServices(newServices);
+        setPage(0);
+      }
+
+      const totalLoaded = loadMore ? (currentPage + 1) * ITEMS_PER_PAGE : ITEMS_PER_PAGE;
+      setHasMore((count || 0) > totalLoaded);
     } catch (error) {
       console.error('Servis kayıtları yüklenirken hata:', error);
       toast.error("Servis kayıtları yüklenirken hata oluştu");
     } finally {
       setIsLoading(false);
+      setIsLoadingMore(false);
     }
+  };
+
+  const handleLoadMore = () => {
+    fetchServices(true);
   };
 
   const fetchServiceMaterials = async (serviceId: string) => {
@@ -252,35 +300,51 @@ const ServiceRecords = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 [grid-auto-flow:dense]">
-                {filteredServices.map((service) => (
-                  <div 
-                    key={service.id} 
-                    className={cn(
-                      "space-y-2 transition-all duration-500 ease-in-out",
-                      expandedServiceId === service.id && "lg:col-span-2 animate-scale-in"
-                    )}
-                  >
-                    <div className="transform transition-transform duration-300 hover:scale-[1.01]">
-                      <ServiceCard
+              {filteredServices.map((service) => (
+                <div 
+                  key={service.id} 
+                  className="space-y-2 transition-all duration-500 ease-in-out"
+                >
+                  <div className="transform transition-transform duration-300 hover:scale-[1.01]">
+                    <ServiceCard
+                      service={service}
+                      isExpanded={expandedServiceId === service.id}
+                      onToggle={() => handleToggleExpand(service.id)}
+                      onEdit={() => handleEdit(service)}
+                      onDelete={() => handleDelete(service)}
+                    />
+                  </div>
+                  {expandedServiceId === service.id && (
+                    <div className="animate-fade-in">
+                      <ServiceDetails
                         service={service}
-                        isExpanded={expandedServiceId === service.id}
-                        onToggle={() => handleToggleExpand(service.id)}
-                        onEdit={() => handleEdit(service)}
-                        onDelete={() => handleDelete(service)}
+                        materials={serviceMaterials[service.id] || []}
                       />
                     </div>
-                    {expandedServiceId === service.id && (
-                      <div className="animate-fade-in">
-                        <ServiceDetails
-                          service={service}
-                          materials={serviceMaterials[service.id] || []}
-                        />
-                      </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Daha Fazla Yükle */}
+              {hasMore && !searchQuery && (
+                <div className="flex justify-center pt-4">
+                  <Button
+                    onClick={handleLoadMore}
+                    variant="outline"
+                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                    disabled={isLoadingMore}
+                  >
+                    {isLoadingMore ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Yükleniyor...
+                      </>
+                    ) : (
+                      "Daha Fazla Yükle"
                     )}
-                  </div>
-                ))}
-              </div>
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
