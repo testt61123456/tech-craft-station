@@ -40,7 +40,7 @@ interface CustomerDevice {
 
 const CustomerRegistration = () => {
   const navigate = useNavigate();
-  const { user, userRole } = useAuth();
+  const { user, userRole, loading: authLoading } = useAuth();
   
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
@@ -61,7 +61,7 @@ const CustomerRegistration = () => {
   const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
-    if (user && (userRole === 'admin' || userRole === 'superadmin')) {
+    if (!authLoading && user && (userRole === 'admin' || userRole === 'superadmin')) {
       fetchCustomers();
       requestNotificationPermission();
       setupDeviceStatusSubscription();
@@ -71,7 +71,7 @@ const CustomerRegistration = () => {
       const interval = setInterval(checkOverdueDevices, 2 * 60 * 60 * 1000);
       return () => clearInterval(interval);
     }
-  }, [user, userRole]);
+  }, [user, userRole, authLoading]);
 
   // customers değiştiğinde filteredCustomers'ı güncelle (arama yoksa)
   useEffect(() => {
@@ -408,6 +408,19 @@ const CustomerRegistration = () => {
       console.error('Bekleyen cihazlar kontrol edilirken hata:', error);
     }
   };
+
+  // Auth yüklenirken bekle
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-secondary">
+        <Header />
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-white" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   // Admin kontrolü
   if (!user || (userRole !== 'admin' && userRole !== 'superadmin')) {
