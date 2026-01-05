@@ -36,7 +36,7 @@ interface ServiceMaterial {
 
 const ServiceRecords = () => {
   const navigate = useNavigate();
-  const { user, userRole } = useAuth();
+  const { user, userRole, loading: authLoading } = useAuth();
   
   const [services, setServices] = useState<ServiceRecord[]>([]);
   const [filteredServices, setFilteredServices] = useState<ServiceRecord[]>([]);
@@ -55,10 +55,10 @@ const ServiceRecords = () => {
   const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
-    if (user && (userRole === 'admin' || userRole === 'superadmin')) {
+    if (!authLoading && user && (userRole === 'admin' || userRole === 'superadmin')) {
       fetchServices();
     }
-  }, [user, userRole]);
+  }, [user, userRole, authLoading]);
 
   // services değiştiğinde filteredServices'ı güncelle (arama yoksa)
   useEffect(() => {
@@ -207,6 +207,19 @@ const ServiceRecords = () => {
       toast.error("Servis kaydı silinirken hata oluştu");
     }
   };
+
+  // Auth yüklenirken bekle
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-secondary">
+        <Header />
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-white" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!user || (userRole !== 'admin' && userRole !== 'superadmin')) {
     return (
