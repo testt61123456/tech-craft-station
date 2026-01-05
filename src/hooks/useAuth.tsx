@@ -21,22 +21,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // IMPORTANT: Always resolve role using the DB function which applies role priority.
+  // (Avoid reading the first row from user_roles which may not represent the highest privilege.)
   const fetchUserRole = useCallback(async (userId: string): Promise<UserRole> => {
     try {
-      const { data: roleData, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .maybeSingle();
-      
+      const { data, error } = await supabase.rpc('get_user_role', { user_uuid: userId });
+
       if (error) {
-        console.error('Rol sorgusu hatası:', error);
+        console.error('Rol RPC hatası:', error);
         return 'user';
       }
-      
-      return (roleData?.role as UserRole) || 'user';
+
+      return (data as UserRole) || 'user';
     } catch (error) {
       console.error('Rol alınamadı:', error);
       return 'user';
@@ -53,50 +49,45 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     let isMounted = true;
 
-    // Mevcut oturumu kontrol et
     const initializeAuth = async () => {
       try {
         const { data: { session: currentSession } } = await supabase.auth.getSession();
-        
+
         if (!isMounted) return;
-        
+
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
-        
+
         if (currentSession?.user) {
           const role = await fetchUserRole(currentSession.user.id);
-          if (isMounted) {
-            setUserRole(role);
-          }
+          if (isMounted) setUserRole(role);
         }
       } catch (error) {
         console.error('Auth başlatma hatası:', error);
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }
     };
 
     initializeAuth();
 
-    // Auth durumu değişikliklerini dinle
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
+      async (_event, newSession) => {
         if (!isMounted) return;
-        
+
+        // Start loading while we resolve the role for the new session
+        setLoading(true);
+
         setSession(newSession);
         setUser(newSession?.user ?? null);
-        
+
         if (newSession?.user) {
           const role = await fetchUserRole(newSession.user.id);
-          if (isMounted) {
-            setUserRole(role);
-          }
+          if (isMounted) setUserRole(role);
         } else {
           setUserRole(null);
         }
-        
+
         setLoading(false);
       }
     );
