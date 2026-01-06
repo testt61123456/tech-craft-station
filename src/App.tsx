@@ -18,6 +18,7 @@ import Auth from "./pages/Auth";
 import CustomerRegistration from "./pages/CustomerRegistration";
 import ServiceRecords from "./pages/ServiceRecords";
 import QuoteForm from "./pages/QuoteForm";
+import AdminPanel from "./pages/AdminPanel";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const AppContent = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/admin-panel" element={<AdminPanel />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

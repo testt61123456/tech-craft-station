@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, LogOut, User, X, ChevronDown } from "lucide-react";
+import { Menu, LogOut, User, X, ChevronDown, Settings } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
@@ -56,6 +56,10 @@ const Header = () => {
     { to: "/quote-form", label: "Teklif Formu" }
   ];
 
+  const superadminLinks = [
+    { to: "/admin-panel", label: "Yönetim Paneli", icon: Settings }
+  ];
+
   return (
     <header className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
@@ -108,6 +112,16 @@ const Header = () => {
                       onClick={() => navigate(link.to)}
                       className="text-white hover:bg-white/10 cursor-pointer"
                     >
+                      {link.label}
+                    </DropdownMenuItem>
+                  ))}
+                  {userRole === 'superadmin' && superadminLinks.map((link) => (
+                    <DropdownMenuItem 
+                      key={link.to}
+                      onClick={() => navigate(link.to)}
+                      className="text-white hover:bg-white/10 cursor-pointer"
+                    >
+                      <link.icon className="h-4 w-4 mr-2" />
                       {link.label}
                     </DropdownMenuItem>
                   ))}
@@ -197,6 +211,24 @@ const Header = () => {
                 )}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
+                {link.label}
+              </Link>
+            ))}
+            
+            {/* Superadmin Links - Mobile */}
+            {userRole === 'superadmin' && superadminLinks.map((link) => (
+              <Link 
+                key={link.to}
+                to={link.to} 
+                className={cn(
+                  "px-4 py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2",
+                  isActive(link.to)
+                    ? "bg-primary text-white"
+                    : "text-white/80 hover:bg-white/10"
+                )}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <link.icon className="h-4 w-4" />
                 {link.label}
               </Link>
             ))}
