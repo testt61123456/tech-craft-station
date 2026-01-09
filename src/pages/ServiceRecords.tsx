@@ -236,18 +236,18 @@ const ServiceRecords = () => {
   }
 
   return (
-    <div className="min-h-screen bg-secondary">
+    <div className="min-h-screen bg-zinc-950">
       <Header />
       
-      <main className="py-8 md:py-12 lg:py-16">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="flex flex-col gap-4 mb-8 md:mb-12">
+      <main className="py-6 md:py-10">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="flex flex-col gap-4 mb-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
                   Servis Kayıtları
                 </h1>
-                <p className="text-base md:text-lg text-gray-300">
+                <p className="text-sm text-gray-400">
                   Servis kayıtlarını görüntüleyin ve yönetin
                 </p>
               </div>
@@ -256,7 +256,7 @@ const ServiceRecords = () => {
                   setEditService(null);
                   setFormDialogOpen(true);
                 }}
-                className="bg-gradient-hero hover:shadow-tech"
+                className="bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni Servis Kaydı
@@ -264,18 +264,18 @@ const ServiceRecords = () => {
             </div>
 
             <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <Input
                 type="text"
                 placeholder="Servis ara (kurum, müşteri, telefon)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                className="pl-10 pr-10 bg-zinc-900 border-zinc-700 text-white placeholder:text-gray-500 focus:border-red-500/50 focus:ring-red-500/20"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
                 >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -286,47 +286,45 @@ const ServiceRecords = () => {
           </div>
 
           {isLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-white" />
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-6 w-6 animate-spin text-red-400" />
             </div>
           ) : services.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-gray-400 text-lg mb-4">Henüz servis kaydı bulunmamaktadır.</p>
+            <div className="text-center py-16">
+              <p className="text-gray-500 mb-4">Henüz servis kaydı bulunmamaktadır.</p>
               <Button
                 onClick={() => setFormDialogOpen(true)}
-                className="bg-gradient-hero hover:shadow-tech"
+                className="bg-red-600 hover:bg-red-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 İlk Servis Kaydını Oluştur
               </Button>
             </div>
           ) : filteredServices.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-gray-400 text-lg mb-4">Arama sonucu bulunamadı.</p>
+            <div className="text-center py-16">
+              <p className="text-gray-500 mb-4">Arama sonucu bulunamadı.</p>
               <Button
                 onClick={() => setSearchQuery("")}
                 variant="outline"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
               >
                 Aramayı Temizle
               </Button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {filteredServices.map((service) => (
                 <div 
                   key={service.id} 
-                  className="space-y-2 transition-all duration-500 ease-in-out"
+                  className="transition-all duration-300 ease-in-out"
                 >
-                  <div className="transform transition-transform duration-300 hover:scale-[1.01]">
-                    <ServiceCard
-                      service={service}
-                      isExpanded={expandedServiceId === service.id}
-                      onToggle={() => handleToggleExpand(service.id)}
-                      onEdit={() => handleEdit(service)}
-                      onDelete={() => handleDelete(service)}
-                    />
-                  </div>
+                  <ServiceCard
+                    service={service}
+                    isExpanded={expandedServiceId === service.id}
+                    onToggle={() => handleToggleExpand(service.id)}
+                    onEdit={() => handleEdit(service)}
+                    onDelete={() => handleDelete(service)}
+                  />
                   {expandedServiceId === service.id && (
                     <div className="animate-fade-in">
                       <ServiceDetails
@@ -344,7 +342,7 @@ const ServiceRecords = () => {
                   <Button
                     onClick={handleLoadMore}
                     variant="outline"
-                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                    className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
                     disabled={isLoadingMore}
                   >
                     {isLoadingMore ? (

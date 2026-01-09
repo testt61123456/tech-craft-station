@@ -439,25 +439,25 @@ const CustomerRegistration = () => {
 
 
   return (
-    <div className="min-h-screen bg-secondary">
+    <div className="min-h-screen bg-zinc-950">
       <Header />
       
-      <main className="py-8 md:py-12 lg:py-16">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="flex flex-col gap-4 mb-8 md:mb-12">
+      <main className="py-6 md:py-10">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="flex flex-col gap-4 mb-6">
             {overdueDevices.length > 0 && (
-              <Alert className="bg-destructive/10 border-destructive/50">
-                <AlertCircle className="h-4 w-4 text-destructive" />
-                <AlertDescription className="text-white">
+              <Alert className="bg-red-500/10 border-red-500/50">
+                <AlertCircle className="h-4 w-4 text-red-400" />
+                <AlertDescription className="text-white text-sm">
                   <strong>{overdueDevices.length} cihaz 7 günden fazla bekliyor:</strong>
-                  <ul className="mt-2 space-y-1">
+                  <ul className="mt-1 space-y-0.5">
                     {overdueDevices.slice(0, 3).map(device => (
-                      <li key={device.id}>
+                      <li key={device.id} className="text-gray-300">
                         {device.customer_name} - {device.days} gün
                       </li>
                     ))}
                     {overdueDevices.length > 3 && (
-                      <li className="text-gray-300">ve {overdueDevices.length - 3} tane daha...</li>
+                      <li className="text-gray-400">ve {overdueDevices.length - 3} tane daha...</li>
                     )}
                   </ul>
                 </AlertDescription>
@@ -466,10 +466,10 @@ const CustomerRegistration = () => {
             
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
                   Müşteri Yönetimi
                 </h1>
-                <p className="text-base md:text-lg text-gray-300">
+                <p className="text-sm text-gray-400">
                   Müşteri kayıtlarını görüntüleyin ve yönetin
                 </p>
               </div>
@@ -478,7 +478,7 @@ const CustomerRegistration = () => {
                   setEditCustomer(null);
                   setFormDialogOpen(true);
                 }}
-                className="bg-gradient-hero hover:shadow-tech"
+                className="bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni Müşteri Ekle
@@ -487,18 +487,18 @@ const CustomerRegistration = () => {
 
             {/* Arama Çubuğu */}
             <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <Input
                 type="text"
                 placeholder="Müşteri ara (numara, isim veya telefon)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                className="pl-10 pr-10 bg-zinc-900 border-zinc-700 text-white placeholder:text-gray-500 focus:border-red-500/50 focus:ring-red-500/20"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
                 >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -509,77 +509,73 @@ const CustomerRegistration = () => {
           </div>
 
           {isLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-white" />
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-6 w-6 animate-spin text-red-400" />
             </div>
           ) : customers.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-gray-400 text-lg mb-4">Henüz müşteri kaydı bulunmamaktadır.</p>
+            <div className="text-center py-16">
+              <p className="text-gray-500 mb-4">Henüz müşteri kaydı bulunmamaktadır.</p>
               <Button
                 onClick={() => setFormDialogOpen(true)}
-                className="bg-gradient-hero hover:shadow-tech"
+                className="bg-red-600 hover:bg-red-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 İlk Müşteri Kaydını Oluştur
               </Button>
             </div>
           ) : filteredCustomers.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-gray-400 text-lg mb-4">Arama sonucu bulunamadı.</p>
+            <div className="text-center py-16">
+              <p className="text-gray-500 mb-4">Arama sonucu bulunamadı.</p>
               <Button
                 onClick={() => setSearchQuery("")}
                 variant="outline"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
               >
                 Aramayı Temizle
               </Button>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                {filteredCustomers.map((customer) => (
-                  <div 
-                    key={customer.id} 
-                    className={cn(
-                      "space-y-2 transition-all duration-500 ease-in-out",
-                      expandedCustomerId === customer.id && "animate-scale-in"
-                    )}
-                  >
-                    <div className="transform transition-transform duration-300 hover:scale-[1.01]">
-                      <CustomerCard
-                        customer={customer}
-                        devices={customerDeviceStatuses[customer.id]}
-                        isExpanded={expandedCustomerId === customer.id}
-                        onToggle={() => handleToggleExpand(customer.id)}
-                        onEdit={() => handleEdit(customer)}
-                        onDelete={() => handleDelete(customer)}
+            <div className="space-y-3">
+              {filteredCustomers.map((customer) => (
+                <div 
+                  key={customer.id} 
+                  className={cn(
+                    "transition-all duration-300 ease-in-out",
+                    expandedCustomerId === customer.id && "animate-scale-in"
+                  )}
+                >
+                  <CustomerCard
+                    customer={customer}
+                    devices={customerDeviceStatuses[customer.id]}
+                    isExpanded={expandedCustomerId === customer.id}
+                    onToggle={() => handleToggleExpand(customer.id)}
+                    onEdit={() => handleEdit(customer)}
+                    onDelete={() => handleDelete(customer)}
+                  />
+                  {expandedCustomerId === customer.id && (
+                    <div className="animate-fade-in">
+                      <CustomerDetails
+                        customer={{
+                          customer_number: customer.customer_number,
+                          customer_name: customer.customer_name,
+                          phone_number: customer.phone_number
+                        }}
+                        devices={customerDevices[customer.id] || []}
+                        customerId={customer.id}
+                        onStatusUpdate={() => fetchCustomerDevices(customer.id)}
                       />
                     </div>
-                    {expandedCustomerId === customer.id && (
-                      <div className="animate-fade-in">
-                        <CustomerDetails
-                          customer={{
-                            customer_number: customer.customer_number,
-                            customer_name: customer.customer_name,
-                            phone_number: customer.phone_number
-                          }}
-                          devices={customerDevices[customer.id] || []}
-                          customerId={customer.id}
-                          onStatusUpdate={() => fetchCustomerDevices(customer.id)}
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+                  )}
+                </div>
+              ))}
 
               {!searchQuery && hasMore && (
-                <div className="flex justify-center pt-6">
+                <div className="flex justify-center pt-4">
                   <Button
                     onClick={handleLoadMore}
                     disabled={isLoadingMore}
                     variant="outline"
-                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                    className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
                   >
                     {isLoadingMore ? (
                       <>

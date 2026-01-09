@@ -39,11 +39,11 @@ interface CustomerDetailsProps {
 }
 
 const statusConfig = {
-  pending: { label: "Beklemede", icon: Clock, color: "bg-yellow-500" },
-  completed: { label: "Sorun Giderildi", icon: CheckCircle, color: "bg-green-500" },
-  returned: { label: "İade Edildi", icon: XCircle, color: "bg-red-500" },
-  waiting_parts: { label: "Parça Bekleniyor", icon: Package, color: "bg-orange-500" },
-  warranty: { label: "Garanti Kapsamında", icon: AlertCircle, color: "bg-blue-500" }
+  pending: { label: "Beklemede", icon: Clock, color: "bg-yellow-500/80" },
+  completed: { label: "Sorun Giderildi", icon: CheckCircle, color: "bg-emerald-500/80" },
+  returned: { label: "İade Edildi", icon: XCircle, color: "bg-red-500/80" },
+  waiting_parts: { label: "Parça Bekleniyor", icon: Package, color: "bg-orange-500/80" },
+  warranty: { label: "Garanti Kapsamında", icon: AlertCircle, color: "bg-blue-500/80" }
 };
 
 const deviceTypeLabels: Record<string, string> = {
@@ -63,7 +63,6 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
   const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   const handleStatusChange = async (deviceId: string, newStatus: string) => {
-    // Eğer pending ise direkt güncelle, diğer durumlar için dialog aç
     if (newStatus === 'pending') {
       setUpdatingStatus(deviceId);
       try {
@@ -90,7 +89,6 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
         setUpdatingStatus(null);
       }
     } else {
-      // Diğer durumlar için dialog aç
       setSelectedDeviceId(deviceId);
       setSelectedStatus(newStatus);
       setStatusDialogOpen(true);
@@ -99,9 +97,9 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
 
   if (devices.length === 0) {
     return (
-      <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm">
-        <CardContent className="p-4">
-          <p className="text-gray-300 text-center">Bu müşteriye ait cihaz kaydı bulunmamaktadır.</p>
+      <Card className="bg-zinc-900/80 border border-zinc-700/50 ml-4 mt-2">
+        <CardContent className="p-3">
+          <p className="text-gray-400 text-center text-sm">Bu müşteriye ait cihaz kaydı bulunmamaktadır.</p>
         </CardContent>
       </Card>
     );
@@ -109,143 +107,110 @@ const CustomerDetails = ({ customer, devices, customerId, onStatusUpdate }: Cust
 
   return (
     <>
-      <div className="space-y-4 mt-4">
+      <div className="space-y-2 mt-2 ml-4">
         {devices.map((device) => {
-        const StatusIcon = statusConfig[device.status as keyof typeof statusConfig]?.icon || Clock;
-        const statusLabel = statusConfig[device.status as keyof typeof statusConfig]?.label || device.status;
-        const statusColor = statusConfig[device.status as keyof typeof statusConfig]?.color || "bg-gray-500";
+          const StatusIcon = statusConfig[device.status as keyof typeof statusConfig]?.icon || Clock;
+          const statusLabel = statusConfig[device.status as keyof typeof statusConfig]?.label || device.status;
 
-        return (
-          <Card key={device.id} className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm hover:shadow-tech transition-all duration-300">
-            <CardHeader className="border-b border-white/10">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <CardTitle className="text-lg text-white flex items-center gap-2">
-                  <Laptop className="h-5 w-5" />
-                  {deviceTypeLabels[device.device_type] || device.device_type}
-                </CardTitle>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Select
-                    value={device.status}
-                    onValueChange={(value) => handleStatusChange(device.id, value)}
-                    disabled={updatingStatus === device.id}
-                  >
-                    <SelectTrigger className="w-[200px] bg-white/10 border-white/20 text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-secondary border-white/20">
-                      {Object.entries(statusConfig).map(([key, { label }]) => (
-                        <SelectItem key={key} value={key} className="text-white hover:bg-white/10">
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <PrintReceipt
-                    customer={customer}
-                    device={device}
-                  />
+          return (
+            <Card key={device.id} className="bg-zinc-900/80 border border-zinc-700/50">
+              <CardHeader className="border-b border-zinc-700/30 py-2 px-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <CardTitle className="text-sm text-white flex items-center gap-2">
+                    <Laptop className="h-4 w-4 text-red-400" />
+                    {deviceTypeLabels[device.device_type] || device.device_type}
+                  </CardTitle>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Select
+                      value={device.status}
+                      onValueChange={(value) => handleStatusChange(device.id, value)}
+                      disabled={updatingStatus === device.id}
+                    >
+                      <SelectTrigger className="w-[160px] h-7 text-xs bg-zinc-800 border-zinc-600 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-zinc-800 border-zinc-600">
+                        {Object.entries(statusConfig).map(([key, { label }]) => (
+                          <SelectItem key={key} value={key} className="text-white text-xs hover:bg-zinc-700">
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <PrintReceipt customer={customer} device={device} />
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="text-sm text-gray-400 mb-1">Sorun:</p>
-                <p className="text-white">{device.device_problem}</p>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-gray-300">
-                  <Calendar className="h-4 w-4" />
-                  <span>
-                    Alındığı Tarih: {new Date(device.received_date).toLocaleDateString('tr-TR', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </span>
+              </CardHeader>
+              <CardContent className="p-3 space-y-2">
+                <div>
+                  <p className="text-xs text-gray-500 mb-0.5">Sorun:</p>
+                  <p className="text-white text-sm">{device.device_problem}</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                  <div className="flex items-center gap-1.5 text-gray-400">
+                    <Calendar className="h-3 w-3" />
+                    <span>Alındı: {new Date(device.received_date).toLocaleDateString('tr-TR')}</span>
+                  </div>
+
+                  {device.status === 'completed' && device.delivery_date && (
+                    <div className="flex items-center gap-1.5 text-emerald-400">
+                      <CheckCircle className="h-3 w-3" />
+                      <span>Teslim: {new Date(device.delivery_date).toLocaleDateString('tr-TR')}</span>
+                    </div>
+                  )}
+
+                  {device.status === 'returned' && device.return_date && (
+                    <div className="flex items-center gap-1.5 text-red-400">
+                      <XCircle className="h-3 w-3" />
+                      <span>İade: {new Date(device.return_date).toLocaleDateString('tr-TR')}</span>
+                    </div>
+                  )}
+
+                  {device.status === 'warranty' && device.warranty_sent_date && (
+                    <div className="flex items-center gap-1.5 text-blue-400">
+                      <AlertCircle className="h-3 w-3" />
+                      <span>Garanti: {new Date(device.warranty_sent_date).toLocaleDateString('tr-TR')}</span>
+                    </div>
+                  )}
+
+                  {device.status === 'waiting_parts' && device.waiting_days && (
+                    <div className="flex items-center gap-1.5 text-orange-400">
+                      <Clock className="h-3 w-3" />
+                      <span>Bekleme: {device.waiting_days} gün</span>
+                    </div>
+                  )}
                 </div>
 
-                {device.status === 'completed' && device.delivery_date && (
-                  <div className="flex items-center gap-2 text-sm text-green-300">
-                    <CheckCircle className="h-4 w-4" />
-                    <span>
-                      Teslim Tarihi: {new Date(device.delivery_date).toLocaleDateString('tr-TR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </span>
-                  </div>
-                )}
-
-                {device.status === 'returned' && device.return_date && (
-                  <div className="flex items-center gap-2 text-sm text-red-300">
-                    <XCircle className="h-4 w-4" />
-                    <span>
-                      İade Tarihi: {new Date(device.return_date).toLocaleDateString('tr-TR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </span>
-                  </div>
-                )}
-
-                {device.status === 'warranty' && device.warranty_sent_date && (
-                  <div className="flex items-center gap-2 text-sm text-blue-300">
-                    <AlertCircle className="h-4 w-4" />
-                    <span>
-                      Garantiye Gönderilme: {new Date(device.warranty_sent_date).toLocaleDateString('tr-TR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </span>
-                  </div>
-                )}
-
-                {device.status === 'waiting_parts' && device.waiting_days && (
-                  <div className="flex items-center gap-2 text-sm text-orange-300">
-                    <Clock className="h-4 w-4" />
-                    <span>Parça Bekleme Süresi: {device.waiting_days} gün</span>
-                  </div>
-                )}
-              </div>
-
-              {device.materials && device.materials.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-sm text-gray-400 mb-2 flex items-center gap-2">
-                    <Package className="h-4 w-4" />
-                    Malzemeler:
-                  </p>
-                  <div className="space-y-2">
-                    {device.materials.map((material) => (
-                      <div key={material.id} className="flex justify-between items-center bg-white/5 p-2 rounded">
-                        <div className="flex-1">
-                          <p className="text-white">{material.material_name}</p>
-                          <p className="text-xs text-gray-400">
-                            Adet: {material.quantity} x ₺{material.unit_price.toFixed(2)}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-white font-semibold flex items-center gap-1">
-                            <DollarSign className="h-4 w-4" />
+                {device.materials && device.materials.length > 0 && (
+                  <div className="pt-2 border-t border-zinc-700/30">
+                    <p className="text-xs text-gray-500 mb-1.5 flex items-center gap-1">
+                      <Package className="h-3 w-3" />
+                      Malzemeler:
+                    </p>
+                    <div className="space-y-1">
+                      {device.materials.map((material) => (
+                        <div key={material.id} className="flex justify-between items-center bg-zinc-800/50 p-1.5 rounded text-xs">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white truncate">{material.material_name}</p>
+                            <p className="text-gray-500">{material.quantity} × ₺{material.unit_price.toFixed(2)}</p>
+                          </div>
+                          <Badge variant="outline" className="text-xs text-red-400 border-red-500/30 bg-red-500/10">
                             ₺{material.total_price.toFixed(2)}
-                          </p>
+                          </Badge>
                         </div>
+                      ))}
+                      <div className="flex justify-end pt-1.5 border-t border-zinc-700/30">
+                        <p className="text-sm font-bold text-white">
+                          Toplam: <span className="text-red-400">₺{device.materials.reduce((sum, m) => sum + m.total_price, 0).toFixed(2)}</span>
+                        </p>
                       </div>
-                    ))}
-                    <div className="flex justify-end pt-2 border-t border-white/10">
-                      <p className="text-lg font-bold text-white">
-                        Toplam: ₺{device.materials.reduce((sum, m) => sum + m.total_price, 0).toFixed(2)}
-                      </p>
                     </div>
                   </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        );
+                )}
+              </CardContent>
+            </Card>
+          );
         })}
       </div>
 
