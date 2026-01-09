@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Printer } from "lucide-react";
+import { Printer, Package } from "lucide-react";
 import { Canvas as FabricCanvas } from "fabric";
 
 interface Material {
@@ -214,66 +214,104 @@ const ServiceDetails = ({ service, materials }: ServiceDetailsProps) => {
   };
 
   const signatureCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fabricCanvasRef = useRef<FabricCanvas | null>(null);
+
   useEffect(() => {
     if (!service.signature_data || !signatureCanvasRef.current) return;
-    const canvas = new FabricCanvas(signatureCanvasRef.current, { width: 600, height: 200, backgroundColor: '#ffffff' });
+    
+    // Dispose previous canvas if exists
+    if (fabricCanvasRef.current) {
+      fabricCanvasRef.current.dispose();
+    }
+
+    const canvas = new FabricCanvas(signatureCanvasRef.current, { 
+      width: 280, 
+      height: 100, 
+      backgroundColor: '#ffffff' 
+    });
+    fabricCanvasRef.current = canvas;
+
     (async () => {
       try {
         const json = typeof service.signature_data === 'string' ? JSON.parse(service.signature_data) : service.signature_data;
         await canvas.loadFromJSON(json);
+        
+        // Scale signature to fit smaller canvas
+        const objects = canvas.getObjects();
+        if (objects.length > 0) {
+          const group = new (await import('fabric')).Group(objects);
+          const scaleX = 260 / (group.width || 260);
+          const scaleY = 80 / (group.height || 80);
+          const scale = Math.min(scaleX, scaleY, 0.5);
+          
+          objects.forEach(obj => {
+            obj.scale(scale);
+          });
+        }
+        
         canvas.renderAll();
         canvas.isDrawingMode = false;
       } catch (e) {
         console.error('İmza yüklenirken hata:', e);
       }
     })();
-    return () => { canvas.dispose(); };
+
+    return () => { 
+      if (fabricCanvasRef.current) {
+        fabricCanvasRef.current.dispose();
+        fabricCanvasRef.current = null;
+      }
+    };
   }, [service.signature_data]);
 
   return (
-    <Card className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 border-white/20 backdrop-blur-sm">
-      <div className="p-4 md:p-6 space-y-6">
+    <Card className="bg-zinc-900/80 border border-zinc-700/50 ml-4 mt-2">
+      <div className="p-3 md:p-4 space-y-3">
         <div className="flex justify-end">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={handlePrint}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            className="h-7 px-2 text-gray-400 hover:text-white hover:bg-zinc-700"
           >
-            <Printer className="h-4 w-4 mr-2" />
+            <Printer className="h-3.5 w-3.5 mr-1.5" />
             Yazdır
           </Button>
         </div>
+
         {service.description && (
           <div>
-            <h4 className="text-sm font-semibold text-white mb-2">Açıklama</h4>
+            <h4 className="text-xs font-semibold text-gray-400 mb-1">Açıklama</h4>
             <p className="text-gray-300 text-sm">{service.description}</p>
           </div>
         )}
 
         {materials.length > 0 && (
           <div>
-            <h4 className="text-sm font-semibold text-white mb-3">Kullanılan Malzemeler</h4>
-            <div className="space-y-2">
+            <h4 className="text-xs font-semibold text-gray-400 mb-2 flex items-center gap-1.5">
+              <Package className="h-3.5 w-3.5" />
+              Malzemeler
+            </h4>
+            <div className="space-y-1.5">
               {materials.map((material) => (
                 <div
                   key={material.id}
-                  className="flex items-center justify-between bg-white/5 p-3 rounded-md border border-white/10"
+                  className="flex items-center justify-between bg-zinc-800/50 p-2 rounded border border-zinc-700/30"
                 >
-                  <div className="flex-1">
-                    <p className="text-white font-medium">{material.material_name}</p>
-                    <p className="text-sm text-gray-300">
-                      {material.quantity} adet × {material.unit_price}₺
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-sm font-medium truncate">{material.material_name}</p>
+                    <p className="text-xs text-gray-500">
+                      {material.quantity} × {material.unit_price}₺
                     </p>
                   </div>
-                  <Badge variant="outline" className="text-white border-white/20">
+                  <Badge variant="outline" className="text-xs text-red-400 border-red-500/30 bg-red-500/10">
                     {material.total_price}₺
                   </Badge>
                 </div>
               ))}
-              <div className="flex justify-end pt-2 border-t border-white/10">
-                <p className="text-white font-bold">
-                  Toplam: {materials.reduce((sum, m) => sum + m.total_price, 0).toFixed(2)}₺
+              <div className="flex justify-end pt-2 border-t border-zinc-700/30">
+                <p className="text-white text-sm font-bold">
+                  Toplam: <span className="text-red-400">{materials.reduce((sum, m) => sum + m.total_price, 0).toFixed(2)}₺</span>
                 </p>
               </div>
             </div>
@@ -282,14 +320,13 @@ const ServiceDetails = ({ service, materials }: ServiceDetailsProps) => {
 
         {service.signature_data && (
           <div>
-            <h4 className="text-sm font-semibold text-white mb-2">İmza</h4>
-            <div className="bg-white rounded-md p-4 border border-white/20">
+            <h4 className="text-xs font-semibold text-gray-400 mb-1.5">İmza</h4>
+            <div className="bg-white rounded border border-zinc-600 inline-block">
               <canvas
                 ref={signatureCanvasRef}
-                width={600}
-                height={200}
-                className="w-full"
-                style={{ maxHeight: "200px" }}
+                width={280}
+                height={100}
+                className="block"
               />
             </div>
           </div>
