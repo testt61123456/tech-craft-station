@@ -442,7 +442,7 @@ const CustomerRegistration = () => {
     <div className="min-h-screen bg-zinc-950">
       <Header />
       
-      <main className="py-6 md:py-10">
+      <main className="pt-24 pb-6 md:pb-10">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="flex flex-col gap-4 mb-6">
             {overdueDevices.length > 0 && (

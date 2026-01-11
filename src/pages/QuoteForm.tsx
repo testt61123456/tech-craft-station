@@ -392,7 +392,7 @@ const QuoteForm = () => {
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
       <Header />
-      <main className="container mx-auto px-4 pt-24 pb-12">
+      <main className="container mx-auto px-4 pt-28 pb-12">
         <Card className="bg-[#141414] border-[#2a2a2a] shadow-2xl">
           {/* Modern Header with Logo */}
           <div className="p-6 border-b border-[#2a2a2a]">
