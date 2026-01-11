@@ -4,9 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Printer, RefreshCw, Save, FolderOpen, Edit, Search, Download } from "lucide-react";
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
+import { Plus, Trash2, Printer, RefreshCw, Save, FolderOpen, Edit, Search } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import karadenizLogo from "@/assets/karadeniz-logo.png";
@@ -272,72 +270,8 @@ const QuoteForm = () => {
     window.print();
   };
 
-  const handleDownloadPdf = async () => {
-    const element = printRef.current;
-    if (!element) return;
-
-    try {
-      // Capture element as canvas with high quality
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
-
-      // Calculate dimensions for A4 format
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      // Create PDF
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-
-      // Add image with margins
-      const margin = 10;
-      const contentWidth = imgWidth - (margin * 2);
-      const contentHeight = (canvas.height * contentWidth) / canvas.width;
-
-      // Handle multi-page content if needed
-      let heightLeft = contentHeight;
-      let position = margin;
-
-      pdf.addImage(
-        canvas.toDataURL('image/jpeg', 0.98),
-        'JPEG',
-        margin,
-        position,
-        contentWidth,
-        contentHeight
-      );
-
-      heightLeft -= (pageHeight - margin * 2);
-
-      while (heightLeft > 0) {
-        position = heightLeft - contentHeight + margin;
-        pdf.addPage();
-        pdf.addImage(
-          canvas.toDataURL('image/jpeg', 0.98),
-          'JPEG',
-          margin,
-          position,
-          contentWidth,
-          contentHeight
-        );
-        heightLeft -= (pageHeight - margin * 2);
-      }
-
-      // Save PDF
-      pdf.save(`teklif-${editingQuoteNumber || 'yeni'}.pdf`);
-    } catch (error) {
-      console.error('PDF oluşturma hatası:', error);
-      toast.error('PDF oluşturulamadı');
-    }
-  };
+  // PDF fonksiyonu kaldırıldı - güvenlik açığı bulunan html2pdf.js yerine
+  // tarayıcının yazdırma özelliğini kullanın (Yazdır -> PDF olarak kaydet)
 
   const handleSaveQuote = async () => {
     if (!companyName.trim()) {
@@ -608,10 +542,6 @@ const QuoteForm = () => {
                 <Button onClick={handlePrint} className="bg-primary hover:bg-primary/90">
                   <Printer className="w-4 h-4 mr-2" />
                   Yazdır
-                </Button>
-                <Button onClick={handleDownloadPdf} variant="outline" className="bg-[#1a1a1a] border-[#333] text-gray-300 hover:bg-[#252525] hover:text-white hover:border-[#444]">
-                  <Download className="w-4 h-4 mr-2" />
-                  PDF
                 </Button>
               </div>
             </div>
