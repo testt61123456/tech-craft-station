@@ -97,9 +97,9 @@ const AboutPage = () => {
                 <span className="text-sm text-primary font-medium">15 Yıldır Sizinle</span>
               </div>
               
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-normal">
                 Hakkımızda
-                <span className="block bg-gradient-to-r from-primary via-red-400 to-primary bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-primary via-red-400 to-primary bg-clip-text text-transparent pb-2">
                   Karadeniz Bilgisayar
                 </span>
               </h1>

@@ -348,7 +348,7 @@ const AdminPanel = () => {
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 pt-24 pb-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white flex items-center gap-2">
             <Settings className="h-8 w-8 text-blue-400" />
