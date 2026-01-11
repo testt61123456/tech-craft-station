@@ -49,9 +49,13 @@ const Partners = () => {
                 alt={partner.name}
                 className="max-h-10 max-w-[100px] object-contain filter brightness-0 invert opacity-60 group-hover:opacity-100 transition-all duration-300"
                 onError={(e) => {
-                  // Fallback to text if image fails
-                  (e.target as HTMLImageElement).style.display = 'none';
-                  (e.target as HTMLImageElement).parentElement!.innerHTML = `<span class="text-white/60 font-semibold text-lg group-hover:text-white transition-colors">${partner.name}</span>`;
+                  // Fallback to text if image fails - using safe DOM manipulation to prevent XSS
+                  const img = e.target as HTMLImageElement;
+                  img.style.display = 'none';
+                  const span = document.createElement('span');
+                  span.className = 'text-white/60 font-semibold text-lg group-hover:text-white transition-colors';
+                  span.textContent = partner.name; // Safe: textContent prevents XSS
+                  img.parentElement?.replaceChildren(span);
                 }}
               />
             </div>
