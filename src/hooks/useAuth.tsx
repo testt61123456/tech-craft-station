@@ -59,81 +59,104 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     let isMounted = true;
 
-    const initializeAuth = async () => {
-      try {
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
+    // Listener FIRST (sync only) to avoid missing events and to prevent deadlocks
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (!isMounted) return;
 
+      // Only synchronous state updates here (avoid Supabase calls inside this callback)
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
+
+      if (event === 'SIGNED_OUT') {
+        setUserRole(null);
+        setLoading(false);
+      }
+
+      // Role will be resolved in a separate effect
+      if (event === 'SIGNED_IN') {
+        setLoading(true);
+      }
+    });
+
+    // THEN check existing session
+    supabase.auth
+      .getSession()
+      .then(({ data: { session: currentSession } }) => {
         if (!isMounted) return;
 
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
 
-        if (currentSession?.user) {
-          const role = await fetchUserRole(currentSession.user.id);
-          if (isMounted) {
-            setUserRole(role);
-          }
-        }
-      } catch (error) {
-        console.error('Auth başlatma hatası:', error);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
-    initializeAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
-        if (!isMounted) return;
-
-        // Token yenileme olaylarında sadece session/user güncelle, rol değiştirme
-        if (event === 'TOKEN_REFRESHED') {
-          setSession(newSession);
-          setUser(newSession?.user ?? null);
-          // Rol zaten mevcut, değiştirme
-          return;
-        }
-
-        // Yeni giriş veya çıkış durumlarında loading başlat
-        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        if (!currentSession?.user) {
+          setLoading(false);
+        } else {
+          // user exists => role will be fetched in the role effect
           setLoading(true);
         }
-
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
-
-        if (newSession?.user) {
-          const role = await fetchUserRole(newSession.user.id);
-          if (isMounted) {
-            setUserRole(role);
-          }
-        } else {
-          setUserRole(null);
-        }
-
-        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
-          setLoading(false);
-        }
-      }
-    );
+      })
+      .catch((error) => {
+        console.error('Auth başlatma hatası:', error);
+        if (isMounted) setLoading(false);
+      });
 
     return () => {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, [fetchUserRole]);
+  }, []);
+
+  // Resolve role whenever user changes (outside onAuthStateChange to avoid deadlocks)
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!user?.id) return;
+
+    setLoading(true);
+    fetchUserRole(user.id)
+      .then((role) => {
+        if (!cancelled) setUserRole(role);
+      })
+      .catch((error) => {
+        console.error('Rol alınamadı:', error);
+        if (!cancelled) setUserRole((prev) => prev || 'user');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id, fetchUserRole]);
 
   const signOut = async () => {
+    const timeoutMs = 6000;
+
     try {
-      await supabase.auth.signOut();
+      await Promise.race([
+        supabase.auth.signOut(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('signOut timeout')), timeoutMs)
+        ),
+      ]);
     } catch (error) {
       console.error('Çıkış hatası:', error);
+
+      // Fallback: localStorage'daki Supabase auth tokenlarını temizle
+      try {
+        const keys = Object.keys(localStorage).filter(
+          (k) => k.startsWith('sb-') && k.endsWith('-auth-token')
+        );
+        keys.forEach((k) => localStorage.removeItem(k));
+      } catch {
+        // ignore
+      }
     } finally {
       // Her durumda state'i temizle
       setUser(null);
       setSession(null);
       setUserRole(null);
+      setLoading(false);
     }
   };
 

@@ -26,8 +26,9 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSignOut = async () => {
-    await signOut();
+  const handleSignOut = () => {
+    // Logout işlemi bazen Supabase tarafında asılı kalabildiği için burada await etmiyoruz.
+    void signOut();
     navigate("/");
   };
 
@@ -37,7 +38,7 @@ const Header = () => {
       case 'admin': return 'Yönetici';
       case 'dealer': return 'Bayi';
       case 'user': return 'Kullanıcı';
-      default: return 'Kullanıcı';
+      default: return 'Yükleniyor...';
     }
   };
 
@@ -109,7 +110,7 @@ const Header = () => {
                   {adminLinks.map((link) => (
                     <DropdownMenuItem 
                       key={link.to}
-                      onClick={() => navigate(link.to)}
+                      onSelect={() => navigate(link.to)}
                       className="text-white hover:bg-white/10 cursor-pointer"
                     >
                       {link.label}
@@ -118,7 +119,7 @@ const Header = () => {
                   {userRole === 'superadmin' && superadminLinks.map((link) => (
                     <DropdownMenuItem 
                       key={link.to}
-                      onClick={() => navigate(link.to)}
+                      onSelect={() => navigate(link.to)}
                       className="text-white hover:bg-white/10 cursor-pointer"
                     >
                       <link.icon className="h-4 w-4 mr-2" />
@@ -146,7 +147,7 @@ const Header = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-secondary border-white/10">
                   <DropdownMenuItem 
-                    onClick={handleSignOut} 
+                    onSelect={handleSignOut} 
                     className="text-white hover:bg-white/10 cursor-pointer"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
