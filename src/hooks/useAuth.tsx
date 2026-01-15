@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, useCallback } from "react";
+import { useState, useEffect, createContext, useContext, useCallback, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,33 +20,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Ref to track current role to avoid stale closure issues
+  const userRoleRef = useRef<UserRole | null>(null);
+  
+  // Keep ref in sync with state
+  useEffect(() => {
+    userRoleRef.current = userRole;
+  }, [userRole]);
 
   // IMPORTANT: Always resolve role using the DB function which applies role priority.
-  // (Avoid reading the first row from user_roles which may not represent the highest privilege.)
-  const fetchUserRole = useCallback(async (userId: string, currentRole?: UserRole | null): Promise<UserRole> => {
+  const fetchUserRole = useCallback(async (userId: string): Promise<UserRole> => {
     try {
       const { data, error } = await supabase.rpc('get_user_role', { user_uuid: userId });
 
       if (error) {
         console.error('Rol RPC hatası:', error);
-        // Hata durumunda mevcut rolü koru, yoksa 'user' döndür
-        return currentRole || 'user';
+        // Hata durumunda mevcut rolü koru
+        return userRoleRef.current || 'user';
       }
 
-      return (data as UserRole) || currentRole || 'user';
+      const role = (data as UserRole) || 'user';
+      return role;
     } catch (error) {
       console.error('Rol alınamadı:', error);
       // Hata durumunda mevcut rolü koru
-      return currentRole || 'user';
+      return userRoleRef.current || 'user';
     }
   }, []);
 
   const refreshRole = useCallback(async () => {
     if (user) {
-      const role = await fetchUserRole(user.id, userRole);
+      const role = await fetchUserRole(user.id);
       setUserRole(role);
     }
-  }, [user, userRole, fetchUserRole]);
+  }, [user, fetchUserRole]);
 
   useEffect(() => {
     let isMounted = true;
@@ -62,7 +70,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (currentSession?.user) {
           const role = await fetchUserRole(currentSession.user.id);
-          if (isMounted) setUserRole(role);
+          if (isMounted) {
+            setUserRole(role);
+          }
         }
       } catch (error) {
         console.error('Auth başlatma hatası:', error);
@@ -94,9 +104,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(newSession?.user ?? null);
 
         if (newSession?.user) {
-          // Mevcut rolü parametre olarak geç - hata durumunda korunacak
-          const role = await fetchUserRole(newSession.user.id, userRole);
-          if (isMounted) setUserRole(role);
+          const role = await fetchUserRole(newSession.user.id);
+          if (isMounted) {
+            setUserRole(role);
+          }
         } else {
           setUserRole(null);
         }
@@ -114,10 +125,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [fetchUserRole]);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setUserRole(null);
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Çıkış hatası:', error);
+    } finally {
+      // Her durumda state'i temizle
+      setUser(null);
+      setSession(null);
+      setUserRole(null);
+    }
   };
 
   const value = {
